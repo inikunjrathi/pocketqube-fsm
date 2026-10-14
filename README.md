@@ -4,8 +4,8 @@
 
 Code, configurations and evidence for the paper *Mission-agnostic flight
 software for PocketQubes: a configuration-driven, model-checked state machine
-for deployment and downlink management* (Nikunj Rathi, K. J. Somaiya School of
-Engineering, submitted to Acta Astronautica). Version v1.0.0, the code described in the
+for deployment and downlink management* (Nikunj Rathi, Purva Pote and Megha Sharma,
+K. J. Somaiya School of Engineering, submitted to Acta Astronautica). Version v1.0.0, the code described in the
 paper, is archived on Zenodo at https://doi.org/10.5281/zenodo.23365148.
 
 The engine holds no mission constants. Lifecycle states, events, guarded
