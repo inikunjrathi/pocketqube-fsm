@@ -121,3 +121,57 @@ def test_sequence_has_no_32_bit_wraparound_in_python():
     assert bank == "B"
     assert layer._banks["B"].sequence == 2**32
     assert layer.load()["state"] == "S-02"
+
+LATCH = ("deployment_confirmed",)
+
+def test_latch_survives_corruption_of_newest_bank_right_after_first_latched_save():
+    # R-29
+    layer = PersistenceLayer(LATCH)
+    layer.save("S-03", {"deployment_confirmed": False})
+    layer.save("S-04", {"deployment_confirmed": True})
+    for bank in ("A", "B"):
+        probe = PersistenceLayer(LATCH)
+        probe._banks = dict(layer._banks)
+        probe.corrupt(bank)
+        assert probe.load()["context"]["deployment_confirmed"] is True, bank
+
+def test_without_latch_names_the_single_write_window_is_open():
+    layer = PersistenceLayer()
+    layer.save("S-03", {"deployment_confirmed": False})
+    bank = layer.save("S-04", {"deployment_confirmed": True})
+    layer.corrupt(bank)
+    assert layer.load()["context"]["deployment_confirmed"] is False
+
+def test_latch_survives_a_torn_mirror_write():
+    # R-29
+    layer = PersistenceLayer(LATCH)
+    layer.save("S-03", {"deployment_confirmed": False})
+    layer.save("S-04", {"deployment_confirmed": True})
+    layer.corrupt(layer.last_written_bank)
+    assert layer.load() == {"state": "S-04", "context": {"deployment_confirmed": True}}
+
+def test_mirror_write_happens_once_then_saves_alternate():
+    layer = PersistenceLayer(LATCH)
+    layer.save("S-03", {"deployment_confirmed": False})
+    layer.save("S-04", {"deployment_confirmed": True})
+    sequences = sorted(r.sequence for r in layer._banks.values())
+    assert sequences == [1, 2]
+    banks = [layer.save("S-05", {"deployment_confirmed": True}) for _ in range(4)]
+    assert banks[0] != banks[1] and banks[0] == banks[2] and banks[1] == banks[3]
+    assert max(r.sequence for r in layer._banks.values()) == 6
+
+def test_latch_survives_any_single_bank_corruption_after_any_save_sequence():
+    # R-29
+    states = ["S-03", "S-04", "S-05", "S-06", "S-07"]
+    for latch_at in range(len(states)):
+        for stop in range(latch_at + 1, len(states) + 1):
+            layer = PersistenceLayer(LATCH)
+            for i, state in enumerate(states[:stop]):
+                layer.save(state, {"deployment_confirmed": i >= latch_at})
+            for bank in ("A", "B"):
+                probe = PersistenceLayer(LATCH)
+                probe._banks = dict(layer._banks)
+                probe.corrupt(bank)
+                restored = probe.load()
+                assert restored is not None
+                assert restored["context"]["deployment_confirmed"] is True, (latch_at, stop, bank)

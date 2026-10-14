@@ -111,7 +111,7 @@ def run_simulation(
         rate_per_class_per_hour=rate_per_class_per_hour,
     )
 
-    persistence = PersistenceLayer()
+    persistence = PersistenceLayer(latch.name for latch in cfg.latches)
     logger = DecisionLogger()
 
     params_by_name = {p.name: p.value for p in cfg.parameters.values()}

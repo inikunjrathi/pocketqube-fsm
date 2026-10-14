@@ -23,7 +23,7 @@
 \newcommand{\cfgC}{Config~C}
 \newcommand{\ttc}{TT\&C}
 \DeclareUrlCommand\code{\urlstyle{tt}}
-\newcommand{\TestCount}{1,208}
+\newcommand{\TestCount}{1,213}
 \newcommand{\ReplayOutcome}{Firmware rebuilt; full replay on the rebuilt image: 35,763 calls, 0 mismatches; Python trace and firmware log byte-identical to the archived ones}
 
 \journal{Acta Astronautica}
@@ -33,7 +33,7 @@
 
 \begin{frontmatter}
 
-\title{Mission-agnostic flight software for PocketQubes: a configuration-driven, model-checked state machine for deployment and downlink management}
+\title{Mission-agnostic mode management for PocketQubes: a configuration-driven, model-checked decision engine for deployment and downlink scheduling}
 
 \author{Nikunj Rathi\corref{cor1}}
 \ead{nikunj.rathi@somaiya.edu}
@@ -47,11 +47,11 @@
             country={India}}
 
 \begin{abstract}
-PocketQube missions fly with less than 1~W of average power and often start software design before an interface-control document exists. This paper describes a scheduling and mode-arbitration framework that keeps every mission constant out of the engine: lifecycle states, events, guarded transitions, persisted latches, downlink priorities and event-conflict ranks are all YAML data checked against one schema. Three structurally different configurations run on the same engine without code changes: a ten-state configuration with dual-path deployment confirmation and four downlink modes, a seven-state single-path variant with ground-only safe-mode exit, and a seven-state variant that combines single-path deployment with autonomous recovery. A suite of \TestCount{} tests covers every transition, every illegal state--event pair, a guard-false and a threshold-boundary case for every guarded transition, and resets injected at each transition boundary and inside non-volatile writes. TLC model checking of TLA+ specifications that model torn non-volatile writes checks hand-written requirement properties on all three configurations; it found a path by which one configuration could reach commissioning without the deployment latch, which was then fixed. Once durably saved, the latch survives every reset and any single-bank corruption. A simulation built on the published two-line element set, battery, solar and link figures of the POQUITO PocketQube delivers 91.85\% of items within a 48~h reference run (20-seed mean 92.03\%, 95\% CI 91.61--92.45\%), which an offline clairvoyant bound shows is the most any policy can deliver for that seed, but only 2.61\% meet their deadline because passes over the single station are hours apart. A one-step lookahead policy and a decision tree trained to imitate it tie the rule-based scheduler on delivery over 20 held-out seeds; the lookahead policy draws 4.4\% less energy at a small cost in deadline success. Sensitivity runs show that the elevation mask is the only assumed parameter that moves delivery (80.63--91.93\%) and that adverse values combined with an arrival surge lower it to 47.34\%. A second, polar ground station raises delivery to 99.08\% and deadline success to 18.14\%. The engine orders simultaneous events by configured conflict ranks and can authenticate ground commands with HMAC-SHA256 and a replay counter. A C port running on an emulated STM32F401RE under Zephyr reproduced all 35,763 engine decisions of the reference run without a mismatch.
+PocketQube missions fly with less than 1~W of average power and often start software design before an interface-control document exists. This paper describes a decision engine for lifecycle mode management and downlink scheduling that keeps every mission constant out of the code: states, events, guarded transitions, persisted latches, downlink priorities and event-conflict ranks are YAML data checked against one schema. Three configurations that differ in deployment confirmation, downlink modes and safe-mode exit run on the same engine without code changes. A suite of \TestCount{} tests covers every transition, every illegal state--event pair, a guard-false and a threshold-boundary case for every guarded transition, and resets injected at each transition boundary and inside non-volatile writes. TLC model checking of hand-written requirement properties, under a model in which any save can be torn by a reset, found a path by which one configuration reached commissioning without the deployment latch; it was fixed. Review found a second defect: a latch set by one save was held by only one of the two non-volatile banks until the next save. The save that sets a latch now writes both banks, so once it completes the latch survives any reset and the corruption of either bank, which the tests check over every short save history. A C port on an emulated STM32F401RE under Zephyr reproduced all 35,763 engine decisions of a 48~h reference run without a mismatch; it covers the decision logic, not hardware actions, timing or power. A supporting simulation uses the published orbit, battery, solar and link figures of the POQUITO PocketQube with an elevation-gated link and a lossless battery. In that scenario the rule-based scheduler delivers 91.85\% of items within 48~h, the most any policy can deliver for that seed according to an offline clairvoyant bound, but only 2.61\% meet their deadline because passes over one station are hours apart; a second, polar station raises these to 99.08\% and 18.14\%. A one-step lookahead policy and a decision tree trained to imitate it do not improve delivery. These figures describe the simulated scenario, not on-orbit performance.
 \end{abstract}
 
 \begin{keyword}
-PocketQube \sep finite-state machine \sep flight software \sep TLA+ model checking \sep downlink scheduling \sep fault injection \sep Renode
+PocketQube \sep finite-state machine \sep mode management \sep TLA+ model checking \sep downlink scheduling \sep fault injection \sep Renode
 \end{keyword}
 
 \end{frontmatter}
@@ -68,15 +68,13 @@ The work addresses four questions. RQ1: can one engine drive structurally differ
 
 The contributions are as follows.
 \begin{enumerate}
-\item A YAML configuration schema with a guard grammar and a closed-world rule for undefined state--event pairs, interpreted by an engine that contains no mission constants (Section~\ref{sec:design}).
-\item Three reference configurations that differ in deployment confirmation, RF inhibit, number of downlink modes and safe-mode exit policy, together with the design-review defects found in them before any engine code existed (Section~\ref{sec:configs}).
-\item Verification by full transition coverage, illegal-pair coverage, guard-boundary tests, reset injection at transition and byte boundaries, TLC model checking of hand-written requirement properties under a torn-write persistence model, and a configuration-mutation study that measures how much of each check depends on the shared YAML file (Section~\ref{sec:verification}).
-\item A simulation driven by the published POQUITO element set and flight figures~\cite{Franzese2026POQUITO,Franzese2024POQUITO4S}, with baseline, multi-seed, sensitivity, compounding worst-case and two-station results (Sections~\ref{sec:sim} and~\ref{sec:results}).
-\item A comparison of rule-based, one-step lookahead and imitation-learned scheduling policies on held-out seeds, against an offline clairvoyant bound, with measured decision costs (Section~\ref{sec:policy}).
-\item Ground-command authentication with HMAC-SHA256 and an optional replay counter inside the engine's step function (Section~\ref{sec:auth}).
-\item A C port verified call-for-call against the Python engine on an emulated Cortex-M4 under Zephyr, plus a ground-side contact-window gate for command injection (Section~\ref{sec:cport}).
-\item A full re-run of the reported experiments and a record of the defects that re-running and review found (Section~\ref{sec:rerun}).
+\item A YAML configuration schema with a guard grammar and a closed-world rule for undefined state--event pairs, interpreted by an engine that contains no mission constants, with conflict-ranked event arbitration, A/B-bank persistence and optional HMAC-SHA256 command authentication (Section~\ref{sec:design}), demonstrated on three configurations (Section~\ref{sec:configs}).
+\item Verification by transition, illegal-pair and guard-boundary tests, reset and corruption injection, TLC model checking of hand-written requirement properties, and a configuration-mutation study that measures how much of each check depends on the shared YAML file, with the defects these checks found and a statement of what each claim rests on (Section~\ref{sec:verification}).
+\item A C port checked call for call against the Python engine on an emulated Cortex-M4 under Zephyr (Section~\ref{sec:cport}).
+\item A supporting simulation study on POQUITO's published figures, which shows that contact time, not the scheduling policy, limits delivery in that scenario, and which gives a negative result for the learned policy (Sections~\ref{sec:sim} and~\ref{sec:results}).
 \end{enumerate}
+
+The engine decides; it does not drive hardware. Actions such as \code{enable_rf} are logged, not executed, and nothing here is flight-qualified. Results are labelled by where they come from: the configurations and tests, the TLA+ model, the emulated firmware, or the simulation (Table~\ref{tab:scope}).
 
 \section{Related work}\label{sec:related}
 
@@ -98,7 +96,7 @@ The authors are not aware of prior work that combines a mission-agnostic configu
 
 \subsection{Architecture}
 
-The engine (Fig.~\ref{fig:architecture}) has seven parts: a transition-table interpreter, a guard evaluator, an event arbiter, a priority-queue scheduler, an A/B-bank persistence layer, a decision logger and a fault-injection harness. The interpreter's entry point, \code{step(config, state, event, context)}, returns the new state and a list of actions. It is written in Python; the engine, simulation and policy packages together are about 4,600 lines. The engine package itself is about 1,250 lines and contains no mission constants. The simulation consumes the engine's decisions and produces delivery, latency and energy metrics; the C port of Section~\ref{sec:cport} uses a table generated from the same configuration file.
+The engine (Fig.~\ref{fig:architecture}) has seven parts: a transition-table interpreter, a guard evaluator, an event arbiter, a priority-queue scheduler, an A/B-bank persistence layer, a decision logger and a fault-injection harness. The interpreter's entry point, \code{step(config, state, event, context)}, returns the new state and a list of actions. It is written in Python; the engine, simulation and policy packages together are about 4,600 lines. The engine package itself is about 1,300 lines and contains no mission constants. The simulation consumes the engine's decisions and produces delivery, latency and energy metrics; the C port of Section~\ref{sec:cport} uses a table generated from the same configuration file.
 
 \begin{figure}[t]
 \centering
@@ -165,9 +163,32 @@ The arbiter sorts the pending events by rank, then by a data-class key within th
 
 An earlier version validated the ranks at load time but never consumed them: the simulation driver tried events in a fixed order, and in safe mode that order put autonomous recovery (rank~2) ahead of a ground exit (rank~1). Routing the driver through the arbiter left every seed-42 result, every evaluation-seed result and the recorded decision trace of Section~\ref{sec:cport} unchanged. It changed only the battery stress cases of Section~\ref{sec:stress}, where a recovery and a pass end can fall in the same tick.
 
-\subsection{Persistence and decision log}
+\subsection{Persistence and decision log}\label{sec:persistence}
 
-Each write goes to the inactive bank with sequence number $n+1$ and a fresh CRC-32. At boot both banks are validated and the valid bank with the higher sequence number is loaded. A reset during a write therefore leaves the previous bank intact, and the engine recovers the last consistent state. The guarantee assumes one fault at a time. If both banks are corrupt the engine boots from the initial state with an empty context and the deployment latch is lost. The sequence number that selects the newer bank lies outside the CRC, so a bit flip that raises the older bank's sequence number would load a stale but valid record. The C port's 32-bit sequence counter would wrap after $2^{32}$ saves, about 136 years at one save per second. Tests pin all three behaviours; none is fixed in this version. The decision log records every transition, including illegal-pair no-ops, with the triggering event and guard inputs, and every scheduler choice with the competing candidates and the rule that decided. The verification-matrix generator reads this log and the test results to map requirements to evidence.
+The engine saves the control state and the context after every legal step. A save writes one record to the inactive bank: the state and context, a sequence number one higher than any stored, and a CRC-32 over the record body. At boot both banks are read, a bank whose CRC fails is skipped whatever its sequence number, and the valid bank with the higher sequence number is loaded. If the record being saved sets a latch that the other bank does not hold, the same record is then written to the other bank with the next sequence number. A latch is committed when the save that sets it returns, and from then on both banks hold it.
+
+The fault model is one fault at a time: a reset at any point, including in the middle of a write, or corruption of one bank's contents. Table~\ref{tab:persist} lists the cases. The mirror write closes a window that an earlier version left open, in which a latch set by one save was held by only the bank just written until the following save, so corruption of that bank in the gap reloaded the older record without the latch (decision 0011). Torn writes could not cause it, since the write after a latched save goes to the other bank; a bit flip or retention failure in the newest bank could.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Persistence outcomes under one fault at a time.}
+\label{tab:persist}
+\begin{tabular}{@{}p{0.45\textwidth}p{0.47\textwidth}@{}}
+\toprule
+Fault & Outcome \\
+\midrule
+Reset during an ordinary save & Older bank loads; the last completed save is restored \\
+Reset during the first write of a latch-setting save & Latch not committed; the older record loads without it and deployment is confirmed again \\
+Reset during the mirror write & The first copy is valid and holds the latch \\
+Corruption of either bank after a latch-setting save returns & The other bank holds the latch \\
+Bit flip raising the older bank's sequence number, which lies outside the CRC & A stale record can load; a committed latch is in both banks and is kept, but the state may be stale \\
+Corruption of both banks (two faults) & Initial state with an empty context; the latch is lost \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The C port's 32-bit sequence counter would wrap after $2^{32}$ saves, about 136 years at one save per second; neither this nor the sequence number lying outside the CRC is fixed. The decision log records every transition, including illegal-pair no-ops, with the triggering event and guard inputs, and every scheduler choice with the competing candidates and the rule that decided. The verification-matrix generator reads this log and the test results to map requirements to evidence.
 
 \section{Reference configurations}\label{sec:configs}
 
@@ -279,19 +300,19 @@ P-023 began as \code{tbd}: no defensible authentication model existed while auth
 
 \subsection{Test suite and fault injection}
 
-For each configuration, the suite runs every transition row as a positive case and every state--event pair absent from the table as a no-op assertion. Every guarded row also has a guard-false case and a case at the threshold, with the inclusive or exclusive side taken from the requirement wording. Resets are injected at every transition boundary and, separately, at every byte boundary of a simulated non-volatile write, in the style of software-implemented fault injection~\cite{Hsueh1997FaultInjection}. A latch test checks that no sequence of resets or bank corruptions clears \code{deployment_confirmed} once set. A cross-configuration harness asserts three engine-level guarantees on every configuration: latch integrity (R-04, RB-02, RC-02), ground override from the RF-enabled states onward (R-22, RB-08, RC-08), and legality of \code{RESET} from every state with latch survival (R-27/R-29, RB-10, RC-10).
+For each configuration, the suite runs every transition row as a positive case and every state--event pair absent from the table as a no-op assertion. Every guarded row also has a guard-false case and a case at the threshold, with the inclusive or exclusive side taken from the requirement wording. Resets are injected at every transition boundary and, separately, at every byte boundary of a simulated non-volatile write, in the style of software-implemented fault injection~\cite{Hsueh1997FaultInjection}. Persistence tests corrupt either bank after every save history of up to five saves, and a random walk over each configuration injects resets and corrupts either bank at random, including straight after the step that sets the latch; none may clear \code{deployment_confirmed} once its save has returned. A cross-configuration harness asserts three engine-level guarantees on every configuration: latch integrity (R-04, RB-02, RC-02), ground override from the RF-enabled states onward (R-22, RB-08, RC-08), and legality of \code{RESET} from every state with latch survival (R-27/R-29, RB-10, RC-10).
 
-The suite grew from 539 tests at the verification freeze to \TestCount{} today, as later phases added the scheduler reordering hook, the published-orbit fixtures, \cfgC{}, the second ground station, authentication, the C port harnesses and, during review, the guard-boundary tests, the arbiter and the checks described below. All \TestCount{} tests pass. Statement coverage of the engine is 96.9\% and branch coverage 92.0\%. The verification matrix maps 34 \cfgA{}, 12 \cfgB{} and 13 \cfgC{} requirements to tests. It separates a requirement that a test merely names from one whose test result was recorded as an executed pass.
+The suite grew from 539 tests at the verification freeze to \TestCount{} today, as later phases added the scheduler reordering hook, the published-orbit fixtures, \cfgC{}, the second ground station, authentication, the C port harnesses and, during review, the guard-boundary tests, the arbiter, the bank-corruption tests and the checks described below. All \TestCount{} tests pass. Statement coverage of the engine is 96.8\% and branch coverage 91.9\%. The verification matrix maps 34 \cfgA{}, 12 \cfgB{} and 13 \cfgC{} requirements to tests. It separates a requirement that a test merely names from one whose test result was recorded as an executed pass.
 
 \subsection{Model checking}\label{sec:mc}
 
-Tests enumerate cases chosen by people. To cover every reachable state, a generator writes a TLA+ module and TLC configuration from each YAML file on every run. The module tracks the control state, the latch, the Boolean context flags and the last durable snapshot of these. Every step either saves or leaves the previous snapshot in place, as a torn write would, and a reset restores the snapshot as the engine does. Guards that compare a Boolean context flag are encoded exactly. All other guards (timers, telemetry, parameters) are nondeterministic, which over-approximates the reachable behaviour.
+Tests enumerate cases chosen by people. To cover every reachable state, a generator writes a TLA+ module and TLC configuration from each YAML file on every run. The module tracks the control state, the latch, the Boolean context flags and a snapshot of these that stands for the last completed save. Every step either saves or leaves the previous snapshot in place, as a torn write would, and a reset restores the snapshot as the engine does. The two banks are abstracted into that one snapshot, so the model covers torn saves but not later corruption of a completed bank; the tests of Section~\ref{sec:persistence} cover that case. Guards that compare a Boolean context flag are encoded exactly. All other guards (timers, telemetry, parameters) are nondeterministic, which over-approximates the reachable behaviour.
 
 TLC~\cite{Yu1999TLC} checks properties of two kinds. Generic ones come from the configuration: \code{TypeOK}, the persisted latch never clears, and once persisted the live latch is set. The others are written by hand from the requirements documents, naming states and events rather than reading them from the YAML: the latch rises only on the declared confirmation events (for \cfgA{}, only once both paths have confirmed); the RF-silent states are left only when the inhibit or debounce timer expires; safe mode is entered and left only through the declared events; ground safe-mode entry is available from exactly the RF-enabled states; reset is always available; and commissioning and every downlink state require the latch. Deadlock checking stays on.
 
 The first run of this model found a defect in \cfgA{}. A ground safe-mode command from the confirmation-pending state, followed by either safe-mode exit, reached commissioning and then nominal downlink with the latch unset, in breach of the requirement that commissioning begins only after the latch is set. The engine reproduced the trace. It came from the design-review fix of Section~\ref{sec:configs}, which let T-17 start from the pending states while both exits still went to commissioning. Both exits are now guarded on the latch, and two new rows return an unlatched satellite to the pending state (decision 0010). After the fix all three configurations satisfy every property (Table~\ref{tab:tlc}). None of the simulation results moved, because the reference and stress runs enter safe mode only after deployment is confirmed.
 
-The in-RAM form of the latch property is false in this model, and the checker script asserts that it stays false so that the persistence model cannot silently become vacuous: a reset that tears the save of the latch-setting step reloads the older bank. A version of this paper reported that the latch ``never clears'' from a model in which a reset returned to the initial state with the latch untouched. That model had no persistence, so the property held by construction. The model says nothing about timing, thresholds or liveness.
+The in-RAM form of the latch property is false in this model, and the checker script asserts that it stays false so that the persistence model cannot silently become vacuous: a reset that tears the save of the latch-setting step reloads the older bank. The model says nothing about timing, thresholds or liveness.
 
 \begin{table}[t]
 \centering
@@ -313,6 +334,32 @@ Configuration & Declared states & States generated & Distinct states & Depth & R
 \subsection{Configuration mutation}
 
 One YAML file feeds the engine, the TLA+ model and the C table, so a check derived from that file can share its errors. To measure this, 288 mutants of the three configurations were generated: dropped or retargeted transitions, toggled latch setters, swapped conflict ranks and changed guard operators. A mutant counts as killed if a check fails on it. TLC with only the configuration-derived properties killed the 18 that the loader already rejects and nothing else. With the hand-written properties it killed 77, about the same set as a breadth-first exploration of the real engine against the same requirements (73). The test suite as it stood before review killed 209, and all checks together killed 246, 96.1\% of the 256 non-equivalent mutants. Guard-operator mutants are killed almost entirely by the boundary tests, since TLC sees only the Boolean guards. Of the ten survivors, three are rank swaps (\cfgB{} ranks 2 and 3, \cfgC{} ranks 1 and 2 and ranks 2 and 3) that no test distinguishes, and seven remove ``must be able to'' behaviour, such as \cfgA{}'s watchdog entry into safe mode, that the hand-written properties do not yet state.
+
+\subsection{What each claim rests on}
+
+Table~\ref{tab:scope} separates what TLC checks over every reachable state of the abstract model, what the tests show for the cases they enumerate, what the emulated firmware shows, and what rests on the simulation alone.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Evidence behind each claim and what it does not cover.}
+\label{tab:scope}
+\begin{tabular}{@{}p{0.27\textwidth}p{0.33\textwidth}p{0.32\textwidth}@{}}
+\toprule
+Claim & Evidence & Not covered \\
+\midrule
+Each transition and illegal pair behaves as tabled & Tests, all three configurations & -- \\
+Guard thresholds take the specified side & Boundary tests & Not in TLC: numeric guards are nondeterministic there \\
+Latch rises only on the declared events; RF-silent states, safe-mode entry and exit only via declared events; ground safe-mode entry from exactly the RF-enabled states; reset always available; commissioning and downlink require the latch & TLC, every reachable state of the abstract model, three configurations & Liveness; timer and threshold values; the ten surviving mutants \\
+Latch survives torn saves & TLC snapshot model; byte-level reset tests & -- \\
+Latch survives corruption of either bank once committed & Bank-level tests over every save history of up to five saves; random walk; C host harness & Not in the TLA+ model; two corrupted banks \\
+Events serviced in conflict-rank order & Python tests; C arbiter against Python on 7,711 cases & Firmware does not call the arbiter; three rank swaps undetected \\
+C decisions equal Python decisions & 35,763-call replay on emulated Cortex-M4, \cfgA{} & Timing, power, hardware I/O; \cfgB{} and \cfgC{} end to end \\
+Ground commands authenticated & Unit tests; C golden vectors & Key management; replay counter in Python only \\
+Delivery, latency and energy figures & Simulation of Section~\ref{sec:sim} & Link budget, battery losses, real payload draws, other epochs \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Simulation environment}\label{sec:sim}
 
@@ -362,7 +409,7 @@ Delivery success & 99.9\% & 91.85\% \\
 
 \subsection{Baseline}
 
-Table~\ref{tab:baseline} gives the seed-42 baseline. \cfgA{} and \cfgB{} give the same figures on every metric. Delivery depends on link availability, throughput and arrivals, which the two configurations share; their structural differences sit in deployment and recovery, and neither configuration enters safe mode in this scenario. The state of charge never falls below 91.29\% with one station (70.65\% with two), so the safe-mode thresholds are exercised only by the stress cases of Section~\ref{sec:stress}.
+Every delivery, latency and energy figure in this section is an output of the simulation of Section~\ref{sec:sim} for the stated scenario, not a prediction of on-orbit performance. Table~\ref{tab:baseline} gives the seed-42 baseline. \cfgA{} and \cfgB{} give the same figures on every metric. Delivery depends on link availability, throughput and arrivals, which the two configurations share; their structural differences sit in deployment and recovery, and neither configuration enters safe mode in this scenario. The state of charge never falls below 91.29\% with one station (70.65\% with two), so the safe-mode thresholds are exercised only by the stress cases of Section~\ref{sec:stress}.
 
 \begin{table}[t]
 \centering
@@ -516,7 +563,7 @@ P-019 fault threshold & 1 / 3 / 5 & 91.85\% (all) & $3.389\times10^{-4}$ (all) \
 \end{tabular}
 \end{table}
 
-Only the elevation mask moves the metrics (Table~\ref{tab:sensitivity}, Fig.~\ref{fig:sens}). Raising it from 10$^\circ$ to 15$^\circ$ costs 11.2 percentage points of delivery, while lowering it to 5$^\circ$ gains 0.08 points and raises energy per bit by 15\%. The charge thresholds have no effect because the battery never falls to them in the 48~h window. The fault threshold has none because the reference scenario injects no faults; the fault path is exercised by the engine tests and by stress case ST-3.
+Only the elevation mask moves the metrics (Table~\ref{tab:sensitivity}, Fig.~\ref{fig:sens}). This describes the implementation and the scenario, not the physical importance of the other parameters: a parameter that no code path reads cannot show sensitivity, and thresholds that the scenario never reaches cannot either. Raising it from 10$^\circ$ to 15$^\circ$ costs 11.2 percentage points of delivery, while lowering it to 5$^\circ$ gains 0.08 points and raises energy per bit by 15\%. The charge thresholds have no effect because the battery never falls to them in the 48~h window. The fault threshold has none because the reference scenario injects no faults; the fault path is exercised by the engine tests and by stress case ST-3.
 
 \begin{figure}[t]
 \centering
@@ -637,7 +684,7 @@ Repeat run & Byte-identical logs \\
 \end{tabular}
 \end{table}
 
-All 35,763 decisions matched (Table~\ref{tab:cport}). Most illegal calls are \code{POWER_LOW} and \code{PASS_END} attempted on nearly every tick once the satellite is in a comms state. That is the closed-world no-op of Section~\ref{sec:design}, now shown to agree between the two implementations. \cfgB{} and \cfgC{} were not run end to end.
+All 35,763 decisions matched (Table~\ref{tab:cport}). Most illegal calls are \code{POWER_LOW} and \code{PASS_END} attempted on nearly every tick once the satellite is in a comms state. That is the closed-world no-op of Section~\ref{sec:design}, now shown to agree between the two implementations. \cfgB{} and \cfgC{} were not run end to end. The persistence change of Section~\ref{sec:persistence} was made after this replay. It does not alter any decision, and a fresh Python capture of the trace still matches the archive call for call, but the firmware image was not rebuilt with it; the C change was compiled and tested on the host with gcc and clang.
 
 \subsection{Contact-window gate for ground commands}
 
@@ -645,55 +692,27 @@ Command injection over two emulated nodes, satellite and ground station, was als
 
 The host bridge already stands in for the ground segment, so it gained a contact-window gate instead. The gate computes contact windows with the simulation's own pass finder for \cfgC{}'s two-station scenario and refuses to write an \code{INJECT} line unless the simulated time is inside a window, signing the command with the engine's HMAC routine when a secret is configured. Four cases on \cfgC{}'s T-14 (\code{UPLINK_CMD_GENERIC}, a ground event) passed in one Renode session, twice. A gated command outside a window was refused and no bytes reached the UART. A follow-up read timed out, confirming that nothing was sent. The same command at the same time with the gate bypassed was accepted by the firmware, which shows the block is ground-side policy. A gated command inside a window (345~s, within the window from 160 to 530~s at 26.91$^\circ$ peak elevation) went through with a valid signature. Authentication on board and pass timing on the ground are separate concerns: a satellite accepts an authentic command without knowing whether it is over a station.
 
-\section{Re-running and revising the reported results}\label{sec:rerun}
+\section{Reproduction and revision}\label{sec:rerun}
 
-Every experiment was re-run against the committed sources on 6 and 7 October 2026 and compared with the committed results. That re-run reproduced the simulation, policy and model-checking numbers of the time. A review of the resulting manuscript then raised points that led to the code changes described in the preceding sections, and every experiment was regenerated from the revised sources on 14 October 2026 (Table~\ref{tab:rerun}).
-
-\begin{table}[t]
-\centering
-\footnotesize
-\caption{Outcome of the revision run on 14 October 2026, against the numbers of the earlier version.}
-\label{tab:rerun}
-\begin{tabular}{@{}p{0.30\textwidth}p{0.62\textwidth}@{}}
-\toprule
-Experiment & Outcome \\
-\midrule
-Test suite & \TestCount{} tests, all passed \\
-Baseline, A/B/C, 1 and 20 seeds & Delivery and latency unchanged; \cfgB{} and \cfgC{} energy corrected; deadline success added \\
-Policy comparison & Reworked: four policies, held-out seeds, bootstrap intervals, clairvoyant bound \\
-Sensitivity and power uncertainty & Unchanged \\
-Two-station analysis & Unchanged except \cfgB{} energy; deadline success added \\
-Compounding worst case & Unchanged except \cfgB{} energy; stress cases added \\
-Policy timing & Re-measured on identical inputs (Table~\ref{tab:complexity}) \\
-TLC & New persistence model; \cfgC{} added; \cfgA{} defect found and fixed \\
-C-port equivalence & \ReplayOutcome \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The review and re-runs found the following defects in the earlier version, each corrected above. The power model's name-keyed lookup charged \cfgB{} and \cfgC{} downlinks at idle power; the earlier version had noticed the anomaly but described it rather than fixing it. The policy called an oracle and an upper bound was a one-step heuristic, and on deadline success it does worse than always serving. The model behind ``the deployment latch never clears'' had no persistence, so the property was close to vacuous; the stronger model found the \cfgA{} commissioning defect. The conflict ranks the paper described as governing event order were validated but never read at run time. Authentication without a secret silently accepted unsigned ground commands, and the same signed message could be accepted twice at the same time. Delivery was reported only within the run window, which hides how few items meet their deadline.
-
-Two tests compile the C authentication module against the host's mbedTLS. The host library had moved to mbedTLS 4.2, which declares \code{mbedtls_md_hmac} only when \code{MBEDTLS_DECLARE_PRIVATE_IDENTIFIERS} is set; the host test build now defines it. The firmware builds against the mbedTLS bundled with Zephyr and is unaffected.
-
-The October re-run stated that the Zephyr SDK was not installed, so the firmware was not rebuilt. That was wrong: a pinned SDK was present in a working copy on the same machine. For the revision the firmware was rebuilt from the current sources, including the two new \cfgA{} transitions, and the full reference trace was replayed over Renode on the rebuilt image in one continuous session: all 35,763 calls matched, and both the Python trace and the firmware decision log were byte-identical to the archived ones. The revised engine produces a Python trace identical, call for call, to the archived one: the new transitions start in safe mode, which the reference run never enters. Reading the C-port records also showed that the flash and RAM figures quoted in an earlier draft (15,988~B and 4,544~B) belong to the first echo-loop firmware used to prove the toolchain, not to the engine firmware; and that the timestamp restriction of Section~\ref{sec:cport} rests on 53 hand-written fixtures, not the ``about 150'' a design record states. Finally, the eclipse fraction quoted earlier, 36.46\%, was sampled every 60~s; the driver's 10~s tick gives 36.49\%.
+Every experiment was re-run against the committed sources on 6 and 7 October 2026, and regenerated from the revised sources on 14 October 2026 after review. The review and the re-runs found defects in an earlier version, each corrected above: a power-model lookup that charged two configurations' downlinks at idle power, a heuristic policy described as an upper bound, a near-vacuous model-checking result, conflict ranks that were never read at run time, authentication that accepted unsigned commands when no secret was set, and the single-bank window in latch persistence. \ref{app:revision} gives the outcome per experiment and the detail of each correction.
 
 \section{Discussion}\label{sec:discussion}
 
-\paragraph{RQ1, generality} One engine runs the three configurations unchanged, and the schema took no new fields for \cfgB{} or \cfgC{}. The three guarantees most tied to the engine (latch integrity, ground override, reset legality) hold on all three under one harness. The \cfgC{} recovery path ran on simulation code written before \cfgC{} existed, because that code looks parameters up by name. The generality has limits. All three configurations use one latch, the same five conflict categories and single-comparison guards. A mission that needs compound guards or nested states would need schema work.
+\paragraph{RQ1, generality} One engine runs the three configurations unchanged, and the schema took no new fields for \cfgB{} or \cfgC{}. The three guarantees most tied to the engine (latch integrity, ground override, reset legality) hold on all three under one harness. The \cfgC{} recovery path ran on simulation code written before \cfgC{} existed, because that code looks parameters up by name. The generality has limits. All three configurations use one latch, the same five conflict categories and single-comparison guards. A mission that needs compound guards or nested states would need schema work. The three configurations were written by the authors and are variants of one flat-machine design; a configuration written independently for a different mission has not been tried, and the effort of writing one has not been compared with hand-coding the same lifecycle.
 
-\paragraph{RQ2, resets} \code{RESET} is legal from every state on every configuration, and a reset during a write never leaves a corrupted state loaded. Once the deployment latch has been durably saved, it survives every reset and any single-bank corruption; TLC confirms this over every reachable state of all three configurations, and the tests add the byte-level write interruptions that the model does not represent. Two cases lose the latch: a reset that tears the save of the step that set it, which leaves the satellite to confirm deployment again, and corruption of both banks. Checking hand-written requirements rather than properties read from the configuration is what found the \cfgA{} commissioning defect; checks derived from the same file as the engine caught none of the mutants that the loader accepted.
+\paragraph{RQ2, resets} \code{RESET} is legal from every state on every configuration, and a reset during a write never leaves a corrupted state loaded. Once the save that sets the deployment latch has returned, the latch survives any reset and the corruption of either bank. TLC checks the reset part over every reachable state of the abstract model of all three configurations; the bank-corruption part rests on tests, because the model has one snapshot rather than two banks. Two cases lose the latch: a reset that tears the first write of the latch-setting save, which leaves the satellite to confirm deployment again, and corruption of both banks. Review found the single-bank window that the earlier design left open, after the tests and the model had both missed it, because neither checked corruption of the only bank holding a newly set latch. Checking hand-written requirements rather than properties read from the configuration is what found the \cfgA{} commissioning defect; checks derived from the same file as the engine caught none of the mutants that the loader accepted.
 
 \paragraph{RQ3, learned policy} The tie is a property of the scenario. The clairvoyant bound shows that every policy already delivers almost everything that the contact windows allow, so no scheduling policy can raise window delivery by more than a fraction of a point. Passes are rare and short, so whatever is queued when the link comes up should go out. The room that remains is in energy: the lookahead policy draws 4.4\% less at a small cost in deadline success, and the tree did not capture that behaviour at depth 4. A learned policy would have more room in a scenario where holding pays, for example with a battery near its safe-mode threshold during a pass.
 
 \paragraph{RQ4, port} The C decision logic matched every decision of a full 48~h run. This is evidence that the logic survives the move from a dynamically typed language to fixed-size C structures on a Cortex-M4 instruction set. Timing and power behaviour on silicon remain untested.
 
-\paragraph{What the numbers say about the mission} The single-station deadline performance is poor: 2.61\% of items and about 1\% of \ttc{} items meet their deadline, against a bound of about 3\% for any policy. That follows from orbit geometry: four passes in 48~h over Mumbai. A scheduler cannot fix it, but a second station raises deadline success to 18\%. The elevation mask is the parameter to pin down first, since it is the only assumed value that moves delivery.
+\paragraph{What the simulation says about the scenario} In the simulated scenario, single-station deadline performance is poor: 2.61\% of items and about 1\% of \ttc{} items meet their deadline, against a bound of about 3\% for any policy. That follows from orbit geometry: four passes in 48~h over Mumbai. A scheduler cannot fix it, but a second station raises deadline success to 18\%. The elevation mask is the parameter to pin down first, since it is the only assumed value that moves delivery.
 
 \section{Limitations and threats to validity}\label{sec:limitations}
 
-The ground-operator model is one fixed assumption: a ground override is issued at any tick inside a pass after safe-mode entry, whatever the charge, which causes the cycling of stress case ST-2. The reference scenario injects no faults and never approaches the safe-mode thresholds; only the stress cases and the engine tests exercise those paths, and no watchdog event is simulated. SSTV and voice draws, data-arrival rates for those classes, sizes and deadlines are illustrative. The battery model is lossless with flat solar input, and the link is gated on elevation alone at a constant rate, so the fade margin has no effect. The orbit is a single element set frozen at its epoch, and the results describe that 48~h window only.
+The ground-operator model is one fixed assumption: a ground override is issued at any tick inside a pass after safe-mode entry, whatever the charge, which causes the cycling of stress case ST-2. The reference scenario injects no faults and never approaches the safe-mode thresholds; only the stress cases and the engine tests exercise those paths, and no watchdog event is simulated. SSTV and voice draws, data-arrival rates for those classes, sizes and deadlines are illustrative. The battery model is lossless with flat solar input, and the link is gated on elevation alone at a constant rate, so the fade margin has no effect. The orbit is a single element set frozen at its epoch, and the results describe that 48~h window only. The three configurations come from the same authors and share one design style, and no comparison with a hand-coded implementation or an existing flight-software framework was made.
 
-Model checking encodes only the Boolean guards; timers, thresholds and parameter values are nondeterministic, and liveness is not checked, so threshold errors are caught by the boundary tests and not by TLC. The persistence guarantee assumes one corrupted bank at a time, the bank sequence number is outside the CRC, and the C port's sequence counter can in principle wrap. The deployment-confirmation timeouts are documentation only; a stalled confirmation needs a ground command. The C port has been checked end to end on \cfgA{} only, on emulated hardware, and its arbiter is checked on the host but not called by the firmware. Physical deployment, power measurement, flight qualification, RF implementation, deployer mechanics and on-board anomaly detection are outside the project. Opaque actions such as \code{enable_rf} are only logged; RF state is implied by the state-machine state. Authentication excludes key management and link-layer security, and replay protection exists in the Python engine only.
+Model checking encodes only the Boolean guards; timers, thresholds and parameter values are nondeterministic, and liveness is not checked, so threshold errors are caught by the boundary tests and not by TLC. The persistence guarantee assumes one fault at a time, the bank sequence number is outside the CRC, the C port's sequence counter can in principle wrap, and bank corruption is checked by tests, not by the model. The C persistence change was not run on the emulated board. The deployment-confirmation timeouts are documentation only; a stalled confirmation needs a ground command. The C port has been checked end to end on \cfgA{} only, on emulated hardware, and its arbiter is checked on the host but not called by the firmware. Physical deployment, power measurement, flight qualification, RF implementation, deployer mechanics and on-board anomaly detection are outside the project. Opaque actions such as \code{enable_rf} are only logged; RF state is implied by the state-machine state. Authentication excludes key management and link-layer security, and replay protection exists in the Python engine only.
 
 \section{Adopting the framework for a new mission}\label{sec:migration}
 
@@ -701,10 +720,10 @@ A new mission supplies data only. It writes a configuration file under the schem
 
 \section{Conclusion}\label{sec:conclusion}
 
-A table-driven engine with no mission constants ran three structurally different PocketQube lifecycles unchanged. Once durably saved, its deployment latch survived every reset tested and every state TLC reached, after model checking against hand-written requirements found and closed a path to commissioning without the latch. The decision logic reproduced every one of 35,763 decisions when ported to C on an emulated Cortex-M4. Driven by POQUITO's published orbit and power figures, the rule-based scheduler delivered 91.85\% of items within 48~h from one station, the most any policy could deliver for that seed, but only 2.61\% by their deadlines; a second station raised these to 99.08\% and 18.14\%. A learned policy did not improve on the rule-based one, and the elevation mask was the only assumed parameter that changed delivery. Re-running the experiments and responding to review corrected a power-model defect, a mislabelled policy, a near-vacuous model-checking result and an unimplemented ordering claim, all recorded in Section~\ref{sec:rerun}.
+A table-driven engine with no mission constants ran three PocketQube lifecycles unchanged. Model checking against hand-written requirements found and closed a path to commissioning without the deployment latch, and review found a window in which a newly set latch lived in one bank only; the latch-setting save now writes both banks, so a committed latch survives any reset and the corruption of either bank. The C decision logic reproduced every one of 35,763 decisions on an emulated Cortex-M4. In a simulated scenario built on POQUITO's published orbit and power figures, the rule-based scheduler delivered 91.85\% of items within 48~h from one station, the most any policy could deliver for that seed, but only 2.61\% by their deadlines; a second station raised these to 99.08\% and 18.14\%, and a learned policy did not improve on the rule-based one. The engine is a verified decision layer, not flight software: hardware actions, timing and power on silicon, and an independently written configuration are the next steps.
 
 \section*{Data and code availability}
-Configuration files, engine, simulation, generators, TLA+ specifications, firmware sources and the archived equivalence logs are in the project repository, \url{https://github.com/inikunjrathi/pocketqube-fsm}, archived as version v1.0.0 at \url{https://doi.org/10.5281/zenodo.23365148}. Every table in Sections~\ref{sec:verification}--\ref{sec:rerun} is produced by a named generator under \code{tools/} or by the scripts in \code{mcu/host_bridge/}; the commands are listed in \code{report/elsevier/README.md}. The reference orbit is POQUITO's element set (NORAD 98706), hard-coded in \code{sim/scenario.py}, whose two element lines, each newline-terminated, have the SHA-256 digest \code{69c5aec63c09c5652c2d8a76a09f647f} \code{615a04d8370d41f61aca6c23439ff581}; it is propagated with the \code{sgp4} Python package, version 2.27.
+Configuration files, engine, simulation, generators, TLA+ specifications, firmware sources and the archived equivalence logs are in the project repository, \url{https://github.com/inikunjrathi/pocketqube-fsm}, archived as version v1.0.0 at \url{https://doi.org/10.5281/zenodo.23365148}. Every table in Sections~\ref{sec:verification}--\ref{sec:cport} and \ref{app:revision} is produced by a named generator under \code{tools/} or by the scripts in \code{mcu/host_bridge/}; the commands are listed in \code{report/elsevier/README.md}. The reference orbit is POQUITO's element set (NORAD 98706), hard-coded in \code{sim/scenario.py}, whose two element lines, each newline-terminated, have the SHA-256 digest \code{69c5aec63c09c5652c2d8a76a09f647f} \code{615a04d8370d41f61aca6c23439ff581}; it is propagated with the \code{sgp4} Python package, version 2.27.
 
 \section*{Declaration of competing interest}
 The authors declare no competing financial interests or personal relationships that could have influenced the work reported in this paper.
@@ -720,6 +739,37 @@ This research received no specific grant from any funding agency in the public, 
 \appendix
 \section{Transition tables}\label{app:transitions}
 \input{transitions.tex}
+
+\section{Revision record}\label{app:revision}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Outcome of the revision run of 14 October 2026, against the numbers of the earlier version.}
+\label{tab:rerun}
+\begin{tabular}{@{}p{0.30\textwidth}p{0.62\textwidth}@{}}
+\toprule
+Experiment & Outcome \\
+\midrule
+Test suite & \TestCount{} tests, all passed \\
+Baseline, A/B/C, 1 and 20 seeds & Delivery and latency unchanged; \cfgB{} and \cfgC{} energy corrected; deadline success added \\
+Policy comparison & Reworked: four policies, held-out seeds, bootstrap intervals, clairvoyant bound \\
+Sensitivity and power uncertainty & Unchanged \\
+Two-station analysis & Unchanged except \cfgB{} energy; deadline success added \\
+Compounding worst case & Unchanged except \cfgB{} energy; stress cases added \\
+Policy timing & Re-measured on identical inputs (Table~\ref{tab:complexity}) \\
+TLC & New persistence model; \cfgC{} added; \cfgA{} defect found and fixed \\
+Persistence & Latch-setting save writes both banks (decision 0011); simulation results and replay trace unchanged \\
+C-port equivalence & \ReplayOutcome; the later persistence change was tested on the host only \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The review and re-runs found the following defects in the earlier version, each corrected in the main text. The power model's name-keyed lookup charged \cfgB{} and \cfgC{} downlinks at idle power; the earlier version had noticed the anomaly but described it rather than fixing it. The policy called an oracle and an upper bound was a one-step heuristic, and on deadline success it does worse than always serving. The model behind ``the deployment latch never clears'' had no persistence, so the property was close to vacuous; the stronger model found the \cfgA{} commissioning defect. The conflict ranks the paper described as governing event order were validated but never read at run time. Authentication without a secret silently accepted unsigned ground commands, and the same signed message could be accepted twice at the same time. Delivery was reported only within the run window, which hides how few items meet their deadline. A version of this paper reported that the latch ``never clears'' from a model in which a reset returned to the initial state with the latch untouched; that model had no persistence, so the property held by construction. The same version claimed that a durably saved latch survives any single-bank corruption, but the latch-setting save wrote one bank only, and corrupting that bank before the next save lost the latch; the tests had saved the latched state twice before corrupting a bank, and the TLA+ model abstracts the banks into one snapshot. The latch-setting save now writes both banks (Section~\ref{sec:persistence}).
+
+Two tests compile the C authentication module against the host's mbedTLS. The host library had moved to mbedTLS 4.2, which declares \code{mbedtls_md_hmac} only when \code{MBEDTLS_DECLARE_PRIVATE_IDENTIFIERS} is set; the host test build now defines it. The firmware builds against the mbedTLS bundled with Zephyr and is unaffected.
+
+The October re-run stated that the Zephyr SDK was not installed, so the firmware was not rebuilt. That was wrong: a pinned SDK was present in a working copy on the same machine. For the revision the firmware was rebuilt from the current sources, including the two new \cfgA{} transitions, and the full reference trace was replayed over Renode on the rebuilt image in one continuous session: all 35,763 calls matched, and both the Python trace and the firmware decision log were byte-identical to the archived ones. The revised engine produces a Python trace identical, call for call, to the archived one: the new transitions start in safe mode, which the reference run never enters. Reading the C-port records also showed that the flash and RAM figures quoted in an earlier draft (15,988~B and 4,544~B) belong to the first echo-loop firmware used to prove the toolchain, not to the engine firmware; and that the timestamp restriction of Section~\ref{sec:cport} rests on 53 hand-written fixtures, not the ``about 150'' a design record states. Finally, the eclipse fraction quoted earlier, 36.46\%, was sampled every 60~s; the driver's 10~s tick gives 36.49\%.
 
 \bibliographystyle{elsarticle-num}
 \bibliography{refs}

@@ -127,10 +127,10 @@ def run(
                 label="step 4: pre-corruption LOAD (bank A, highest sequence, wins)",
             )
 
-            corrupt_response = _testhook(bridge, "TESTHOOK CORRUPT A")
+            corrupt_response = _testhook(bridge, "TESTHOOK CORRUPT B")
             if not isinstance(corrupt_response, Raw) or corrupt_response.text != "OK":
-                raise PersistenceVerificationError(f"step 5: TESTHOOK CORRUPT A failed: {corrupt_response!r}")
-            print(f"[OK] step 5: TESTHOOK CORRUPT A: {corrupt_response!r}", file=sys.stderr)
+                raise PersistenceVerificationError(f"step 5: TESTHOOK CORRUPT B failed: {corrupt_response!r}")
+            print(f"[OK] step 5: TESTHOOK CORRUPT B: {corrupt_response!r}", file=sys.stderr)
 
             bridge.send_inject("E-04", "S-03", 2002, {"path_a_confirmed": True}, {})
             _expect_decision(

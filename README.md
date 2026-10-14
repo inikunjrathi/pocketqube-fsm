@@ -1,12 +1,12 @@
 # pocketqube-fsm
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23365148.svg)](https://doi.org/10.5281/zenodo.23365148)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23365147.svg)](https://doi.org/10.5281/zenodo.23365147)
 
-Code, configurations and evidence for the paper *Mission-agnostic flight
-software for PocketQubes: a configuration-driven, model-checked state machine
-for deployment and downlink management* (Nikunj Rathi, Purva Pote and Megha Sharma,
-K. J. Somaiya School of Engineering, submitted to Acta Astronautica). Version v1.0.0, the code described in the
-paper, is archived on Zenodo at https://doi.org/10.5281/zenodo.23365148.
+Code, configurations and evidence for the paper *Mission-agnostic mode
+management for PocketQubes: a configuration-driven, model-checked decision
+engine for deployment and downlink scheduling* (Nikunj Rathi, Purva Pote and Megha Sharma,
+K. J. Somaiya School of Engineering, submitted to Acta Astronautica). Every release is archived on
+Zenodo; https://doi.org/10.5281/zenodo.23365147 resolves to the latest one.
 
 The engine holds no mission constants. Lifecycle states, events, guarded
 transitions, persisted latches, downlink priorities and event-conflict ranks
@@ -31,7 +31,7 @@ engine/          state machine, guards, scheduler, arbitration, persistence, aut
 sim/             SGP4 orbit, link, power and data-arrival models; simulation driver
 policy/          rule-based, lookahead, decision-tree and clairvoyant-bound policies
 tools/           generators for every results table, TLA+ specs and C tables
-tests/           1,208 tests: transitions, illegal pairs, guards, fault injection
+tests/           1,213 tests: transitions, illegal pairs, guards, fault injection
 docs/            requirements, state machines, decision records, generated results
 docs/tla/        generated TLA+ specifications and TLC configurations
 mcu/firmware/    C port of the engine for STM32F401RE under Zephyr

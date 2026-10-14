@@ -20,7 +20,7 @@ From the repository root:
 
 ```
 pip install -r requirements.txt                            # sgp4 pinned to 2.27
-.venv/bin/python -m pytest -q --junitxml=build/junit.xml   # 1,208 tests
+.venv/bin/python -m pytest -q --junitxml=build/junit.xml   # 1,213 tests
 .venv/bin/python tools/generate_baseline_results.py
 .venv/bin/python tools/generate_policy_comparison.py       # slowest step (~20 min on 30 cores); also appends the same-input timing section
 .venv/bin/python tools/generate_sensitivity_analysis.py

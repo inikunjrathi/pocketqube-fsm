@@ -46,7 +46,7 @@ def _apply_fixture(cfg, t, now, context, fixture):
 
 def _run_walk(cfg, seed):
     rng = random.Random(seed)
-    persistence = PersistenceLayer()
+    persistence = PersistenceLayer(latch.name for latch in cfg.latches)
     state, context, now = cfg.initial_state, {}, 0
     latch_ever_true = False
     reset_event = next(e.id for e in cfg.events.values() if e.name == "RESET")
@@ -76,8 +76,7 @@ def _run_walk(cfg, seed):
 
         if rng.random() < 0.2:
             if rng.random() < 0.5:
-                persistence.save(state, context)
-                persistence.corrupt(persistence.last_written_bank)
+                persistence.corrupt(rng.choice(("A", "B")))
             reset_result = step(cfg, state, reset_event, {}, now=now + 1, persisted=persistence.load())
             assert reset_result.legal
             state, context = reset_result.new_state, reset_result.context

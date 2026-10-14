@@ -48,3 +48,9 @@ bool engine_persist_io_write(engine_persist_bank_t bank, const engine_persist_re
     memcpy(dst, record, sizeof(*dst));
     return true;
 }
+
+void persist_io_fake_erase(void)
+{
+    g_initialized = false;
+    ensure_initialized();
+}

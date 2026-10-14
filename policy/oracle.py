@@ -118,7 +118,7 @@ def _rollout(
     if action == "hold":
         scheduler.insert(acted_item)
 
-    persistence = PersistenceLayer()
+    persistence = PersistenceLayer(latch.name for latch in cfg.latches)
     logger = DecisionLogger()
     params_by_name = {p.name: p.value for p in cfg.parameters.values()}
 

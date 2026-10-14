@@ -1,5 +1,6 @@
 #include "engine_persistence.h"
 #include "engine_persistence_io.h"
+#include "engine_config_table.h"
 
 #include <string.h>
 
@@ -21,6 +22,18 @@ static bool bank_is_valid(const engine_persist_record_t *record)
     }
     uint32_t computed = crc32_ieee((const uint8_t *)&record->body, sizeof(record->body));
     return computed == record->crc32;
+}
+
+static bool body_holds_latch(const engine_persist_body_t *body, const char *name)
+{
+    for (uint8_t i = 0; i < body->context_count && i < ENGINE_CONTEXT_MAX_ENTRIES; i++) {
+        const engine_persist_entry_t *entry = &body->entries[i];
+        if (entry->kind == (uint8_t)VAL_BOOL && entry->bool_value != 0 &&
+            strncmp(entry->name, name, ENGINE_PERSIST_NAME_MAX) == 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 static engine_persist_bank_t other_bank(engine_persist_bank_t bank)
@@ -184,6 +197,20 @@ void engine_persistence_save(state_id_t state, const engine_context_t *context)
     new_record.crc32 = crc32_ieee((const uint8_t *)&new_record.body, sizeof(new_record.body));
 
     (void)engine_persist_io_write(target, &new_record);
+
+    const engine_persist_record_t *other_record =
+        (target == ENGINE_PERSIST_BANK_A) ? &record_b : &record_a;
+    bool other_valid = (target == ENGINE_PERSIST_BANK_A) ? (have_b && bank_is_valid(&record_b))
+                                                         : (have_a && bank_is_valid(&record_a));
+    for (uint32_t i = 0; i < g_latches_count; i++) {
+        const char *latch = g_latches[i].name;
+        if (body_holds_latch(&new_record.body, latch) &&
+            !(other_valid && body_holds_latch(&other_record->body, latch))) {
+            new_record.sequence = next_sequence + 1;
+            (void)engine_persist_io_write(other_bank(target), &new_record);
+            break;
+        }
+    }
 }
 
 bool engine_persistence_corrupt(engine_persist_bank_t bank)
