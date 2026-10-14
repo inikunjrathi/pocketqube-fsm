@@ -1,6 +1,6 @@
 {
-  "title": "pocketqube-fsm: configuration-driven, model-checked state machine for PocketQube deployment and downlink management",
-  "description": "Code, configurations and evidence for the paper \"Mission-agnostic flight software for PocketQubes: a configuration-driven, model-checked state machine for deployment and downlink management\". Includes the Python engine and three YAML mission configurations, the POQUITO-based simulation, the policy comparison, generated TLA+ specifications, the 1,208-test suite, the Zephyr C port for STM32F401RE, and the archived Renode replay logs (35,763 decisions, no mismatches).",
+  "title": "pocketqube-fsm: configuration-driven, model-checked decision engine for PocketQube deployment and downlink scheduling",
+  "description": "Code, configurations and evidence for the paper \"Mission-agnostic mode management for PocketQubes: a configuration-driven, model-checked decision engine for deployment and downlink scheduling\". Includes the Python engine and three YAML mission configurations, the POQUITO-based simulation, the policy comparison, generated TLA+ specifications, the 1,213-test suite, the Zephyr C port for STM32F401RE, and the archived Renode replay logs (35,763 decisions, no mismatches).",
   "upload_type": "software",
   "license": "MIT",
   "creators": [
@@ -20,7 +20,7 @@
   "keywords": [
     "PocketQube",
     "finite-state machine",
-    "flight software",
+    "mode management",
     "TLA+ model checking",
     "downlink scheduling",
     "fault injection",
