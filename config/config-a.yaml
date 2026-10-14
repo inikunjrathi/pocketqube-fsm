@@ -1,0 +1,160 @@
+meta:
+  config_id: config-a
+  name: "PocketQube reference (SomaiyaSat-derived)"
+  description: >
+    Deployer-ejected, RF-inhibit silence timer, dual-path deployment
+    confirmation, four comms modes, sub-1W power budget, autonomous
+    safe-mode recovery bounded by ground override.
+  version: "0.1.0"
+
+states:
+  - id: S-01
+    name: STOWED
+    category: deployment
+    description: Pre-separation. RF silent by construction. Deployment not confirmed.
+    entry_actions: []
+    is_initial: true
+  - id: S-02
+    name: RF_INHIBIT
+    category: deployment
+    description: Separation detected; RF-inhibit silence timer running.
+    entry_actions: [start_rf_inhibit_timer]
+    is_initial: false
+  - id: S-03
+    name: DEPLOY_CONFIRM_PENDING
+    category: deployment
+    description: Silence timer expired; RF enabled; awaiting both confirmation paths.
+    entry_actions: [enable_rf]
+    is_initial: false
+  - id: S-04
+    name: DEPLOYED_CONFIRMED
+    category: deployment
+    description: Both confirmation paths agreed; deployment_confirmed latch set.
+    entry_actions: [set_deployment_confirmed_latch]
+    is_initial: false
+  - id: S-05
+    name: COMMISSIONING
+    category: deployment
+    description: Initial checkout before nominal comms rotation.
+    entry_actions: []
+    is_initial: false
+  - id: S-06
+    name: COMMS_TTC
+    category: comms-mode
+    description: Nominal mode 1 — TT&C/housekeeping downlink active.
+    entry_actions: []
+    is_initial: false
+  - id: S-07
+    name: COMMS_SSTV
+    category: comms-mode
+    description: Nominal mode 2 — SSTV imagery downlink active.
+    entry_actions: []
+    is_initial: false
+  - id: S-08
+    name: COMMS_VOICE
+    category: comms-mode
+    description: Nominal mode 3 — Codec2/M17 voice/data downlink active.
+    entry_actions: []
+    is_initial: false
+  - id: S-09
+    name: COMMS_IDLE
+    category: comms-mode
+    description: Nominal mode 4 — no active downlink.
+    entry_actions: []
+    is_initial: false
+  - id: S-10
+    name: SAFE_MODE
+    category: safe
+    description: Minimal TT&C-only footprint; entered on fault/power/watchdog/ground trigger.
+    entry_actions: [suspend_non_ttc_downlink, log_rationale]
+    is_initial: false
+
+events:
+  - {id: E-01, name: SEPARATION_DETECTED, source: onboard, description: Deployer ejection sensed.}
+  - {id: E-02, name: RF_INHIBIT_TIMER_EXPIRED, source: onboard, description: RF-inhibit silence timer elapsed.}
+  - {id: E-03, name: DEPLOY_CONFIRM_PATH_A, source: onboard, description: Confirmation path A (switch/timer) asserts.}
+  - {id: E-04, name: DEPLOY_CONFIRM_PATH_B, source: onboard, description: Confirmation path B (RF beacon) asserts.}
+  - {id: E-05, name: COMMISSIONING_COMPLETE, source: onboard, description: Checkout/health checks pass.}
+  - {id: E-06, name: SCHEDULER_SELECT_TTC, source: scheduler, description: Scheduler selects a TT&C item.}
+  - {id: E-07, name: SCHEDULER_SELECT_SSTV, source: scheduler, description: Scheduler selects an SSTV item.}
+  - {id: E-08, name: SCHEDULER_SELECT_VOICE, source: scheduler, description: Scheduler selects a voice/data item.}
+  - {id: E-09, name: SCHEDULER_SELECT_IDLE, source: scheduler, description: No eligible item pending.}
+  - {id: E-10, name: PASS_END, source: onboard, description: Ground-station pass ended (elevation below minimum).}
+  - {id: E-11, name: FAULT_DETECTED, source: onboard, description: Non-watchdog fault condition detected.}
+  - {id: E-12, name: POWER_LOW, source: onboard, description: Battery SoC crossed safe-mode entry threshold.}
+  - {id: E-13, name: GROUND_SAFE_MODE_CMD, source: ground, description: Ground commands entry into/hold within safe mode.}
+  - {id: E-14, name: GROUND_OVERRIDE_EXIT_SAFE, source: ground, description: Ground commands exit from safe mode.}
+  - {id: E-15, name: AUTONOMOUS_RECOVERY_CONDITIONS_MET, source: onboard, description: Nominal conditions restored.}
+  - {id: E-16, name: RESET, source: harness, description: Unconditional reset, injectable at any point including mid-write.}
+  - {id: E-17, name: WATCHDOG_TIMEOUT, source: onboard, description: Watchdog not serviced within timeout window.}
+  - {id: E-18, name: UPLINK_CMD_GENERIC, source: ground, description: Generic uplinked command not otherwise covered.}
+  - {id: E-19, name: ENTER_COMMISSIONING, source: onboard, description: Raised once deployment_confirmed latch is set.}
+  - {id: E-20, name: COMMS_LOSS_TIMEOUT, source: onboard, description: Ground-contact timer exceeded P-025 with no intervening telecommand.}
+
+transitions:
+  - {id: T-01, from: [S-01], event: E-01, guard: null, to: S-02, actions: [start_rf_inhibit_timer], requirements: [R-01]}
+  - {id: T-02, from: [S-02], event: E-02, guard: "elapsed(rf_inhibit_timer) >= P-010", to: S-03, actions: [enable_rf, start_ground_contact_timer], requirements: [R-02]}
+  - {id: T-03, from: [S-03], event: E-03, guard: "context.path_b_confirmed == false", to: S-03, actions: ["set context.path_a_confirmed = true"], requirements: [R-03, R-07]}
+  - {id: T-04, from: [S-03], event: E-03, guard: "context.path_b_confirmed == true", to: S-04, actions: ["set context.path_a_confirmed = true", set_deployment_confirmed_latch], requirements: [R-03, R-04, R-07]}
+  - {id: T-05, from: [S-03], event: E-04, guard: "context.path_a_confirmed == false", to: S-03, actions: ["set context.path_b_confirmed = true"], requirements: [R-03, R-07]}
+  - {id: T-06, from: [S-03], event: E-04, guard: "context.path_a_confirmed == true", to: S-04, actions: ["set context.path_b_confirmed = true", set_deployment_confirmed_latch], requirements: [R-03, R-04, R-07]}
+  - {id: T-07, from: [S-04], event: E-19, guard: null, to: S-05, actions: [], requirements: [R-05]}
+  - {id: T-08, from: [S-05], event: E-05, guard: null, to: S-06, actions: [begin_ttc_downlink], requirements: [R-06]}
+  - {id: T-09, from: [S-06, S-07, S-08, S-09], event: E-06, guard: null, to: S-06, actions: [switch_ttc_downlink, log_mode_change], requirements: [R-11, R-13, R-17]}
+  - {id: T-10, from: [S-06, S-07, S-08, S-09], event: E-07, guard: null, to: S-07, actions: [switch_sstv_downlink, log_mode_change], requirements: [R-11, R-13]}
+  - {id: T-11, from: [S-06, S-07, S-08, S-09], event: E-08, guard: null, to: S-08, actions: [switch_voice_downlink, log_mode_change], requirements: [R-11, R-13]}
+  - {id: T-12, from: [S-06, S-07, S-08, S-09], event: E-09, guard: null, to: S-09, actions: [end_downlink, log_mode_change], requirements: [R-11, R-13, R-18]}
+  - {id: T-13, from: [S-06, S-07, S-08, S-09], event: E-10, guard: "elevation < P-015", to: S-09, actions: [end_downlink, log_pass_end], requirements: [R-12]}
+  - {id: T-14, from: [S-05, S-06, S-07, S-08, S-09], event: E-11, guard: "fault_count >= P-019", to: S-10, actions: [suspend_non_ttc_downlink, log_rationale], requirements: [R-21, R-31]}
+  - {id: T-15, from: [S-05, S-06, S-07, S-08, S-09], event: E-12, guard: "battery_soc <= P-013", to: S-10, actions: [suspend_non_ttc_downlink, log_rationale], requirements: [R-21, R-25, R-31]}
+  - {id: T-16, from: [S-05, S-06, S-07, S-08, S-09], event: E-17, guard: null, to: S-10, actions: [suspend_non_ttc_downlink, log_rationale], requirements: [R-21, R-31]}
+  - {id: T-17, from: [S-03, S-04, S-05, S-06, S-07, S-08, S-09, S-10], event: E-13, guard: null, to: S-10, actions: [suspend_non_ttc_downlink, log_rationale, start_ground_contact_timer], requirements: [R-22, R-31]}
+  - {id: T-18, from: [S-10], event: E-15, guard: "context.deployment_confirmed == true", to: S-05, actions: [resume_nominal_rotation, log_rationale], requirements: [R-05, R-23, R-25, R-31]}
+  - {id: T-21, from: [S-10], event: E-14, guard: "context.deployment_confirmed == true", to: S-05, actions: [resume_nominal_rotation, log_rationale, start_ground_contact_timer], requirements: [R-05, R-24, R-31]}
+  - {id: T-25, from: [S-10], event: E-15, guard: "context.deployment_confirmed == false", to: S-03, actions: [resume_deployment_confirmation, log_rationale], requirements: [R-05, R-23, R-31]}
+  - {id: T-26, from: [S-10], event: E-14, guard: "context.deployment_confirmed == false", to: S-03, actions: [resume_deployment_confirmation, log_rationale, start_ground_contact_timer], requirements: [R-05, R-24, R-31]}
+  - {id: T-22, from: "*", event: E-16, guard: null, to: reload_from_persistence, actions: [reload_from_nvm, start_ground_contact_timer], requirements: [R-04, R-27, R-28, R-29]}
+  - {id: T-23, from: "*", event: E-18, guard: null, to: null, actions: [log_command_received, start_ground_contact_timer], requirements: [R-31, R-33]}
+  - {id: T-24, from: [S-03, S-04, S-05, S-06, S-07, S-08, S-09, S-10], event: E-20, guard: "elapsed(ground_contact_timer) >= P-025", to: reload_from_persistence, actions: [reload_from_nvm, start_ground_contact_timer], requirements: [R-34]}
+
+latches:
+  - name: deployment_confirmed
+    description: Set once both deployment-confirmation paths independently agree.
+    set_by: [T-04, T-06]
+    one_way: true
+    survives_reset: true
+
+parameters:
+  - {id: P-001, name: data_class_priority_order, value: [TTC, SSTV, CODEC2_M17], applies_to: both, source: "use-case doc, Solution Approach + Governance table", confidence: cited, rationale: "Given directly by the mission document."}
+  - {id: P-002, name: power_budget_avg, value: "<1W", applies_to: both, source: "use-case doc", confidence: cited, rationale: "Given directly."}
+  - {id: P-003, name: deployment_confirmation_mechanisms, value: [separation_switch, timer, RF_beacon], applies_to: config-a, source: "use-case doc", confidence: cited, rationale: "Given directly; Config B uses a different, single-path mechanism set."}
+  - {id: P-004, name: autonomy_bound, value: "uplinked commands + safe-mode triggers only", applies_to: both, source: "use-case doc, Human-in-the-Loop row", confidence: cited, rationale: "Given directly."}
+  - {id: P-005, name: collaborating_org, value: "ReOrbit, Finland", applies_to: context, source: "use-case doc", confidence: cited, rationale: "Non-runtime, report traceability only."}
+  - {id: P-010, name: rf_inhibit_silence_timer_s, value: 900, applies_to: config-a, source: "Franzese, Kanavouras, Bruce Rosete et al., System design of the POQUITO PocketQube mission, CEAS Space J 18 (2026), Sect. 2 ConOps", confidence: cited, rationale: "Real POQUITO figure: kill switches release and the spacecraft powers up after a 15 min silent time for safety, post-ejection."}
+  - {id: P-011, name: deploy_confirm_path_a_timeout_s, value: 5400, applies_to: config-a, source: "engineering judgment", confidence: assumed, rationale: "~1 orbital period at low LEO altitude."}
+  - {id: P-012, name: deploy_confirm_path_b_beacon_window_s, value: 60, applies_to: config-a, source: "use-case doc (short-duration RF beacon) + engineering judgment", confidence: assumed, rationale: "Short enough to respect sub-1W budget, long enough to be caught by a pass."}
+  - {id: P-013, name: battery_soc_safe_mode_entry_threshold_pct, value: 25, applies_to: config-a, source: "engineering judgment", confidence: assumed, rationale: "Conventional small-sat entry threshold."}
+  - {id: P-014, name: battery_soc_safe_mode_recovery_threshold_pct, value: 40, applies_to: config-a, source: "engineering judgment", confidence: assumed, rationale: "15-point hysteresis margin above P-013 to avoid chattering."}
+  - {id: P-015, name: link_quality_min_elevation_deg, value: 10, applies_to: config-a, source: "common ground-station minimum-elevation convention", confidence: assumed, rationale: "Widely used minimum-elevation mask."}
+  - {id: P-016, name: fade_margin_db, value: 3, applies_to: config-a, source: "engineering judgment", confidence: assumed, rationale: "Placeholder pending Phase 4 link-budget validation."}
+  - {id: P-017, name: watchdog_timeout_s, value: 120, applies_to: config-a, source: "Latachi et al., Masat-1, MDPI Aerospace 7(10):146 (2020)", confidence: assumed, rationale: "Informed by cited watchdog-pattern discussion; exact figure not sourced."}
+  - {id: P-018, name: mode_exclusivity_ruleset, value: [COMMS_TTC, COMMS_SSTV, COMMS_VOICE, COMMS_IDLE], applies_to: config-a, source: "section 5 (count cited) + engineering judgment (exclusivity)", confidence: assumed, rationale: "Count of four is cited; strict mutual exclusivity is an engineering assumption for a single-radio platform."}
+  - {id: P-019, name: fault_count_threshold_for_latched_fault, value: 3, applies_to: config-a, source: "AIAA J. Spacecraft & Rockets, DOI 10.2514/1.A35882 (FDIR pattern)", confidence: assumed, rationale: "Consecutive-count threshold motivated by cited FDIR pattern; count itself unsourced."}
+  - {id: P-020, name: safe_mode_exit_policy, value: autonomous_permitted_with_override, applies_to: config-a, source: "section 5 (Config A vs. B contrast)", confidence: assumed, rationale: "Deliberate design decision so Config A structurally differs from Config B on this axis."}
+  - {id: P-022, name: decision_log_verbosity, value: full, applies_to: config-a, source: "section 3, Responsible AI", confidence: assumed, rationale: "Full logging chosen while log completeness is itself under test (R-30)."}
+  - {id: P-023, name: ground_override_command_auth_model, value: hmac-sha256, applies_to: config-a, source: "engine/auth.py (Phase 7C)", confidence: assumed, rationale: "Phase 7C update (supersedes the prior TBD/null value): a real HMAC-SHA256 signature (engine.auth.sign_command/verify_command) over the (event_id, now) pair is now required and enforced by engine/fsm.py::step() for every EventDef.source == 'ground' event, closing the 'unauthenticated ground override' critique. Still explicitly scoped to the simulation/engine software layer only — real RF/flight-hardware crypto keying and physical uplink security remain out of scope per the project plan (section 9), unchanged."}
+  - {id: P-024, name: conflict_resolution_default_order, value: "see conflict_resolution section below", applies_to: config-a, source: "docs/conflict-resolution.md", confidence: assumed, rationale: "Full rationale in conflict-resolution.md."}
+  - {id: P-025, name: comms_loss_reset_timer_s, value: 172800, applies_to: config-a, source: "Franzese, Kanavouras, Bruce Rosete et al., System design of the POQUITO PocketQube mission, CEAS Space J 18 (2026), Sect. 3.7 Software architecture", confidence: cited, rationale: "Real POQUITO radiation-mitigation feature: reset of the satellite to a known state if no TC is received from the ground station within 2 days (172800 s)."}
+
+data_class_priority: [TTC, SSTV, CODEC2_M17]
+
+conflict_resolution:
+  - {rank: 1, category: ground_override_reset, member_events: [E-13, E-14, E-16], tie_break: "event timestamp, earliest first; RESET always wins ties against ground commands"}
+  - {rank: 2, category: fault_watchdog, member_events: [E-11, E-12, E-15, E-17, E-20], tie_break: "event timestamp, then event ID lexical order"}
+  - {rank: 3, category: deployment_lifecycle, member_events: [E-01, E-02, E-03, E-04, E-19], tie_break: "event timestamp"}
+  - {rank: 4, category: scheduler_data_class, member_events: [E-06, E-07, E-08, E-09, E-10], tie_break: "ordered by data_class_priority; PASS_END outranks SCHEDULER_SELECT_* within this rank"}
+  - {rank: 5, category: routine_informational, member_events: [E-05, E-18], tie_break: "event timestamp"}
+
+mode_exclusivity_groups:
+  - group_name: comms_modes
+    member_states: [S-06, S-07, S-08, S-09]

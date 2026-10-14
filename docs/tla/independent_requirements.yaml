@@ -1,0 +1,47 @@
+config-a:
+  latch: deployment_confirmed
+  pre_latch_states: [STOWED, RF_INHIBIT, DEPLOY_CONFIRM_PENDING, SAFE_MODE]
+  latch_events: [DEPLOY_CONFIRM_PATH_A, DEPLOY_CONFIRM_PATH_B]
+  latch_requires: [path_a_confirmed, path_b_confirmed]
+  rf_silent_states: [STOWED, RF_INHIBIT]
+  rf_enable_events: [RF_INHIBIT_TIMER_EXPIRED]
+  safe_state: SAFE_MODE
+  safe_exit_events: [GROUND_OVERRIDE_EXIT_SAFE, AUTONOMOUS_RECOVERY_CONDITIONS_MET, RESET, COMMS_LOSS_TIMEOUT]
+  safe_entry_events: [FAULT_DETECTED, POWER_LOW, WATCHDOG_TIMEOUT, GROUND_SAFE_MODE_CMD, RESET, COMMS_LOSS_TIMEOUT]
+  ground_safe_event: GROUND_SAFE_MODE_CMD
+  ground_safe_from: [DEPLOY_CONFIRM_PENDING, DEPLOYED_CONFIRMED, COMMISSIONING, COMMS_TTC, COMMS_SSTV, COMMS_VOICE, COMMS_IDLE, SAFE_MODE]
+  reset_event: RESET
+  scheduler_events: [SCHEDULER_SELECT_TTC, SCHEDULER_SELECT_SSTV, SCHEDULER_SELECT_VOICE, SCHEDULER_SELECT_IDLE, PASS_END]
+  comms_states: [COMMS_TTC, COMMS_SSTV, COMMS_VOICE, COMMS_IDLE]
+
+config-b:
+  latch: deployment_confirmed
+  pre_latch_states: [STOWED, DEPLOY_CONFIRM_PENDING]
+  latch_events: [SWITCH_DEBOUNCE_ELAPSED]
+  latch_requires: []
+  rf_silent_states: [STOWED, DEPLOY_CONFIRM_PENDING]
+  rf_enable_events: [SWITCH_DEBOUNCE_ELAPSED]
+  safe_state: SAFE_MODE
+  safe_exit_events: [GROUND_OVERRIDE_EXIT_SAFE, RESET]
+  safe_entry_events: [FAULT_DETECTED, POWER_LOW, WATCHDOG_TIMEOUT, GROUND_SAFE_MODE_CMD, RESET, COMMS_LOSS_TIMEOUT]
+  ground_safe_event: GROUND_SAFE_MODE_CMD
+  ground_safe_from: [DEPLOYED_CONFIRMED, COMMISSIONING, COMMS_ACTIVE, COMMS_IDLE, SAFE_MODE]
+  reset_event: RESET
+  scheduler_events: [SCHEDULER_SELECT_ACTIVE, SCHEDULER_SELECT_IDLE, PASS_END]
+  comms_states: [COMMS_ACTIVE, COMMS_IDLE]
+
+config-c:
+  latch: deployment_confirmed
+  pre_latch_states: [STOWED, DEPLOY_CONFIRM_PENDING]
+  latch_events: [SWITCH_DEBOUNCE_ELAPSED]
+  latch_requires: []
+  rf_silent_states: [STOWED, DEPLOY_CONFIRM_PENDING]
+  rf_enable_events: [SWITCH_DEBOUNCE_ELAPSED]
+  safe_state: SAFE_MODE
+  safe_exit_events: [GROUND_OVERRIDE_EXIT_SAFE, AUTONOMOUS_RECOVERY_CONDITIONS_MET, RESET]
+  safe_entry_events: [FAULT_DETECTED, POWER_LOW, WATCHDOG_TIMEOUT, GROUND_SAFE_MODE_CMD, RESET, COMMS_LOSS_TIMEOUT]
+  ground_safe_event: GROUND_SAFE_MODE_CMD
+  ground_safe_from: [DEPLOYED_CONFIRMED, COMMISSIONING, COMMS_ACTIVE, COMMS_IDLE, SAFE_MODE]
+  reset_event: RESET
+  scheduler_events: [SCHEDULER_SELECT_ACTIVE, SCHEDULER_SELECT_IDLE, PASS_END]
+  comms_states: [COMMS_ACTIVE, COMMS_IDLE]

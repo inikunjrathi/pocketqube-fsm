@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cepdt — Presentation Dashboard</title>
+<style>
+:root {
+  --surface-1: #fcfcfb;
+  --page: #f9f9f7;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --gridline: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11,11,11,0.10);
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --good: #0ca30c;
+  --good-text: #006300;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-1: #1a1a19;
+    --page: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --gridline: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --good: #0ca30c;
+    --good-text: #0ca30c;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--page);
+  color: var(--text-primary);
+}
+header { padding: 20px 24px 0; }
+header h1 { margin: 0 0 4px; font-size: 20px; }
+header p { margin: 0; color: var(--text-secondary); font-size: 13px; }
+.tabs { display: flex; gap: 8px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); }
+.tab-btn {
+  background: none; border: none; padding: 10px 16px; font-size: 14px;
+  color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent;
+}
+.tab-btn.active { color: var(--text-primary); border-bottom-color: var(--series-1); font-weight: 600; }
+.tab-panel { display: none; padding: 24px; max-width: 1100px; margin: 0 auto; }
+.tab-panel.active { display: block; }
+.tab-panel h2 { font-size: 16px; margin: 24px 0 8px; }
+.tab-panel h2:first-child { margin-top: 0; }
+.panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card, .chart-card, .stat-tile {
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+  padding: 16px; margin-bottom: 16px;
+}
+.card h3 { margin: 0 0 4px; text-transform: uppercase; font-size: 13px; letter-spacing: 0.04em; }
+.card dl { display: grid; grid-template-columns: auto auto; gap: 4px 12px; margin: 8px 0 0; }
+.card dt { color: var(--text-muted); font-size: 12px; }
+.card dd { margin: 0; font-variant-numeric: tabular-nums; }
+.card-description { font-size: 12px; color: var(--text-secondary); margin: 4px 0 12px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.badge-good { background: rgba(12,163,12,0.15); color: var(--good-text); }
+.badge-muted { background: rgba(137,135,129,0.15); color: var(--text-muted); }
+.badge-info { background: rgba(42,120,214,0.15); color: var(--series-1); }
+.simple-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 16px; }
+.simple-table th, .simple-table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--gridline); }
+.simple-table th { color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+.simple-table td.num { font-variant-numeric: tabular-nums; }
+.simple-table tr.baseline-row td { font-weight: 600; }
+.stat-tile { text-align: center; }
+.stat-value { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat-good { color: var(--good-text); }
+.stat-label { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+.chart-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.axis-line { stroke: var(--axis); stroke-width: 1; }
+.line-path { fill: none; stroke: var(--series-1); stroke-width: 2; }
+.cursor-line { stroke: var(--text-primary); stroke-width: 1; stroke-dasharray: 3 3; }
+.band { fill: var(--series-1); opacity: 0.12; }
+.axis-label { fill: var(--text-muted); font-size: 11px; text-anchor: middle; }
+.axis-label-y { fill: var(--text-muted); font-size: 11px; text-anchor: end; }
+.legend { display: flex; gap: 12px; margin-top: 8px; font-size: 12px; color: var(--text-secondary); }
+.legend-item { display: inline-flex; align-items: center; gap: 4px; }
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.replay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+.replay-hero { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.replay-clock { font-size: 28px; font-variant-numeric: tabular-nums; font-weight: 700; }
+.replay-state { font-size: 22px; font-weight: 700; }
+.replay-state-category { color: var(--text-secondary); font-size: 13px; text-transform: uppercase; }
+.controls { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+#replay-scrubber { flex: 1; }
+.speed-btn, #replay-play-btn {
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 12px; cursor: pointer; color: var(--text-primary);
+}
+.speed-btn.active { border-color: var(--series-1); color: var(--series-1); }
+.queue-row { display: flex; gap: 16px; margin-top: 8px; }
+.queue-item { text-align: center; }
+.queue-item .n { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.queue-item .label { font-size: 11px; color: var(--text-muted); }
+#replay-delivery-list { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+#replay-delivery-list li { padding: 4px 0; border-bottom: 1px solid var(--gridline); }
+.muted { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>cepdt — Configurable Scheduling Framework</h1>
+  <p>PocketQube-class downlink management. Generated by tools/export_visualization_data.py — do not hand-edit.</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="replay">Flight Replay</button>
+  <button class="tab-btn" data-tab="results">Results (RQ1–RQ3)</button>
+  <button class="tab-btn" data-tab="rigor">Rigor &amp; Verification</button>
+</nav>
+
+<section id="tab-replay" class="tab-panel active">
+  <div class="chart-card replay-hero">
+    <div>
+      <div class="replay-clock" id="replay-clock">0h 00m 00s</div>
+      <div class="replay-state" id="replay-state-name">—</div>
+      <div class="replay-state-category" id="replay-state-category">—</div>
+    </div>
+    <span class="badge" id="replay-link-badge">—</span>
+    <span class="badge" id="replay-battery-badge">—</span>
+    <span class="badge" id="replay-illumination-badge">—</span>
+    <div class="queue-row">
+      <div class="queue-item"><div class="n" id="replay-queue-ttc">0</div><div class="label">TT&amp;C</div></div>
+      <div class="queue-item"><div class="n" id="replay-queue-sstv">0</div><div class="label">SSTV</div></div>
+      <div class="queue-item"><div class="n" id="replay-queue-codec2m17">0</div><div class="label">Codec2/M17</div></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="replay-play-btn">▶ Play</button>
+    <button class="speed-btn" data-speed="1">1x</button>
+    <button class="speed-btn active" data-speed="5">5x</button>
+    <button class="speed-btn" data-speed="20">20x</button>
+    <input type="range" id="replay-scrubber" min="0" value="0" step="1">
+  </div>
+
+  <div class="replay-grid">
+    <div class="chart-card" id="replay-elevation-chart"></div>
+    <div class="chart-card" id="replay-battery-chart"></div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Recent deliveries</div>
+    <ul id="replay-delivery-list"></ul>
+  </div>
+</section>
+
+<section id="tab-results" class="tab-panel">
+  <h2>RQ1 — Mission-agnostic engine across two structurally different configs</h2>
+  <div class="panel-grid" id="rq1-cards"></div>
+
+  <h2>RQ2 — Persistence integrity under arbitrary resets</h2>
+  <div id="rq2-summary"></div>
+
+  <h2>RQ3 — Rule-based baseline vs. lookahead oracle vs. learned tree</h2>
+  <div class="chart-card" id="rq3-chart-delivery"></div>
+  <div class="chart-card" id="rq3-chart-latency"></div>
+  <div class="chart-card" id="rq3-chart-energy"></div>
+  <div class="chart-card">
+    <div class="chart-title">RQ3 answer</div>
+    <p id="rq3-answer"></p>
+  </div>
+</section>
+
+<section id="tab-rigor" class="tab-panel">
+  <h2>Multi-seed statistics</h2>
+  <p class="card-description">Every headline number above uses a single seed. This repeats the same runs across many additional seeds and reports mean &plusmn; 95% CI instead of one point estimate.</p>
+  <div class="panel-grid" id="multiseed-baseline-cards"></div>
+  <div id="multiseed-policy-table"></div>
+
+  <h2>Policy complexity / cost (R-20)</h2>
+  <p class="card-description">Same captured decision points, all three policies timed against them &mdash; the concrete answer to "is the decision tree actually cheaper than the oracle it imitates."</p>
+  <div class="panel-grid" id="complexity-cards"></div>
+
+  <h2>Parameter sensitivity</h2>
+  <p class="card-description">One-at-a-time sweep of every Assumed parameter that actually reaches a guard or sim code path. Some move the results a lot; some (surprisingly) move nothing at all &mdash; both are real findings.</p>
+  <div id="sensitivity-table"></div>
+
+  <h2>Power-model uncertainty</h2>
+  <p class="card-description">SSTV/VOICE transmit draws are scaled guesses off the one real (TTC) figure. This is the resulting energy-per-bit range across a &plusmn;30% band on that scaling ratio.</p>
+  <div id="power-uncertainty-table"></div>
+
+  <h2>Formal verification (TLA+/TLC)</h2>
+  <p class="card-description">Exhaustive model checking of the state machine's structure (guards abstracted away &mdash; see docs/model-checking.md) &mdash; every reachable state explored, not just the hand-picked test cases.</p>
+  <div class="panel-grid" id="model-checking-cards"></div>
+</section>
+
+<script>
+const DATA = __DATA_JSON_PLACEHOLDER__;
+
+document.querySelectorAll('.tab-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+function svgEl(tag, attrs) {
+  var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (var k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+function renderBarChart(container, opts) {
+  // opts: {title, groups, seriesNames, seriesColors, getValue(group, series), valueFmt(v)}
+  var width = 560, height = 220, marginLeft = 48, marginBottom = 28, marginTop = 24;
+  var plotW = width - marginLeft - 12;
+  var plotH = height - marginTop - marginBottom;
+  var allValues = [];
+  opts.groups.forEach(function (g) {
+    opts.seriesNames.forEach(function (s) {
+      var raw = opts.getValue(g, s);
+      if (raw !== null && raw !== undefined) allValues.push(raw);
+    });
+  });
+  var maxV = allValues.length ? Math.max(1e-9, Math.max.apply(null, allValues)) : 1e-9;
+  var groupW = plotW / opts.groups.length;
+  var barPad = 6;
+  var barW = (groupW - barPad * (opts.seriesNames.length + 1)) / opts.seriesNames.length;
+
+  var svg = svgEl('svg', {viewBox: '0 0 ' + width + ' ' + height, width: '100%', height: height, role: 'img', 'aria-label': opts.title});
+  svg.appendChild(svgEl('line', {x1: marginLeft, y1: marginTop + plotH, x2: width - 8, y2: marginTop + plotH, class: 'axis-line'}));
+
+  var zeroLabel = svgEl('text', {x: marginLeft - 6, y: marginTop + plotH, class: 'axis-label-y'});
+  zeroLabel.textContent = '0';
+  svg.appendChild(zeroLabel);
+  var maxLabel = svgEl('text', {x: marginLeft - 6, y: marginTop + 9, class: 'axis-label-y'});
+  maxLabel.textContent = opts.valueFmt(maxV);
+  svg.appendChild(maxLabel);
+
+  opts.groups.forEach(function (g, gi) {
+    var gx = marginLeft + gi * groupW;
+    opts.seriesNames.forEach(function (s, si) {
+      var raw = opts.getValue(g, s);
+      var isNA = raw === null || raw === undefined;
+      var v = isNA ? 0 : raw;
+      var barH = maxV > 0 ? (v / maxV) * plotH : 0;
+      var bx = gx + barPad + si * (barW + barPad);
+      var by = marginTop + plotH - barH;
+      var attrs = {x: bx, y: by, width: Math.max(1, barW), height: Math.max(2, barH), rx: 4};
+      if (isNA) {
+        attrs.fill = 'none';
+        attrs.stroke = opts.seriesColors[si];
+        attrs['stroke-dasharray'] = '2 2';
+      } else {
+        attrs.fill = opts.seriesColors[si];
+      }
+      var rect = svgEl('rect', attrs);
+      var titleEl = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      titleEl.textContent = g + ' / ' + s + ': ' + (isNA ? 'N/A' : opts.valueFmt(v));
+      rect.appendChild(titleEl);
+      svg.appendChild(rect);
+    });
+    var label = svgEl('text', {x: gx + groupW / 2 - barPad / 2, y: marginTop + plotH + 18, class: 'axis-label'});
+    label.textContent = g;
+    svg.appendChild(label);
+  });
+
+  var titleText = svgEl('text', {x: marginLeft, y: 14, class: 'chart-title'});
+  titleText.textContent = opts.title;
+  svg.appendChild(titleText);
+
+  container.innerHTML = '';
+  container.appendChild(svg);
+
+  var legend = document.createElement('div');
+  legend.className = 'legend';
+  opts.seriesNames.forEach(function (s, si) {
+    var item = document.createElement('span');
+    item.className = 'legend-item';
+    item.innerHTML = '<span class="swatch" style="background:' + opts.seriesColors[si] + '"></span>' + s;
+    legend.appendChild(item);
+  });
+  container.appendChild(legend);
+}
+
+function renderResultsTab() {
+  var rq1 = DATA.rq1, rq2 = DATA.rq2, rq3 = DATA.rq3;
+
+  document.getElementById('rq1-cards').innerHTML = rq1.configs.map(function (c) {
+    return '<div class="card">' +
+      '<h3>' + c.config_id + '</h3>' +
+      '<p class="muted">' + c.name + '</p>' +
+      '<p class="card-description">' + c.description.trim() + '</p>' +
+      '<dl>' +
+        '<dt>States</dt><dd>' + c.state_count + '</dd>' +
+        '<dt>Events</dt><dd>' + c.event_count + '</dd>' +
+        '<dt>Transitions</dt><dd>' + c.transition_count + '</dd>' +
+        '<dt>Autonomous safe-mode recovery</dt>' +
+        '<dd><span class="badge ' + (c.autonomous_recovery_capable ? 'badge-good' : 'badge-muted') + '">' +
+          (c.autonomous_recovery_capable ? 'Yes' : 'No — ground-only') + '</span></dd>' +
+      '</dl></div>';
+  }).join('');
+
+  document.getElementById('rq2-summary').innerHTML =
+    '<div class="stat-tile">' +
+      '<div class="stat-value ' + (rq2.failed === 0 ? 'stat-good' : '') + '">' + rq2.passed + ' / ' + (rq2.passed + rq2.failed) + '</div>' +
+      '<div class="stat-label">reset / fault-injection / persistence tests passing</div>' +
+      '<p class="muted">Across ' + rq2.test_files.length + ' test files: ' + rq2.test_files.join(', ') + '. ' +
+      'The <code>deployment_confirmed</code> latch was never cleared by any tested reset or corruption sequence.</p>' +
+    '</div>';
+
+  var POLICY_ORDER = ['baseline', 'oracle', 'tree'];
+  var POLICY_COLORS = ['var(--series-1)', 'var(--series-2)', 'var(--series-3)'];
+  var configs = rq3.rows.map(function (r) { return r.config_id; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+
+  function valueFor(configId, policy, key) {
+    var row = rq3.rows.filter(function (r) { return r.config_id === configId && r.policy === policy; })[0];
+    return row ? row[key] : 0;
+  }
+
+  renderBarChart(document.getElementById('rq3-chart-delivery'), {
+    title: 'Delivery success (%)', groups: configs, seriesNames: POLICY_ORDER, seriesColors: POLICY_COLORS,
+    getValue: function (g, s) { return valueFor(g, s, 'delivery_success_pct'); },
+    valueFmt: function (v) { return v.toFixed(2) + '%'; },
+  });
+  renderBarChart(document.getElementById('rq3-chart-latency'), {
+    title: 'TT&C latency p95 (s)', groups: configs, seriesNames: POLICY_ORDER, seriesColors: POLICY_COLORS,
+    getValue: function (g, s) { return valueFor(g, s, 'ttc_latency_p95_s'); },
+    valueFmt: function (v) { return v.toFixed(1) + 's'; },
+  });
+  renderBarChart(document.getElementById('rq3-chart-energy'), {
+    title: 'Energy per delivered bit (J/bit)', groups: configs, seriesNames: POLICY_ORDER, seriesColors: POLICY_COLORS,
+    getValue: function (g, s) { return valueFor(g, s, 'energy_per_bit_j'); },
+    valueFmt: function (v) { return v.toExponential(3) + ' J/bit'; },
+  });
+
+  document.getElementById('rq3-answer').textContent = rq3.answer;
+}
+renderResultsTab();
+
+function fmtPct(v) { return v.toFixed(2) + '%'; }
+function fmtSci(v) { return v === null || v === undefined ? '—' : v.toExponential(4) + ' J/bit'; }
+function fmtCI(obj, fmt) {
+  return fmt(obj.mean) + ' <span class="muted">(n=' + obj.n + ', 95% CI [' + fmt(obj.ci_low) + ', ' + fmt(obj.ci_high) + '])</span>';
+}
+function buildTable(headers, rowsHtml) {
+  return '<table class="simple-table"><thead><tr>' +
+    headers.map(function (h) { return '<th>' + h + '</th>'; }).join('') +
+    '</tr></thead><tbody>' + rowsHtml.join('') + '</tbody></table>';
+}
+
+function renderRigorTab() {
+  var ms = DATA.multi_seed_baseline, msp = DATA.multi_seed_policy;
+  var complexity = DATA.complexity, sensitivity = DATA.sensitivity;
+  var powerUncertainty = DATA.power_uncertainty, modelChecking = DATA.model_checking;
+
+  // Multi-seed baseline: one card per config.
+  document.getElementById('multiseed-baseline-cards').innerHTML = ms.configs.map(function (c) {
+    var m = c.metrics;
+    var deliveryRow = m['Delivery success rate'];
+    var energyRow = m['Energy per delivered bit (J/bit)'];
+    return '<div class="card"><h3>' + c.config_id + '</h3>' +
+      '<p class="muted">' + c.n_seeds + ' seeds, mean &plusmn; 95% CI</p>' +
+      '<dl>' +
+        '<dt>Delivery success</dt><dd>' + fmtCI(deliveryRow, function (v) { return fmtPct(v * 100); }) + '</dd>' +
+        '<dt>Energy/bit</dt><dd>' + fmtCI(energyRow, fmtSci) + '</dd>' +
+      '</dl></div>';
+  }).join('');
+
+  // Multi-seed policy comparison: a table (mean + CI is awkward as bars).
+  document.getElementById('multiseed-policy-table').innerHTML = buildTable(
+    ['Config', 'Policy', 'Delivery success (mean, 95% CI)', 'Energy/bit (mean, 95% CI)'],
+    msp.rows.map(function (r) {
+      return '<tr><td>' + r.config_id + '</td><td>' + r.policy + '</td>' +
+        '<td class="num">' + fmtCI(r.delivery_success, function (v) { return fmtPct(v * 100); }) + '</td>' +
+        '<td class="num">' + fmtCI(r.energy_per_bit_j, fmtSci) + '</td></tr>';
+    })
+  );
+
+  // Complexity / cost per config, plus the headline oracle/tree ratio stat.
+  document.getElementById('complexity-cards').innerHTML = complexity.configs.map(function (c) {
+    var rows = c.policies.map(function (p) {
+      return '<tr><td>' + p.policy + '</td><td class="muted">' + p.big_o + '</td>' +
+        '<td class="num">' + p.mean + '</td><td class="num">' + p.n + '</td></tr>';
+    });
+    return '<div class="card"><h3>' + c.config_id + '</h3>' +
+      buildTable(['Policy', 'Big-O', 'Mean / decision', 'N'], rows) +
+      (c.oracle_to_tree_ratio ? '<div class="stat-tile" style="margin-top:8px;">' +
+        '<div class="stat-value">' + c.oracle_to_tree_ratio.toLocaleString() + 'x</div>' +
+        '<div class="stat-label">oracle cost vs. tree cost, per decision</div></div>' : '') +
+      '</div>';
+  }).join('');
+
+  // Parameter sensitivity: one table, with a badge per parameter for
+  // whether it actually moved anything.
+  document.getElementById('sensitivity-table').innerHTML = buildTable(
+    ['Parameter', 'Value', 'Delivery success', 'Energy/bit', 'Finding'],
+    sensitivity.parameters.reduce(function (acc, p) {
+      var finding = sensitivity.interpretation[p.param_id];
+      var badge = '<span class="badge ' + (finding === 'real sensitivity' ? 'badge-info' : 'badge-muted') + '">' + finding + '</span>';
+      p.rows.forEach(function (r, i) {
+        acc.push(
+          '<tr class="' + (r.is_baseline ? 'baseline-row' : '') + '"><td>' +
+            (i === 0 ? '<code>' + p.param_id + '</code> <span class="muted">' + p.param_name + '</span>' : '') +
+          '</td><td class="num">' + r.value + (r.is_baseline ? ' (baseline)' : '') + '</td>' +
+          '<td class="num">' + fmtPct(r.delivery_success_pct) + '</td>' +
+          '<td class="num">' + fmtSci(r.energy_per_bit_j) + '</td>' +
+          '<td>' + (i === 0 ? badge : '') + '</td></tr>'
+        );
+      });
+      return acc;
+    }, [])
+  );
+
+  // Power-model uncertainty: one small table per data class.
+  document.getElementById('power-uncertainty-table').innerHTML = powerUncertainty.classes.map(function (c) {
+    var rows = c.rows.map(function (r) {
+      return '<tr><td class="num">' + r.ratio.toFixed(3) + 'x</td><td class="num">' + r.draw_w.toFixed(4) + ' W</td>' +
+        '<td class="num">' + fmtSci(r.energy_per_bit_j) + '</td></tr>';
+    });
+    return '<div class="card"><h3>' + c.data_class + '</h3>' +
+      buildTable(['Ratio (x TTC draw)', 'Draw', 'Energy/bit'], rows) +
+      '<p class="card-description">Range: ' + fmtSci(c.range_low) + ' – ' + fmtSci(c.range_high) + '</p></div>';
+  }).join('');
+
+  // Formal verification: one stat-tile per config.
+  document.getElementById('model-checking-cards').innerHTML = modelChecking.rows.map(function (r) {
+    var ok = r.result.toLowerCase().indexOf('no error') !== -1;
+    return '<div class="card"><h3>' + r.config_id + '</h3>' +
+      '<span class="badge ' + (ok ? 'badge-good' : 'badge-muted') + '">' + r.result + '</span>' +
+      '<dl style="margin-top:8px;">' +
+        '<dt>States declared</dt><dd>' + r.states_declared + '</dd>' +
+        '<dt>Distinct (state, latch) reached</dt><dd>' + r.states_reached + '</dd>' +
+        '<dt>Max search depth</dt><dd>' + r.max_depth + '</dd>' +
+      '</dl></div>';
+  }).join('');
+}
+renderRigorTab();
+
+function renderTimeSeriesChart(container, opts) {
+  // opts: {title, ticks, getValue(tick), cursorT, thresholdBands: [{fromT, toT}]?}
+  // Static parts (path/bands/axis/y-labels) never change across calls for a
+  // given container in this app -- only cursorT moves each tick. Building a
+  // ~17k-point <path> and reassigning innerHTML on every 50ms playback frame
+  // was measurably wasteful, so the static SVG is built once and cached on
+  // the container; subsequent calls just reposition the cursor <line>.
+  var width = 560, height = 160, marginLeft = 48, marginBottom = 22, marginTop = 20;
+  var plotW = width - marginLeft - 12;
+  var plotH = height - marginTop - marginBottom;
+
+  if (!container._chartCursor) {
+    var tMax = opts.ticks.length ? opts.ticks[opts.ticks.length - 1].t : 1;
+    var values = opts.ticks.map(opts.getValue);
+    var minV = values.length ? Math.min.apply(null, values) : 0;
+    var maxV = values.length ? Math.max.apply(null, values) : 1;
+    var yRange = Math.max(1e-9, maxV - minV);
+
+    var xOf = function (t) { return marginLeft + (tMax > 0 ? (t / tMax) : 0) * plotW; };
+    var yOf = function (v) { return marginTop + plotH - ((v - minV) / yRange) * plotH; };
+
+    var path = '';
+    opts.ticks.forEach(function (tk, i) {
+      var x = xOf(tk.t), y = yOf(opts.getValue(tk));
+      path += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+    });
+
+    var bands = (opts.thresholdBands || []).map(function (b) {
+      var bx = xOf(b.fromT), bw = Math.max(0, xOf(b.toT) - bx);
+      return '<rect x="' + bx.toFixed(1) + '" y="' + marginTop + '" width="' + bw.toFixed(1) +
+        '" height="' + plotH + '" class="band"></rect>';
+    }).join('');
+
+    container.innerHTML =
+      '<div class="chart-title">' + opts.title + '</div>' +
+      '<svg viewBox="0 0 ' + width + ' ' + height + '" width="100%" height="' + height +
+      '" role="img" aria-label="' + opts.title + '">' +
+        bands +
+        '<line x1="' + marginLeft + '" y1="' + (marginTop + plotH) + '" x2="' + (width - 8) +
+          '" y2="' + (marginTop + plotH) + '" class="axis-line"></line>' +
+        '<text x="' + (marginLeft - 6) + '" y="' + (marginTop + plotH) + '" class="axis-label-y">' + minV.toFixed(1) + '</text>' +
+        '<text x="' + (marginLeft - 6) + '" y="' + (marginTop + 9) + '" class="axis-label-y">' + maxV.toFixed(1) + '</text>' +
+        '<path d="' + path + '" class="line-path"></path>' +
+        '<line x1="0" y1="' + marginTop + '" x2="0" y2="' + (marginTop + plotH) + '" class="cursor-line" id="__cursor__"></line>' +
+      '</svg>';
+
+    var cursorEl = container.querySelector('#__cursor__');
+    cursorEl.removeAttribute('id');
+    container._chartCursor = cursorEl;
+    container._chartXOf = xOf;
+  }
+
+  var cx = container._chartXOf(opts.cursorT).toFixed(1);
+  container._chartCursor.setAttribute('x1', cx);
+  container._chartCursor.setAttribute('x2', cx);
+}
+
+(function () {
+  var replay = DATA.replay;
+  var ticks = replay.ticks;
+  var deliveries = replay.deliveries;
+  if (!ticks.length) return; // no replay data (e.g. the manual preview sample) -- skip wiring
+
+  var scrubber = document.getElementById('replay-scrubber');
+  scrubber.max = ticks.length - 1;
+  scrubber.value = 0;
+
+  var stateNameEl = document.getElementById('replay-state-name');
+  var stateCategoryEl = document.getElementById('replay-state-category');
+  var clockEl = document.getElementById('replay-clock');
+  var linkBadgeEl = document.getElementById('replay-link-badge');
+  var batteryBadgeEl = document.getElementById('replay-battery-badge');
+  var illuminationBadgeEl = document.getElementById('replay-illumination-badge');
+  var queueTtcEl = document.getElementById('replay-queue-ttc');
+  var queueSstvEl = document.getElementById('replay-queue-sstv');
+  var queueCodecEl = document.getElementById('replay-queue-codec2m17');
+  var deliveryListEl = document.getElementById('replay-delivery-list');
+
+  function fmtClock(t) {
+    var h = Math.floor(t / 3600);
+    var m = Math.floor((t % 3600) / 60);
+    var s = Math.floor(t % 60);
+    return h + 'h ' + String(m).padStart(2, '0') + 'm ' + String(s).padStart(2, '0') + 's';
+  }
+
+  function linkUpWindows() {
+    var windows = [];
+    var start = null;
+    ticks.forEach(function (tk) {
+      if (tk.link_is_up && start === null) start = tk.t;
+      if (!tk.link_is_up && start !== null) { windows.push({fromT: start, toT: tk.t}); start = null; }
+    });
+    if (start !== null) windows.push({fromT: start, toT: ticks[ticks.length - 1].t});
+    return windows;
+  }
+  var LINK_WINDOWS = linkUpWindows();
+
+  function updateReplay(index) {
+    var tk = ticks[index];
+    clockEl.textContent = fmtClock(tk.t);
+    stateNameEl.textContent = tk.fsm_state_id;
+    stateCategoryEl.textContent = tk.fsm_state_category;
+    linkBadgeEl.textContent = tk.link_is_up ? 'LINK UP' : 'link down';
+    linkBadgeEl.className = 'badge ' + (tk.link_is_up ? 'badge-good' : 'badge-muted');
+    batteryBadgeEl.textContent = tk.battery_soc_pct.toFixed(1) + '% SoC';
+    illuminationBadgeEl.textContent = tk.is_illuminated ? '☀ SUNLIT' : '🌑 ECLIPSE';
+    illuminationBadgeEl.className = 'badge ' + (tk.is_illuminated ? 'badge-good' : 'badge-muted');
+    queueTtcEl.textContent = tk.ttc_queue_depth;
+    queueSstvEl.textContent = tk.sstv_queue_depth;
+    queueCodecEl.textContent = tk.codec2_m17_queue_depth;
+
+    renderTimeSeriesChart(document.getElementById('replay-elevation-chart'), {
+      title: 'Elevation (deg) — shaded = link up',
+      ticks: ticks, getValue: function (t) { return t.elevation_deg; },
+      cursorT: tk.t, thresholdBands: LINK_WINDOWS,
+    });
+    renderTimeSeriesChart(document.getElementById('replay-battery-chart'), {
+      title: 'Battery SoC (%)',
+      ticks: ticks, getValue: function (t) { return t.battery_soc_pct; }, cursorT: tk.t,
+    });
+
+    var deliveredSoFar = deliveries.filter(function (d) {
+      return d.delivered && d.delivery_time_s !== null && d.delivery_time_s <= tk.t;
+    });
+    deliveryListEl.innerHTML = deliveredSoFar.length
+      ? deliveredSoFar.slice(-8).reverse().map(function (d) {
+          return '<li><strong>' + d.data_class + '</strong> delivered at ' + fmtClock(d.delivery_time_s) +
+            ' (latency ' + d.latency_s.toFixed(1) + 's)</li>';
+        }).join('')
+      : '<li class="muted">No deliveries yet</li>';
+  }
+
+  scrubber.addEventListener('input', function () { updateReplay(parseInt(scrubber.value, 10)); });
+  updateReplay(0);
+
+  var playTimer = null;
+  var speed = 5;
+  var playBtn = document.getElementById('replay-play-btn');
+  document.querySelectorAll('.speed-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      speed = parseInt(btn.dataset.speed, 10);
+      document.querySelectorAll('.speed-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+  playBtn.addEventListener('click', function () {
+    if (playTimer) {
+      clearInterval(playTimer);
+      playTimer = null;
+      playBtn.textContent = '▶ Play';
+      return;
+    }
+    if (parseInt(scrubber.value, 10) >= ticks.length - 1) {
+      scrubber.value = 0;
+      updateReplay(0);
+    }
+    playBtn.textContent = '⏸ Pause';
+    playTimer = setInterval(function () {
+      var next = parseInt(scrubber.value, 10) + speed;
+      if (next >= ticks.length) {
+        next = ticks.length - 1;
+        clearInterval(playTimer);
+        playTimer = null;
+        playBtn.textContent = '▶ Play';
+      }
+      scrubber.value = next;
+      updateReplay(next);
+    }, 50);
+  });
+})();
+</script>
+</body>
+</html>

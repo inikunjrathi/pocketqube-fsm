@@ -1,0 +1,2 @@
+archived: calls=35763 legal=18306 illegal=17457 firmware_vs_oracle_mismatches=0
+fresh capture: calls=35763 entries_differing_from_archive=0

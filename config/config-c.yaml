@@ -1,0 +1,128 @@
+meta:
+  config_id: config-c
+  name: "Hybrid: single-path deployment, autonomous-permitted recovery"
+  description: >
+    Synthetic third configuration (Phase 7D) — not a POQUITO/SomaiyaSat
+    mission variant like Config A/B. Combines Config B's single-path
+    deployment switch with Config A's autonomous-permitted-with-override
+    safe-mode recovery: a deployment x recovery-model combination neither
+    shipped config represents, built to test the engine's generality claim
+    against a new axis combination rather than another real-mission variant.
+  version: "0.1.0"
+
+states:
+  - id: S-01
+    name: STOWED
+    category: deployment
+    description: Pre-separation. Deployment not confirmed.
+    entry_actions: []
+    is_initial: true
+  - id: S-02
+    name: DEPLOY_CONFIRM_PENDING
+    category: deployment
+    description: Separation switch closed; debounce timer running before the single confirmation path is trusted. No RF inhibit — this is purely bounce filtering, not a safety silence period.
+    entry_actions: [start_switch_debounce_timer]
+    is_initial: false
+  - id: S-03
+    name: DEPLOYED_CONFIRMED
+    category: deployment
+    description: Debounce elapsed; deployment_confirmed latch set. No dual-path wait, no RF inhibit.
+    entry_actions: [set_deployment_confirmed_latch, enable_rf]
+    is_initial: false
+  - id: S-04
+    name: COMMISSIONING
+    category: deployment
+    description: Initial checkout before nominal downlink begins. Also the landing state for BOTH safe-mode recovery paths (autonomous, T-16; ground override, T-12).
+    entry_actions: []
+    is_initial: false
+  - id: S-05
+    name: COMMS_ACTIVE
+    category: comms-mode
+    description: The single downlink mode — active, regardless of which data class the scheduler is currently serving.
+    entry_actions: []
+    is_initial: false
+  - id: S-06
+    name: COMMS_IDLE
+    category: comms-mode
+    description: No active downlink; awaiting next queued item or next pass.
+    entry_actions: []
+    is_initial: false
+  - id: S-07
+    name: SAFE_MODE
+    category: safe
+    description: Entered on fault/power/watchdog/ground trigger. Exit is EITHER autonomous (battery recovers above PC-012, T-16) OR ground-commanded (T-12) — unlike Config B, which has no autonomous exit at all.
+    entry_actions: [suspend_downlink, log_rationale]
+    is_initial: false
+
+events:
+  - {id: E-01, name: SEPARATION_DETECTED, source: onboard, description: Single separation switch closes.}
+  - {id: E-02, name: ENTER_COMMISSIONING, source: onboard, description: Raised once deployment_confirmed latch is set.}
+  - {id: E-03, name: COMMISSIONING_COMPLETE, source: onboard, description: Checkout/health checks pass.}
+  - {id: E-04, name: SCHEDULER_SELECT_ACTIVE, source: scheduler, description: Scheduler has an eligible item (any data class) to downlink.}
+  - {id: E-05, name: SCHEDULER_SELECT_IDLE, source: scheduler, description: No eligible item pending.}
+  - {id: E-06, name: PASS_END, source: onboard, description: Ground-station pass ended.}
+  - {id: E-07, name: FAULT_DETECTED, source: onboard, description: Non-watchdog fault condition detected.}
+  - {id: E-08, name: POWER_LOW, source: onboard, description: Battery SoC crossed safe-mode entry threshold.}
+  - {id: E-09, name: WATCHDOG_TIMEOUT, source: onboard, description: Watchdog not serviced within timeout window.}
+  - {id: E-10, name: GROUND_SAFE_MODE_CMD, source: ground, description: Ground commands entry into/hold within safe mode.}
+  - {id: E-11, name: GROUND_OVERRIDE_EXIT_SAFE, source: ground, description: Ground commands exit from safe mode — always available, alongside the autonomous path (E-16).}
+  - {id: E-12, name: RESET, source: harness, description: Unconditional reset, injectable at any point including mid-write.}
+  - {id: E-13, name: UPLINK_CMD_GENERIC, source: ground, description: Generic uplinked command not otherwise covered.}
+  - {id: E-14, name: SWITCH_DEBOUNCE_ELAPSED, source: onboard, description: Deployment-switch debounce timer has elapsed since separation was detected.}
+  - {id: E-15, name: COMMS_LOSS_TIMEOUT, source: onboard, description: Ground-contact timer exceeded PC-011 with no intervening telecommand.}
+  - {id: E-16, name: AUTONOMOUS_RECOVERY_CONDITIONS_MET, source: onboard, description: Battery has recovered above PC-012 while in SAFE_MODE — the new event this config adds relative to Config B, mirroring Config A's E-15.}
+
+transitions:
+  - {id: T-01, from: [S-01], event: E-01, guard: null, to: S-02, actions: [start_switch_debounce_timer], requirements: [RC-01]}
+  - {id: T-02, from: [S-02], event: E-14, guard: "elapsed(switch_debounce_timer) >= PC-002", to: S-03, actions: [set_deployment_confirmed_latch, enable_rf, start_ground_contact_timer], requirements: [RC-01, RC-02]}
+  - {id: T-03, from: [S-03], event: E-02, guard: null, to: S-04, actions: [], requirements: [RC-03]}
+  - {id: T-04, from: [S-04], event: E-03, guard: null, to: S-05, actions: [begin_downlink], requirements: [RC-04]}
+  - {id: T-05, from: [S-05, S-06], event: E-04, guard: null, to: S-05, actions: [begin_or_continue_downlink, log_mode_change], requirements: [RC-05]}
+  - {id: T-06, from: [S-05, S-06], event: E-05, guard: null, to: S-06, actions: [end_downlink, log_mode_change], requirements: [RC-05]}
+  - {id: T-07, from: [S-05, S-06], event: E-06, guard: "elevation < PC-006", to: S-06, actions: [end_downlink, log_pass_end], requirements: [RC-06]}
+  - {id: T-08, from: [S-04, S-05, S-06], event: E-07, guard: "fault_count >= PC-005", to: S-07, actions: [suspend_downlink, log_rationale], requirements: [RC-07, RC-11]}
+  - {id: T-09, from: [S-04, S-05, S-06], event: E-08, guard: "battery_soc <= PC-003", to: S-07, actions: [suspend_downlink, log_rationale], requirements: [RC-07, RC-11]}
+  - {id: T-10, from: [S-04, S-05, S-06], event: E-09, guard: null, to: S-07, actions: [suspend_downlink, log_rationale], requirements: [RC-07, RC-11]}
+  - {id: T-11, from: [S-03, S-04, S-05, S-06, S-07], event: E-10, guard: null, to: S-07, actions: [suspend_downlink, log_rationale, start_ground_contact_timer], requirements: [RC-08, RC-11]}
+  - {id: T-12, from: [S-07], event: E-11, guard: null, to: S-04, actions: [resume_nominal_rotation, log_rationale, start_ground_contact_timer], requirements: [RC-09, RC-11]}
+  - {id: T-13, from: "*", event: E-12, guard: null, to: reload_from_persistence, actions: [reload_from_nvm, start_ground_contact_timer], requirements: [RC-02, RC-10]}
+  - {id: T-14, from: "*", event: E-13, guard: null, to: null, actions: [log_command_received, start_ground_contact_timer], requirements: [RC-11]}
+  - {id: T-15, from: [S-03, S-04, S-05, S-06], event: E-15, guard: "elapsed(ground_contact_timer) >= PC-011", to: reload_from_persistence, actions: [reload_from_nvm, start_ground_contact_timer], requirements: [RC-12]}
+  - {id: T-16, from: [S-07], event: E-16, guard: "battery_soc >= PC-012", to: S-04, actions: [resume_nominal_rotation, log_rationale], requirements: [RC-13]}
+
+latches:
+  - name: deployment_confirmed
+    description: Set once the single deployment-confirmation switch closes and the debounce timer elapses.
+    set_by: [T-02]
+    one_way: true
+    survives_reset: true
+
+parameters:
+  - {id: P-001, name: data_class_priority_order, value: [TTC, SSTV, CODEC2_M17], applies_to: both, source: "use-case doc, Solution Approach + Governance table", confidence: cited, rationale: "Given directly by the mission document; held constant across all three configs — Config C varies the deployment/recovery-model axis and the ground-station-coverage axis, not data priority."}
+  - {id: P-002, name: power_budget_avg, value: "<1W", applies_to: both, source: "use-case doc", confidence: cited, rationale: "Given directly; identical across configs."}
+  - {id: P-004, name: autonomy_bound, value: "uplinked commands + safe-mode triggers only", applies_to: both, source: "use-case doc, Human-in-the-Loop row", confidence: cited, rationale: "Given directly; identical across configs."}
+  - {id: PC-001, name: deployment_confirmation_mechanism, value: [separation_switch], applies_to: config-c, source: "Phase 7D design decision", confidence: assumed, rationale: "Reuses Config B's single-path deployment mechanism unchanged, so the only structural axis varying relative to Config B is the safe-mode recovery model (PC-010/PC-012) — isolating one axis change at a time rather than varying deployment and recovery simultaneously."}
+  - {id: PC-002, name: deploy_confirm_debounce_s, value: 5, applies_to: config-c, source: "engineering judgment", confidence: assumed, rationale: "Identical to Config B's PB-002 — deployment-path axis held constant."}
+  - {id: PC-003, name: battery_soc_safe_mode_entry_threshold_pct, value: 25, applies_to: config-c, source: "engineering judgment", confidence: assumed, rationale: "Identical to Config A's P-013/Config B's PB-003."}
+  - {id: PC-004, name: watchdog_timeout_s, value: 120, applies_to: config-c, source: "engineering judgment", confidence: assumed, rationale: "Identical to Config A's P-017/Config B's PB-004."}
+  - {id: PC-005, name: fault_count_threshold_for_latched_fault, value: 3, applies_to: config-c, source: "engineering judgment", confidence: assumed, rationale: "Identical to Config A's P-019/Config B's PB-005."}
+  - {id: PC-006, name: link_quality_min_elevation_deg, value: 10, applies_to: config-c, source: "common ground-station minimum-elevation convention", confidence: assumed, rationale: "Identical mask to Config A/B; Config C varies ground-station COUNT instead (dual-station reference scenario — see docs/baseline-results.md), not the elevation mask itself."}
+  - {id: PC-007, name: fade_margin_db, value: 3, applies_to: config-c, source: "engineering judgment", confidence: assumed, rationale: "Identical to Config A/B."}
+  - {id: PC-008, name: decision_log_verbosity, value: full, applies_to: config-c, source: "section 3, Responsible AI", confidence: assumed, rationale: "Identical to Config A/B — full logging while log completeness is itself under test."}
+  - {id: PC-009, name: ground_override_command_auth_model, value: hmac-sha256, applies_to: config-c, source: "engine/auth.py (Phase 7C)", confidence: assumed, rationale: "Mirrors Config A's P-023/Config B's PB-009 — the same HMAC-SHA256 enforcement in engine/fsm.py::step() applies automatically (it reads EventDef.source, never config_id)."}
+  - {id: PC-010, name: safe_mode_exit_policy, value: autonomous_permitted_with_override, applies_to: config-c, source: "Phase 7D design decision — Config C's defining structural axis", confidence: assumed, rationale: "The deliberate contrast with Config B (PB-010 = ground_only): Config C combines Config B's single-path deployment (PC-001) with Config A's autonomous-permitted-with-override recovery model (P-020) — a combination neither shipped config represents. T-16/E-16/PC-012 implement the autonomous path; T-12/E-11 (ground override) remains available too, exactly like Config A's own two-path precedent. sim/driver.py::_maybe_recover_from_safe_mode required zero code changes to support this — it already detects an autonomous path generically by checking whether a parameter named battery_soc_safe_mode_recovery_threshold_pct exists in the loaded config."}
+  - {id: PC-011, name: comms_loss_reset_timer_s, value: 172800, applies_to: config-c, source: "Reuses Config A/B's cited value for structural consistency, not an independent citation for this synthetic config", confidence: assumed, rationale: "The autonomous comms-loss reset mechanism is held constant across all three configs; Config C does not vary this axis, only the safe-mode recovery-model axis (PC-010/PC-012) and the ground-station-coverage axis (reference-scenario level, not a config parameter)."}
+  - {id: PC-012, name: battery_soc_safe_mode_recovery_threshold_pct, value: 35, applies_to: config-c, source: "engineering judgment", confidence: assumed, rationale: "Mirrors Config A's P-014 in kind (hysteresis margin above the entry threshold, PC-003) but set to a tighter 10-point margin (Config A uses a 15-point margin: 40 vs. 25) — a deliberately distinct value along this axis, not a copy of Config A's figure. Consumed by sim/driver.py's _maybe_recover_from_safe_mode via an exact parameter-NAME match against _BATTERY_RECOVERY_THRESHOLD_PARAM_NAME; this is how the already config-agnostic driver automatically attempts autonomous recovery for Config C with zero driver.py changes."}
+
+data_class_priority: [TTC, SSTV, CODEC2_M17]
+
+conflict_resolution:
+  - {rank: 1, category: ground_override_reset, member_events: [E-10, E-11, E-12], tie_break: "event timestamp, earliest first; RESET always wins ties against ground commands"}
+  - {rank: 2, category: fault_watchdog, member_events: [E-07, E-08, E-09, E-15, E-16], tie_break: "event timestamp, then event ID lexical order"}
+  - {rank: 3, category: deployment_lifecycle, member_events: [E-01, E-02, E-14], tie_break: "event timestamp"}
+  - {rank: 4, category: scheduler_data_class, member_events: [E-04, E-05, E-06], tie_break: "ordered by data_class_priority; PASS_END outranks SCHEDULER_SELECT_* within this rank"}
+  - {rank: 5, category: routine_informational, member_events: [E-03, E-13], tie_break: "event timestamp"}
+
+mode_exclusivity_groups:
+  - group_name: comms_modes
+    member_states: [S-05, S-06]
