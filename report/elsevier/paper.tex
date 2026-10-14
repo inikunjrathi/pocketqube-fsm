@@ -35,7 +35,13 @@
 
 \title{Mission-agnostic flight software for PocketQubes: a configuration-driven, model-checked state machine for deployment and downlink management}
 
-\author{Nikunj Rathi}
+\author{Nikunj Rathi\corref{cor1}}
+\ead{nikunj.rathi@somaiya.edu}
+\cortext[cor1]{Corresponding author}
+\author{Purva Pote}
+\ead{purva.pote@somaiya.edu}
+\author{Megha Sharma}
+\ead{meghasharma@somaiya.edu}
 \affiliation{organization={K. J. Somaiya School of Engineering, Somaiya Vidyavihar University},
             city={Mumbai},
             country={India}}
@@ -74,7 +80,7 @@ The contributions are as follows.
 
 \section{Related work}\label{sec:related}
 
-\paragraph{PocketQube and small-satellite missions} Franzese's survey~\cite{Franzese2025Survey} collects the PocketQube missions flown so far and the sub-1~W power envelope that bounds them. The POQUITO mission of the University of Luxembourg is the closest flight analogue the author could find: its system-design paper~\cite{Franzese2026POQUITO} gives the 4.5~Wh battery, 0.4~W worst-case generation, 9600~bit/s downlink, 15-minute post-ejection silence and 2-day loss-of-communication reset that the simulation adopts, and its 4S Symposium paper~\cite{Franzese2024POQUITO4S} gives the 3-minute beacon period behind the simulated \ttc{} arrival rate. Villela et al.~\cite{Villela2019Thousandth} estimate the CubeSat mission success rate at about 75\% once launch failures are excluded, which is one reason the design concentrates on deployment confirmation and reset behaviour.
+\paragraph{PocketQube and small-satellite missions} Franzese's survey~\cite{Franzese2025Survey} collects the PocketQube missions flown so far and the sub-1~W power envelope that bounds them. The POQUITO mission of the University of Luxembourg is the closest flight analogue the authors could find: its system-design paper~\cite{Franzese2026POQUITO} gives the 4.5~Wh battery, 0.4~W worst-case generation, 9600~bit/s downlink, 15-minute post-ejection silence and 2-day loss-of-communication reset that the simulation adopts, and its 4S Symposium paper~\cite{Franzese2024POQUITO4S} gives the 3-minute beacon period behind the simulated \ttc{} arrival rate. Villela et al.~\cite{Villela2019Thousandth} estimate the CubeSat mission success rate at about 75\% once launch failures are excluded, which is one reason the design concentrates on deployment confirmation and reset behaviour.
 
 \paragraph{Fault management and flight-software structure} The ECSS operability standard~\cite{ECSS2008Operability} sets requirements for on-board fault detection, isolation and recovery (FDIR) and for ground observability and control. Latachi et al.~\cite{Latachi2020Masat} describe reusable flight-control software for the Masat-1 CubeSat with a watchdog and mode-based safe handling; the framework's watchdog timeout follows their pattern. Eshaq et al.~\cite{Eshaq2025CubeSatFSW} present a CubeSat flight-software case study whose watch-point and action-point fault handling avoids reacting to a single event; it motivated the framework's three-consecutive-fault threshold. The HERMES payload data-handling unit~\cite{Guzman2020HERMES} uses a boot, standby and safe-mode topology similar to that of Fig.~\ref{fig:config-a}. Dependability vocabulary follows Avi\v{z}ienis et al.~\cite{Avizienis2004Dependability}, and software fault injection follows the survey of Hsueh et al.~\cite{Hsueh1997FaultInjection}. The OPS-SAT anomaly benchmark~\cite{Ruszczak2025OPSSAT} is relevant to on-board anomaly detection, which this paper leaves out of scope.
 
@@ -86,7 +92,7 @@ The contributions are as follows.
 
 \paragraph{Orbit, link and security} Orbits are propagated with SGP4~\cite{Hoots1980STR3} in the revised form of Vallado et al.~\cite{Vallado2006SGP4}, and the link model is checked against standard link-budget practice~\cite{Maral2009SatCom}. Command authentication uses HMAC~\cite{Bellare1996HMAC,RFC2104} over SHA-256~\cite{NIST2015SHS}. For flight systems the CCSDS Space Data Link Security protocol~\cite{CCSDS2022SDLS} defines authentication and encryption at the link layer, and Falco~\cite{Falco2019SpaceCyber} sets out security principles for space systems. The emulation work uses Renode~\cite{Renode} and Zephyr~\cite{Zephyr}.
 
-The author is not aware of prior work that combines a mission-agnostic configuration schema for PocketQube lifecycles, model checking of specifications generated from that schema, and a call-level equivalence check of an embedded port. Each piece exists separately in the works above.
+The authors are not aware of prior work that combines a mission-agnostic configuration schema for PocketQube lifecycles, model checking of specifications generated from that schema, and a call-level equivalence check of an embedded port. Each piece exists separately in the works above.
 
 \section{Framework design}\label{sec:design}
 
@@ -701,13 +707,15 @@ A table-driven engine with no mission constants ran three structurally different
 Configuration files, engine, simulation, generators, TLA+ specifications, firmware sources and the archived equivalence logs are in the project repository, \url{https://github.com/inikunjrathi/pocketqube-fsm}, archived as version v1.0.0 at \url{https://doi.org/10.5281/zenodo.23365148}. Every table in Sections~\ref{sec:verification}--\ref{sec:rerun} is produced by a named generator under \code{tools/} or by the scripts in \code{mcu/host_bridge/}; the commands are listed in \code{report/elsevier/README.md}. The reference orbit is POQUITO's element set (NORAD 98706), hard-coded in \code{sim/scenario.py}, whose two element lines, each newline-terminated, have the SHA-256 digest \code{69c5aec63c09c5652c2d8a76a09f647f} \code{615a04d8370d41f61aca6c23439ff581}; it is propagated with the \code{sgp4} Python package, version 2.27.
 
 \section*{Declaration of competing interest}
-The author declares no competing financial interests or personal relationships that could have influenced the work reported in this paper.
+The authors declare no competing financial interests or personal relationships that could have influenced the work reported in this paper.
 
 \section*{Funding}
 This research received no specific grant from any funding agency in the public, commercial or not-for-profit sectors.
 
 \section*{CRediT authorship contribution statement}
 \textbf{Nikunj Rathi:} Conceptualization, Methodology, Software, Validation, Formal analysis, Investigation, Writing -- original draft, Writing -- review \& editing.
+\textbf{Purva Pote:} Writing -- review \& editing.
+\textbf{Megha Sharma:} Supervision.
 
 \appendix
 \section{Transition tables}\label{app:transitions}
