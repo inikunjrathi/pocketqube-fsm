@@ -1,0 +1,21 @@
+{
+  "title": "pocketqube-fsm: configuration-driven, model-checked state machine for PocketQube deployment and downlink management",
+  "description": "Code, configurations and evidence for the paper \"Mission-agnostic flight software for PocketQubes: a configuration-driven, model-checked state machine for deployment and downlink management\". Includes the Python engine and three YAML mission configurations, the POQUITO-based simulation, the policy comparison, generated TLA+ specifications, the 1,208-test suite, the Zephyr C port for STM32F401RE, and the archived Renode replay logs (35,763 decisions, no mismatches).",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Rathi, Nikunj",
+      "affiliation": "K. J. Somaiya School of Engineering, Somaiya Vidyavihar University"
+    }
+  ],
+  "keywords": [
+    "PocketQube",
+    "finite-state machine",
+    "flight software",
+    "TLA+ model checking",
+    "downlink scheduling",
+    "fault injection",
+    "Renode"
+  ]
+}
