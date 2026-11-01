@@ -23,6 +23,21 @@ Every abstraction adds behaviour relative to the engine, so a safety
 property TLC proves here holds for the engine over the modelled
 variables. Nothing here is a liveness or timing result.
 
+## Two-bank model
+
+The per-config modules abstract the banks as one snapshot.
+`docs/tla/persistence_ab.tla` is hand-written and does the opposite: the mission
+shrinks to three contents, and the model keeps both banks, each erase and
+program step, a reset at any point, torn records with readable sequences, and
+corruption of one bank while no save is running. Its invariants say that a
+committed record stays loadable, a load is never older than the last commit, a
+committed latch is never lost, and a save that returns leaves both banks
+holding the record. `run_model_check.sh` also runs three protocol mutants
+(`raw_target`, `single_write`, `skip_either`), and each must violate an
+invariant. Corruption during a save is left out as a double fault: with a
+reset before the save ends it destroys both banks. Wear and time are not in
+this model.
+
 ## Properties
 
 Generic, derived from the YAML (they say nothing the YAML could get wrong):

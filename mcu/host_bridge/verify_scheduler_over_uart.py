@@ -25,8 +25,10 @@ from mcu.host_bridge.uart_bridge import (  # noqa: E402
 
 import run_scheduler_equivalence as rse  # noqa: E402
 
+
 class SchedulerUartVerificationError(Exception):
     pass
+
 
 class UartSchedulerDriver:
 
@@ -89,6 +91,7 @@ class UartSchedulerDriver:
             return OpResult("id_set", frozenset() if ids_str == "NONE" else frozenset(ids_str.split(",")))
         raise SchedulerUartVerificationError(f"unhandled op type: {op!r}")
 
+
 def run_scenario_over_uart(driver: UartSchedulerDriver, scenario, *, verbose: bool) -> list:
     sched = Scheduler(list(scenario.priority))
     driver.reset(list(scenario.priority))
@@ -107,6 +110,7 @@ def run_scenario_over_uart(driver: UartSchedulerDriver, scenario, *, verbose: bo
         if not match:
             mismatches.append(rse.StepMismatch(scenario.name, i, op, py_result, uart_result))
     return mismatches
+
 
 def run(
     *,
@@ -159,6 +163,7 @@ def run(
     )
     return 0
 
+
 def main(argv: Optional[list] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--west", default=None)
@@ -179,6 +184,7 @@ def main(argv: Optional[list] = None) -> int:
         return 1
     finally:
         restore_committed_config_a_table()
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

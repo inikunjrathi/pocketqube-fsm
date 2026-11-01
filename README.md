@@ -2,10 +2,11 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23365147.svg)](https://doi.org/10.5281/zenodo.23365147)
 
-Code, configurations and evidence for the paper *Mission-agnostic mode
-management for PocketQubes: a configuration-driven, model-checked decision
-engine for deployment and downlink scheduling* (Nikunj Rathi, Purva Pote and Megha Sharma,
-K. J. Somaiya School of Engineering, submitted to Acta Astronautica). Every release is archived on
+Code, configurations and evidence for the paper *Configuration-driven mode
+logic for resource-constrained embedded systems: requirement-based model
+checking, torn-write persistence and a PocketQube case study* (Nikunj Rathi,
+Purva Pote and Megha Sharma, K. J. Somaiya School of Engineering), prepared for
+the Journal of Systems Architecture. Every release is archived on
 Zenodo; https://doi.org/10.5281/zenodo.23365147 resolves to the latest one.
 
 The engine holds no mission constants. Lifecycle states, events, guarded
@@ -31,12 +32,13 @@ engine/          state machine, guards, scheduler, arbitration, persistence, aut
 sim/             SGP4 orbit, link, power and data-arrival models; simulation driver
 policy/          rule-based, lookahead, decision-tree and clairvoyant-bound policies
 tools/           generators for every results table, TLA+ specs and C tables
-tests/           1,213 tests: transitions, illegal pairs, guards, fault injection
+tests/           1,218 tests: transitions, illegal pairs, guards, fault injection
 docs/            requirements, state machines, decision records, generated results
-docs/tla/        generated TLA+ specifications and TLC configurations
-mcu/firmware/    C port of the engine for STM32F401RE under Zephyr
-mcu/host_bridge/ UART bridge, Renode replay driver and archived equivalence logs
-report/elsevier/ manuscript source and the scripts that fill its tables
+docs/tla/        TLA+ specifications: generated per config, hand-written two-bank model
+mcu/firmware/    C port of the engine for STM32F401RE and STM32L476RG under Zephyr
+mcu/host_bridge/ UART bridge, Renode replay and measurement drivers, archived logs
+report/jsa/      current manuscript source
+report/elsevier/ earlier manuscript and the scripts that fill its tables
 ```
 
 ## Running it
@@ -72,23 +74,29 @@ bash tools/run_model_check.sh
 ## C port and emulated hardware
 
 The firmware builds with Zephyr 4.2.2 and Zephyr SDK 0.17.4 and runs on Renode
-1.16.1. `docs/phase8-c-port.md` describes the toolchain setup. The full replay
-of the 48 h reference run (35,763 engine decisions, about an hour) is:
+1.17.0. `docs/phase8-c-port.md` describes the toolchain setup. The full replay
+of the 48 h reference run (35,763 engine decisions, about 40 minutes) is:
 
 ```
 .venv/bin/python mcu/host_bridge/replay_baseline.py \
     --west <west> --zephyr-sdk-dir <sdk-0.17.4> --zephyr-base <zephyr-4.2.2>
 ```
 
-The logs from the run reported in the paper are in
-`mcu/host_bridge/evidence/task8_baseline_seed42/`. The host build of the C
+Add `--config config-b` or `--config config-c` for the other configurations.
+`mcu/host_bridge/measure_firmware.py --config <config>` counts flash writes and
+instructions and reports stack use and image size; it needs `CEPDT_WEST` and
+`ZEPHYR_SDK_INSTALL_DIR` set. Set `CEPDT_BOARD=nucleo_l476rg` to target the
+L476RG, which runs on the same emulator; neither board has been run on hardware.
+
+The logs from the runs reported in the paper are in
+`mcu/host_bridge/evidence/task8_baseline_seed42/`, and the measurements are in
+`mcu/host_bridge/evidence/measurements/`. The host build of the C
 authentication tests needs mbedTLS 4.x.
 
 ## Manuscript
 
 ```
-cd report/elsevier
-../../.venv/bin/python make_transition_tables.py
+cd report/jsa
 latexmk -pdf paper.tex
 ```
 

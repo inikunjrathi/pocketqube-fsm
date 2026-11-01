@@ -6,8 +6,10 @@ from typing import Any
 
 import yaml
 
+
 class ConfigError(Exception):
     pass
+
 
 @dataclass(frozen=True)
 class StateDef:
@@ -18,12 +20,14 @@ class StateDef:
     entry_actions: tuple[str, ...]
     is_initial: bool
 
+
 @dataclass(frozen=True)
 class EventDef:
     id: str
     name: str
     source: str
     description: str
+
 
 @dataclass(frozen=True)
 class TransitionDef:
@@ -40,6 +44,7 @@ class TransitionDef:
             return state_id in all_state_ids
         return state_id in self.from_states
 
+
 @dataclass(frozen=True)
 class ParameterDef:
     id: str
@@ -50,6 +55,7 @@ class ParameterDef:
     confidence: str
     rationale: str
 
+
 @dataclass(frozen=True)
 class LatchDef:
     name: str
@@ -58,6 +64,7 @@ class LatchDef:
     one_way: bool
     survives_reset: bool
 
+
 @dataclass(frozen=True)
 class ConflictRankDef:
     rank: int
@@ -65,10 +72,12 @@ class ConflictRankDef:
     member_events: tuple[str, ...]
     tie_break: str
 
+
 @dataclass(frozen=True)
 class ModeGroupDef:
     group_name: str
     member_states: tuple[str, ...]
+
 
 @dataclass(frozen=True)
 class Config:
@@ -100,10 +109,12 @@ class Config:
             if t.event == event_id and t.applies_from(state_id, all_ids)
         ]
 
+
 def _require(d: dict, key: str, ctx: str) -> Any:
     if key not in d:
         raise ConfigError(f"{ctx}: missing required field '{key}'")
     return d[key]
+
 
 def _load_states(raw: list[dict]) -> dict[str, StateDef]:
     states: dict[str, StateDef] = {}
@@ -121,6 +132,7 @@ def _load_states(raw: list[dict]) -> dict[str, StateDef]:
         )
     return states
 
+
 def _load_events(raw: list[dict]) -> dict[str, EventDef]:
     events: dict[str, EventDef] = {}
     for row in raw:
@@ -134,6 +146,7 @@ def _load_events(raw: list[dict]) -> dict[str, EventDef]:
             description=row.get("description", ""),
         )
     return events
+
 
 def _load_transitions(raw: list[dict]) -> tuple[TransitionDef, ...]:
     out = []
@@ -158,6 +171,7 @@ def _load_transitions(raw: list[dict]) -> tuple[TransitionDef, ...]:
         )
     return tuple(out)
 
+
 def _load_parameters(raw: list[dict]) -> dict[str, ParameterDef]:
     params: dict[str, ParameterDef] = {}
     for row in raw:
@@ -175,6 +189,7 @@ def _load_parameters(raw: list[dict]) -> dict[str, ParameterDef]:
         )
     return params
 
+
 def _load_latches(raw: list[dict]) -> tuple[LatchDef, ...]:
     return tuple(
         LatchDef(
@@ -187,6 +202,7 @@ def _load_latches(raw: list[dict]) -> tuple[LatchDef, ...]:
         for row in raw
     )
 
+
 def _load_conflict_resolution(raw: list[dict]) -> tuple[ConflictRankDef, ...]:
     return tuple(
         ConflictRankDef(
@@ -198,6 +214,7 @@ def _load_conflict_resolution(raw: list[dict]) -> tuple[ConflictRankDef, ...]:
         for row in raw
     )
 
+
 def _load_mode_groups(raw: list[dict]) -> tuple[ModeGroupDef, ...]:
     return tuple(
         ModeGroupDef(
@@ -206,6 +223,7 @@ def _load_mode_groups(raw: list[dict]) -> tuple[ModeGroupDef, ...]:
         )
         for row in raw
     )
+
 
 def load_config(path: str | Path) -> Config:
     path = Path(path)
@@ -247,6 +265,7 @@ def load_config(path: str | Path) -> Config:
     )
     _validate(cfg)
     return cfg
+
 
 def _validate(cfg: Config) -> None:
     errors: list[str] = []

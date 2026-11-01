@@ -12,12 +12,14 @@
 
 #include "engine_fsm.h"
 #include "engine_persistence.h"
+#include "engine_arbitration.h"
 #include "engine_auth.h"
 #include "engine_scheduler.h"
 
 #define UART_DEVICE_NODE DT_CHOSEN(zephyr_console)
 
 static const struct device *const uart_dev = DEVICE_DT_GET(UART_DEVICE_NODE);
+
 
 #define LINE_BUF_SIZE 512
 
@@ -62,6 +64,7 @@ static void reply_ok(void)
     uart_write_line_end();
 }
 #endif
+
 
 static void format_double(double value, char *out, size_t out_size)
 {
@@ -125,6 +128,7 @@ static void send_decision_line(double now, const char *from_state, const char *e
     uart_write_line_end();
 }
 
+
 static char *next_token(char **cursor)
 {
     char *p = *cursor;
@@ -148,6 +152,7 @@ static char *next_token(char **cursor)
     *cursor = p;
     return start;
 }
+
 
 static bool looks_like_number(const char *s)
 {
@@ -218,6 +223,111 @@ static bool is_valid_hex64(const char *s)
     return true;
 }
 
+
+static bool parse_context_and_telemetry(char **cursor, engine_context_t *ctx, engine_telemetry_t *tlm,
+                                        const char **signature, bool service)
+{
+    engine_context_init(ctx);
+    engine_telemetry_init(tlm);
+
+    bool saw_semicolon = false;
+    char *tok;
+    while ((tok = next_token(cursor)) != NULL) {
+        if (strcmp(tok, ";") == 0) {
+            saw_semicolon = true;
+            break;
+        }
+        const char *key;
+        val_t value;
+        if (!parse_kv(tok, &key, &value)) {
+            reply_error_detail("bad_context_kv", tok);
+            return false;
+        }
+        if (!engine_context_set(ctx, key, value)) {
+            reply_error_detail("context_overflow", key);
+            return false;
+        }
+    }
+    if (!saw_semicolon) {
+        reply_error("missing_semicolon_separator");
+        return false;
+    }
+
+    *signature = NULL;
+    while ((tok = next_token(cursor)) != NULL) {
+        if (service && strcmp(tok, ";") == 0) {
+            return true;
+        }
+        if (!service && strcmp(tok, "SIG") == 0) {
+            char *sig_tok = next_token(cursor);
+            if (sig_tok == NULL || !is_valid_hex64(sig_tok)) {
+                reply_error("bad_signature");
+                return false;
+            }
+            *signature = sig_tok;
+            if (next_token(cursor) != NULL) {
+                reply_error("trailing_tokens_after_sig");
+                return false;
+            }
+            break;
+        }
+        const char *key;
+        val_t value;
+        if (!parse_kv(tok, &key, &value)) {
+            reply_error_detail("bad_telemetry_kv", tok);
+            return false;
+        }
+        if (value.kind != VAL_NUM) {
+            reply_error_detail("telemetry_value_not_numeric", key);
+            return false;
+        }
+        if (!engine_telemetry_set(tlm, key, value.num)) {
+            reply_error_detail("telemetry_overflow", key);
+            return false;
+        }
+    }
+    if (service) {
+        reply_error("missing_semicolon_separator");
+        return false;
+    }
+    return true;
+}
+
+
+static bool fire_event(state_id_t state, event_id_t event, double now, const engine_context_t *ctx,
+                       const engine_telemetry_t *tlm, const char *signature, bool *legal)
+{
+
+    engine_persisted_snapshot_t persisted;
+    bool has_persisted = engine_persistence_load(&persisted);
+
+    engine_step_result_t result;
+    engine_context_t out_ctx;
+    const char *error_field = NULL;
+    engine_step_status_t status = engine_fsm_step(
+        state, event, ctx, tlm, now,
+        has_persisted ? &persisted : NULL,
+        signature,
+        &result, &out_ctx, &error_field);
+
+    if (status == ENGINE_STEP_ERR_GUARD_TELEMETRY_MISSING) {
+
+        reply_error_detail("guard_telemetry_missing", error_field != NULL ? error_field : "(unknown)");
+        return false;
+    }
+
+    if (result.legal) {
+
+        engine_persistence_save(result.new_state, &out_ctx);
+    }
+
+    send_decision_line(now, g_states[state].id, g_events[event].id,
+                        g_states[result.new_state].id, result.transition_id,
+                        result.legal, result.actions, result.actions_count);
+    *legal = result.legal;
+    return true;
+}
+
 static void handle_inject(char *args)
 {
     char *cursor = args;
@@ -249,91 +359,88 @@ static void handle_inject(char *args)
     }
 
     engine_context_t ctx;
-    engine_context_init(&ctx);
     engine_telemetry_t tlm;
-    engine_telemetry_init(&tlm);
+    const char *signature;
+    if (!parse_context_and_telemetry(&cursor, &ctx, &tlm, &signature, false)) {
+        return;
+    }
 
-    bool saw_semicolon = false;
+    bool legal;
+    (void)fire_event(state, event, now, &ctx, &tlm, signature, &legal);
+}
+
+
+static void handle_service(char *args)
+{
+    char *cursor = args;
+    char *state_tok = next_token(&cursor);
+    char *now_tok = next_token(&cursor);
+
+    if (state_tok == NULL || now_tok == NULL) {
+        reply_error("missing_fields");
+        return;
+    }
+
+    state_id_t state;
+    if (!engine_lookup_state(state_tok, &state)) {
+        reply_error_detail("unknown_state", state_tok);
+        return;
+    }
+
+    char *now_endptr = NULL;
+    double now = strtod(now_tok, &now_endptr);
+    if (now_endptr == now_tok || *now_endptr != '\0') {
+        reply_error_detail("bad_now", now_tok);
+        return;
+    }
+
+    engine_context_t ctx;
+    engine_telemetry_t tlm;
+    const char *signature;
+    if (!parse_context_and_telemetry(&cursor, &ctx, &tlm, &signature, true)) {
+        return;
+    }
+
+    engine_pending_event_t pending[EVENT_COUNT];
+    size_t n = 0;
     char *tok;
     while ((tok = next_token(&cursor)) != NULL) {
-        if (strcmp(tok, ";") == 0) {
-            saw_semicolon = true;
-            break;
-        }
-        const char *key;
-        val_t value;
-        if (!parse_kv(tok, &key, &value)) {
-            reply_error_detail("bad_context_kv", tok);
+        char *at = strchr(tok, '@');
+        char *ts_endptr = NULL;
+        if (at == NULL) {
+            reply_error_detail("bad_pending_event", tok);
             return;
         }
-        if (!engine_context_set(&ctx, key, value)) {
-            reply_error_detail("context_overflow", key);
+        *at = '\0';
+        double timestamp = strtod(at + 1, &ts_endptr);
+        if (ts_endptr == at + 1 || *ts_endptr != '\0' || n == EVENT_COUNT ||
+            !engine_lookup_event(tok, &pending[n].event)) {
+            reply_error_detail("bad_pending_event", tok);
             return;
         }
-    }
-    if (!saw_semicolon) {
-        reply_error("missing_semicolon_separator");
-        return;
+        pending[n++].timestamp = timestamp;
     }
 
-    const char *signature = NULL;
-    while ((tok = next_token(&cursor)) != NULL) {
-        if (strcmp(tok, "SIG") == 0) {
-            char *sig_tok = next_token(&cursor);
-            if (sig_tok == NULL || !is_valid_hex64(sig_tok)) {
-                reply_error("bad_signature");
-                return;
-            }
-            signature = sig_tok;
-            if (next_token(&cursor) != NULL) {
-                reply_error("trailing_tokens_after_sig");
-                return;
-            }
-            break;
-        }
-        const char *key;
-        val_t value;
-        if (!parse_kv(tok, &key, &value)) {
-            reply_error_detail("bad_telemetry_kv", tok);
+    size_t order[EVENT_COUNT];
+    engine_arbitrate(pending, n, order);
+
+    size_t next = 0;
+    bool legal = false;
+    while (next < n && !legal) {
+        if (!fire_event(state, pending[order[next]].event, now, &ctx, &tlm, NULL, &legal)) {
             return;
         }
-        if (value.kind != VAL_NUM) {
-            reply_error_detail("telemetry_value_not_numeric", key);
-            return;
-        }
-        if (!engine_telemetry_set(&tlm, key, value.num)) {
-            reply_error_detail("telemetry_overflow", key);
-            return;
-        }
+        next++;
     }
 
-    engine_persisted_snapshot_t persisted;
-    bool has_persisted = engine_persistence_load(&persisted);
-
-    engine_step_result_t result;
-    engine_context_t out_ctx;
-    const char *error_field = NULL;
-    engine_step_status_t status = engine_fsm_step(
-        state, event, &ctx, &tlm, now,
-        has_persisted ? &persisted : NULL,
-        signature,
-        &result, &out_ctx, &error_field);
-
-    if (status == ENGINE_STEP_ERR_GUARD_TELEMETRY_MISSING) {
-
-        reply_error_detail("guard_telemetry_missing", error_field != NULL ? error_field : "(unknown)");
-        return;
+    uart_write_str("SERVICED");
+    for (; legal && next < n; next++) {
+        uart_write_str(" ");
+        uart_write_str(g_events[pending[order[next]].event].id);
     }
-
-    if (result.legal) {
-
-        engine_persistence_save(result.new_state, &out_ctx);
-    }
-
-    send_decision_line(now, g_states[state].id, g_events[event].id,
-                        g_states[result.new_state].id, result.transition_id,
-                        result.legal, result.actions, result.actions_count);
+    uart_write_line_end();
 }
+
 
 #if ENGINE_PERSIST_TESTHOOKS_ENABLED
 
@@ -358,6 +465,7 @@ static bool handle_testhook_load(void)
     uart_write_line_end();
     return true;
 }
+
 
 static bool handle_testhook_corrupt(char *cursor)
 {
@@ -412,6 +520,7 @@ static void reply_sched_item(const engine_sched_item_t *item)
     uart_write_line_end();
 }
 
+
 static bool handle_testhook_sched_reset(char *cursor)
 {
     char *classes_tok = next_token(&cursor);
@@ -450,6 +559,7 @@ static bool handle_testhook_sched_reset(char *cursor)
     reply_ok();
     return true;
 }
+
 
 static bool handle_testhook_sched_insert(char *cursor)
 {
@@ -621,6 +731,7 @@ static bool handle_testhook(char *args)
 }
 #endif
 
+
 static void handle_line(char *line)
 {
     size_t n = strlen(line);
@@ -637,6 +748,11 @@ static void handle_line(char *line)
         handle_inject(line + 7);
     } else if (strcmp(line, "INJECT") == 0) {
         reply_error("missing_fields");
+    } else if (strncmp(line, "SERVICE ", 8) == 0) {
+        handle_service(line + 8);
+    } else if (strcmp(line, "PING") == 0) {
+        uart_write_str("READY");
+        uart_write_line_end();
     } else if (strncmp(line, "TESTHOOK ", 9) == 0) {
 #if ENGINE_PERSIST_TESTHOOKS_ENABLED || ENGINE_SCHED_TESTHOOKS_ENABLED
         if (!handle_testhook(line + 9)) {
@@ -709,6 +825,7 @@ int main(void)
 #endif
 
     uart_irq_rx_enable(uart_dev);
+
 
     uart_write_str("READY");
     uart_write_line_end();

@@ -28,6 +28,7 @@ MAX_CAPTURED_CONTEXTS = 50
 REPS_PER_CONTEXT = 10
 FAST_INNER_CALLS = 1000
 
+
 class _CapturingPolicy:
 
     def __init__(self, inner: Policy) -> None:
@@ -37,6 +38,7 @@ class _CapturingPolicy:
     def decide(self, features: FeatureVector, context: DecisionContext) -> str:
         self.captured.append((features, context))
         return self._inner.decide(features, context)
+
 
 def capture_decision_contexts(
     cfg: Config, *, max_contexts: int = MAX_CAPTURED_CONTEXTS,
@@ -52,6 +54,7 @@ def capture_decision_contexts(
         return captured
     step = len(captured) / max_contexts
     return [captured[int(i * step)] for i in range(max_contexts)]
+
 
 def _time_decide(
     policy: Policy,
@@ -70,6 +73,7 @@ def _time_decide(
             samples.append((t1 - t0) / inner_calls)
     return samples
 
+
 @dataclass(frozen=True)
 class PolicyTiming:
     policy_name: str
@@ -81,6 +85,7 @@ class PolicyTiming:
     max_s: float
     median_s: float | None = None
     p95_s: float | None = None
+
 
 def _summarize_timing(policy_name: str, big_o: str, samples: list[float]) -> PolicyTiming:
     ordered = sorted(samples)
@@ -95,6 +100,7 @@ def _summarize_timing(policy_name: str, big_o: str, samples: list[float]) -> Pol
         median_s=statistics.median(ordered),
         p95_s=ordered[min(len(ordered) - 1, math.ceil(0.95 * len(ordered)) - 1)],
     )
+
 
 def benchmark_policies(
     cfg: Config, tree_policy: TreePolicy, *,
@@ -123,12 +129,14 @@ def benchmark_policies(
         timings.append(_summarize_timing(policy_name, big_o, samples))
     return timings
 
+
 TREE_C_ESTIMATE = (
     "At most 4 float comparisons (MAX_DEPTH = 4); expected roughly 20-60 "
     "cycles including call overhead, i.e. under 1 us at 84 MHz on the "
     "Cortex-M4F. This is an estimate from instruction counts, not a "
     "measurement: the tree was never compiled for or run on the MCU."
 )
+
 
 def render_same_input_section(timings_by_config: dict[str, list[PolicyTiming]]) -> str:
     lines = [
@@ -160,12 +168,14 @@ def render_same_input_section(timings_by_config: dict[str, list[PolicyTiming]]) 
     lines += ["**Tree on the MCU.** " + TREE_C_ESTIMATE, ""]
     return "\n".join(lines)
 
+
 def _fmt_s(value: float) -> str:
     if value < 1e-3:
         return f"{value * 1e6:.2f} µs"
     if value < 1.0:
         return f"{value * 1e3:.3f} ms"
     return f"{value:.4f} s"
+
 
 def render_document(timings_by_config: dict[str, list[PolicyTiming]]) -> str:
     parts = [
@@ -228,6 +238,7 @@ def render_document(timings_by_config: dict[str, list[PolicyTiming]]) -> str:
         parts.append("")
     return "\n".join(parts)
 
+
 def write_complexity_analysis(
     output_path: str | Path = DEFAULT_OUTPUT_PATH,
 ) -> None:
@@ -245,9 +256,11 @@ def write_complexity_analysis(
     }
     Path(output_path).write_text(render_document(timings_by_config))
 
+
 def main() -> None:
     write_complexity_analysis(DEFAULT_OUTPUT_PATH)
     print(f"wrote {DEFAULT_OUTPUT_PATH}")
+
 
 if __name__ == "__main__":
     main()

@@ -16,16 +16,19 @@ CONFIG_A = REPO_ROOT / "config" / "config-a.yaml"
 
 PRIORITY = ["TTC", "SSTV", "CODEC2_M17"]
 
+
 def test_same_seed_is_deterministic():
     first = generate_arrivals(PRIORITY, duration_s=7200.0, seed=42)
     second = generate_arrivals(PRIORITY, duration_s=7200.0, seed=42)
     assert first == second
     assert len(first) > 0
 
+
 def test_different_seeds_differ():
     first = generate_arrivals(PRIORITY, duration_s=7200.0, seed=1)
     second = generate_arrivals(PRIORITY, duration_s=7200.0, seed=2)
     assert first != second
+
 
 def test_all_items_use_configured_classes():
     cfg_a = load_config(CONFIG_A)
@@ -37,6 +40,7 @@ def test_all_items_use_configured_classes():
         assert isinstance(item, Item)
         assert item.data_class in priority_order
 
+
 def test_sizes_and_deadlines_are_positive_and_ordered():
     arrivals = generate_arrivals(PRIORITY, duration_s=36000.0, seed=99)
     assert len(arrivals) > 0
@@ -47,6 +51,7 @@ def test_sizes_and_deadlines_are_positive_and_ordered():
 
     times = [t for t, _ in arrivals]
     assert times == sorted(times)
+
 
 def test_arrival_rate_within_tolerance():
     duration_s = 360000.0
@@ -69,6 +74,7 @@ def test_arrival_rate_within_tolerance():
     assert actual_count >= expected_count * (1 - tolerance)
     assert actual_count <= expected_count * (1 + tolerance)
 
+
 def test_ttc_default_rate_reflects_real_beacon_cadence_when_omitted():
     duration_s = 360000.0
     duration_hours = duration_s / 3600.0
@@ -88,6 +94,7 @@ def test_ttc_default_rate_reflects_real_beacon_cadence_when_omitted():
         actual = sum(1 for _, item in arrivals if item.data_class == other_class)
         assert actual >= expected * (1 - tolerance)
         assert actual <= expected * (1 + tolerance)
+
 
 def test_no_network_access():
     import sim.data_arrival as data_arrival_module

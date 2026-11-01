@@ -39,8 +39,10 @@ STATE_TRANSMIT_CLASS: dict[str, dict[str, str | None]] = {
     "config-c": {"S-05": SERVED_CLASS, "S-06": None},
 }
 
+
 class PowerModelError(ValueError):
     pass
+
 
 def transmit_class_map(cfg: Config) -> dict[str, str | None]:
     table = STATE_TRANSMIT_CLASS.get(cfg.config_id)
@@ -80,16 +82,19 @@ def transmit_class_map(cfg: Config) -> dict[str, str | None]:
             )
     return dict(table)
 
+
 def resolve_transmit_class(
     table: dict[str, str | None], state_id: str, served_class: str | None
 ) -> str | None:
     tx = table.get(state_id)
     return served_class if tx == SERVED_CLASS else tx
 
+
 def transmit_draw_w(transmit_class: str | None, time_in_mode_s: float = 0.0) -> float:
     if transmit_class is None or time_in_mode_s >= COMMS_BURST_DURATION_S:
         return DRAW_W_IDLE
     return _COMMS_BURST_DRAW_W_BY_CATEGORY[TRANSMIT_CATEGORY_BY_DATA_CLASS[transmit_class]]
+
 
 def _sun_unit_vector_eci(when: datetime) -> tuple[float, float, float]:
     jd, fr = jday(
@@ -120,6 +125,7 @@ def _sun_unit_vector_eci(when: datetime) -> tuple[float, float, float]:
         math.sin(eps) * math.sin(lam),
     )
 
+
 def is_illuminated(
     position_eci_km: tuple[float, float, float], when: datetime
 ) -> bool:
@@ -137,10 +143,12 @@ def is_illuminated(
 
     return perp_distance_km > EARTH_RADIUS_KM
 
+
 @dataclass
 class BatteryState:
 
     soc_pct: float
+
 
 def step_battery(
     battery: BatteryState,
@@ -156,6 +164,7 @@ def step_battery(
     new_soc_pct = battery.soc_pct + energy_delta_wh / capacity_wh * 100.0
     new_soc_pct = max(0.0, min(100.0, new_soc_pct))
     return BatteryState(soc_pct=new_soc_pct)
+
 
 def draw_for_state_category(category: str, time_in_state_s: float = 0.0) -> float:
     burst_draw_w = _COMMS_BURST_DRAW_W_BY_CATEGORY.get(category)

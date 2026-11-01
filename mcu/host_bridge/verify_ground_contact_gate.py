@@ -33,8 +33,10 @@ REPRESENTATIVE_STATE_ID = "S-04"
 
 DEMO_DURATION_S = 6.0 * 3600.0
 
+
 class ContactGateVerificationError(Exception):
     pass
+
 
 def _expect_decision(response, *, legal: bool, to_state: str, transition_id: Optional[str], label: str) -> None:
     if not isinstance(response, Decision):
@@ -50,6 +52,7 @@ def _expect_decision(response, *, legal: bool, to_state: str, transition_id: Opt
             f"{label}: expected transition={transition_id!r}, got {response.transition_id!r} ({response!r})"
         )
     print(f"[OK] {label}: {response!r}", file=sys.stderr)
+
 
 def run(
     *,
@@ -169,6 +172,7 @@ def run(
     )
     return 0
 
+
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--west", default=None)
@@ -187,6 +191,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 1
     finally:
         restore_committed_config_a_table()
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

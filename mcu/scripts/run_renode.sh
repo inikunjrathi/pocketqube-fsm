@@ -8,7 +8,8 @@ MCU_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 ELF="${CEPDT_FIRMWARE_ELF:-${MCU_DIR}/firmware/app/build/zephyr/zephyr.elf}"
 UART_PTY="${CEPDT_UART_PTY:-/tmp/cepdt_nucleo_f401re_uart}"
 MONITOR_PORT="${CEPDT_RENODE_MONITOR_PORT:-0}"
-RESC="${MCU_DIR}/renode/nucleo_f401re.resc"
+BOARD="${CEPDT_BOARD:-nucleo_f401re}"
+RESC="${MCU_DIR}/renode/${BOARD}.resc"
 
 if [[ ! -f "${ELF}" ]]; then
     echo "error: firmware ELF not found: ${ELF}" >&2
@@ -30,4 +31,4 @@ echo "cepdt/mcu: booting ${ELF}" >&2
 echo "cepdt/mcu: UART pty will appear at ${UART_PTY}" >&2
 
 exec renode --disable-xwt -P "${MONITOR_PORT}" \
-    -e "\$bin=@${ELF}; \$uart_pty=\"${UART_PTY}\"; include @${RESC}"
+    -e "\$bin=@${ELF}; \$uart_pty=\"${UART_PTY}\"; \$repl=@${MCU_DIR}/renode/stm32l476.repl; include @${RESC}"

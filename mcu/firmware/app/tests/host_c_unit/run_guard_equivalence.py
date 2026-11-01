@@ -27,8 +27,10 @@ CONFIG_PATHS = {
     "config-c": REPO_ROOT / "config" / "config-c.yaml",
 }
 
+
 class HarnessError(Exception):
     pass
+
 
 @dataclass(frozen=True)
 class Case:
@@ -39,6 +41,7 @@ class Case:
     context: dict
     telemetry: dict
     expect_guard_error: bool = False
+
 
 @dataclass
 class CaseResult:
@@ -56,6 +59,7 @@ class CaseResult:
             return (not self.python_ok) and (not self.c_ok)
         return self.python_ok and self.c_ok and (self.python_value == self.c_value)
 
+
 def _fmt_scalar(value) -> str:
     if isinstance(value, bool):
         return "true" if value else "false"
@@ -63,11 +67,14 @@ def _fmt_scalar(value) -> str:
         return repr(value)
     raise TypeError(f"unsupported value type for the guard-harness wire format: {value!r}")
 
+
 def _fmt_kv(mapping: dict) -> str:
     return ",".join(f"{k}={_fmt_scalar(v)}" for k, v in mapping.items())
 
+
 def encode_case(case: Case) -> str:
     return f"{case.transition_id}|{_fmt_scalar(case.now)}|{_fmt_kv(case.context)}|{_fmt_kv(case.telemetry)}"
+
 
 def _build_cases_for_config(cfg: Config) -> list[Case]:
     tables = generate_tables(cfg)
@@ -193,12 +200,14 @@ def _build_cases_for_config(cfg: Config) -> list[Case]:
 
     return cases
 
+
 def find_cc() -> str:
     for candidate in ("cc", "gcc", "clang"):
         path = shutil.which(candidate)
         if path:
             return path
     raise HarnessError("no C compiler (cc/gcc/clang) found on PATH")
+
 
 def build_config_binary(cfg: Config, build_dir: Path, cc: str) -> Path:
     tables = generate_tables(cfg)
@@ -215,6 +224,7 @@ def build_config_binary(cfg: Config, build_dir: Path, cc: str) -> Path:
     if result.returncode != 0:
         raise HarnessError(f"C build failed for {cfg.config_id}:\n{result.stderr}")
     return exe
+
 
 def run_c_harness(exe: Path, cases: list[Case]) -> list[tuple[bool, Optional[bool], Optional[str]]]:
     stdin_text = "\n".join(encode_case(c) for c in cases) + "\n"
@@ -241,12 +251,14 @@ def run_c_harness(exe: Path, cases: list[Case]) -> list[tuple[bool, Optional[boo
             raise HarnessError(f"unrecognized harness output line: {line!r}")
     return parsed
 
+
 def python_oracle(guard: str, case: Case, params: dict) -> tuple[bool, Optional[bool], Optional[str]]:
     try:
         value = evaluate_guard(guard, context=case.context, telemetry=case.telemetry, params=params, now=case.now)
         return True, value, None
     except GuardError as exc:
         return False, None, str(exc)
+
 
 def run_config(config_id: str, cc: str, build_root: Path, verbose: bool) -> list[CaseResult]:
     cfg = load_config(CONFIG_PATHS[config_id])
@@ -282,6 +294,7 @@ def run_config(config_id: str, cc: str, build_root: Path, verbose: bool) -> list
                 f"c={'error:' + c_error if not c_ok else c_value}"
             )
     return results
+
 
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -328,6 +341,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     print("All C guard-evaluator results match engine.guards.evaluate_guard() exactly.")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

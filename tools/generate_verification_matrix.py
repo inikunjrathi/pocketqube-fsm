@@ -7,12 +7,14 @@ from pathlib import Path
 
 ID_LINE = re.compile(r"^\|\s*(R[A-Z]?-\d+)\s*\|")
 
+
 @dataclass(frozen=True)
 class RequirementRow:
     id: str
     statement: str
     scope: str
     status: str
+
 
 def parse_requirements_table(text: str) -> list[RequirementRow]:
     rows: list[RequirementRow] = []
@@ -25,6 +27,7 @@ def parse_requirements_table(text: str) -> list[RequirementRow]:
         rows.append(RequirementRow(id=req_id, statement=statement, scope=scope, status=status))
     return rows
 
+
 def find_test_references(req_id: str, tests_dir: Path) -> list[str]:
     pattern = re.compile(rf"\b{re.escape(req_id)}\b")
     return [
@@ -32,6 +35,7 @@ def find_test_references(req_id: str, tests_dir: Path) -> list[str]:
         for test_file in sorted(tests_dir.glob("test_*.py"))
         if pattern.search(test_file.read_text())
     ]
+
 
 def parse_junit_requirements(xml_path: Path) -> dict[str, bool]:
     tree = ET.parse(xml_path)
@@ -43,6 +47,7 @@ def parse_junit_requirements(xml_path: Path) -> dict[str, bool]:
                 req_id = prop.get("value")
                 passed[req_id] = passed.get(req_id, True) and not failed
     return passed
+
 
 def render_matrix_section(
     label: str,
@@ -66,6 +71,7 @@ def render_matrix_section(
             f"| {referenced} | {files} | {verified} |"
         )
     return "\n".join(lines)
+
 
 def render_document(
     sections: list[tuple[str, list[RequirementRow]]],
@@ -105,9 +111,11 @@ def render_document(
         parts.append("")
     return "\n".join(parts)
 
+
 def _label_for(req_path: Path) -> str:
     config_id = req_path.stem.removeprefix("requirements-config-")
     return f"Config {config_id.upper()}"
+
 
 def main() -> None:
     repo_root = Path(__file__).resolve().parents[1]
@@ -122,6 +130,7 @@ def main() -> None:
     out_path = repo_root / "docs" / "verification-matrix.md"
     out_path.write_text(render_document(sections, tests_dir, junit_results))
     print(f"wrote {out_path}")
+
 
 if __name__ == "__main__":
     main()

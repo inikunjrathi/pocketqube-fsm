@@ -2,13 +2,21 @@
 #include "engine_persistence_io.h"
 #include "engine_config_table.h"
 
+#include <stddef.h>
 #include <string.h>
 
+
 extern uint32_t crc32_ieee(const uint8_t *data, size_t len);
+
 
 static bool bank_is_blank(const engine_persist_record_t *record)
 {
     return record->sequence == 0xFFFFFFFFu && record->crc32 == 0xFFFFFFFFu;
+}
+
+static uint32_t record_crc(const engine_persist_record_t *record)
+{
+    return crc32_ieee((const uint8_t *)record, offsetof(engine_persist_record_t, crc32));
 }
 
 static bool bank_is_valid(const engine_persist_record_t *record)
@@ -20,26 +28,14 @@ static bool bank_is_valid(const engine_persist_record_t *record)
 
         return false;
     }
-    uint32_t computed = crc32_ieee((const uint8_t *)&record->body, sizeof(record->body));
-    return computed == record->crc32;
-}
-
-static bool body_holds_latch(const engine_persist_body_t *body, const char *name)
-{
-    for (uint8_t i = 0; i < body->context_count && i < ENGINE_CONTEXT_MAX_ENTRIES; i++) {
-        const engine_persist_entry_t *entry = &body->entries[i];
-        if (entry->kind == (uint8_t)VAL_BOOL && entry->bool_value != 0 &&
-            strncmp(entry->name, name, ENGINE_PERSIST_NAME_MAX) == 0) {
-            return true;
-        }
-    }
-    return false;
+    return record_crc(record) == record->crc32;
 }
 
 static engine_persist_bank_t other_bank(engine_persist_bank_t bank)
 {
     return (bank == ENGINE_PERSIST_BANK_A) ? ENGINE_PERSIST_BANK_B : ENGINE_PERSIST_BANK_A;
 }
+
 
 static void encode_entry(engine_persist_entry_t *dst, const engine_context_entry_t *src)
 {
@@ -80,6 +76,7 @@ static void encode_body(engine_persist_body_t *body, state_id_t state, const eng
         encode_entry(&body->entries[i], &context->entries[i]);
     }
 }
+
 
 static char g_decoded_names[ENGINE_CONTEXT_MAX_ENTRIES][ENGINE_PERSIST_NAME_MAX];
 static char g_decoded_strs[ENGINE_CONTEXT_MAX_ENTRIES][ENGINE_PERSIST_STR_MAX];
@@ -124,6 +121,7 @@ static void decode_body(const engine_persist_body_t *body, state_id_t *out_state
     out_context->count = count;
 }
 
+
 bool engine_persistence_load(engine_persisted_snapshot_t *out)
 {
     engine_persist_record_t record_a;
@@ -133,6 +131,7 @@ bool engine_persistence_load(engine_persisted_snapshot_t *out)
 
     bool valid_a = have_a && bank_is_valid(&record_a);
     bool valid_b = have_b && bank_is_valid(&record_b);
+
 
     if (!valid_a && !valid_b) {
         return false;
@@ -158,58 +157,46 @@ void engine_persistence_save(state_id_t state, const engine_context_t *context)
     bool have_a = engine_persist_io_read(ENGINE_PERSIST_BANK_A, &record_a);
     bool have_b = engine_persist_io_read(ENGINE_PERSIST_BANK_B, &record_b);
 
-    bool blank_a = !have_a || bank_is_blank(&record_a);
-    bool blank_b = !have_b || bank_is_blank(&record_b);
-
-    engine_persist_bank_t target;
-    if (blank_a && blank_b) {
-        target = ENGINE_PERSIST_BANK_A;
-    } else if (blank_a) {
-        target = ENGINE_PERSIST_BANK_A;
-    } else if (blank_b) {
-        target = ENGINE_PERSIST_BANK_B;
-    } else {
-        engine_persist_bank_t last_written =
-            (record_a.sequence >= record_b.sequence) ? ENGINE_PERSIST_BANK_A : ENGINE_PERSIST_BANK_B;
-        target = other_bank(last_written);
-    }
-
-    uint32_t next_sequence = 0;
-    bool have_known = false;
-    if (!blank_a) {
-        next_sequence = record_a.sequence;
-        have_known = true;
-    }
-    if (!blank_b) {
-        if (!have_known || record_b.sequence > next_sequence) {
-            next_sequence = record_b.sequence;
-        }
-        have_known = true;
-    }
-    if (have_known) {
-        next_sequence += 1;
-    }
+    bool valid_a = have_a && bank_is_valid(&record_a);
+    bool valid_b = have_b && bank_is_valid(&record_b);
 
     engine_persist_record_t new_record;
     memset(&new_record, 0, sizeof(new_record));
-    new_record.sequence = next_sequence;
     encode_body(&new_record.body, state, context);
-    new_record.crc32 = crc32_ieee((const uint8_t *)&new_record.body, sizeof(new_record.body));
 
-    (void)engine_persist_io_write(target, &new_record);
+    bool a_holds = valid_a && memcmp(&record_a.body, &new_record.body, sizeof(new_record.body)) == 0;
+    bool b_holds = valid_b && memcmp(&record_b.body, &new_record.body, sizeof(new_record.body)) == 0;
 
-    const engine_persist_record_t *other_record =
-        (target == ENGINE_PERSIST_BANK_A) ? &record_b : &record_a;
-    bool other_valid = (target == ENGINE_PERSIST_BANK_A) ? (have_b && bank_is_valid(&record_b))
-                                                         : (have_a && bank_is_valid(&record_a));
-    for (uint32_t i = 0; i < g_latches_count; i++) {
-        const char *latch = g_latches[i].name;
-        if (body_holds_latch(&new_record.body, latch) &&
-            !(other_valid && body_holds_latch(&other_record->body, latch))) {
-            new_record.sequence = next_sequence + 1;
-            (void)engine_persist_io_write(other_bank(target), &new_record);
-            break;
-        }
+
+    if (a_holds && b_holds) {
+        return;
+    }
+
+
+    const engine_persist_record_t *newest = NULL;
+    if (valid_a && valid_b) {
+        newest = (record_a.sequence >= record_b.sequence) ? &record_a : &record_b;
+    } else if (valid_a) {
+        newest = &record_a;
+    } else if (valid_b) {
+        newest = &record_b;
+    }
+
+
+    engine_persist_bank_t target = (newest == &record_a) ? ENGINE_PERSIST_BANK_B : ENGINE_PERSIST_BANK_A;
+    new_record.sequence = (newest != NULL) ? newest->sequence + 1 : 0;
+    new_record.crc32 = record_crc(&new_record);
+
+
+    if (!engine_persist_io_write(target, &new_record)) {
+        return;
+    }
+
+
+    if (!((target == ENGINE_PERSIST_BANK_A) ? b_holds : a_holds)) {
+        new_record.sequence += 1;
+        new_record.crc32 = record_crc(&new_record);
+        (void)engine_persist_io_write(other_bank(target), &new_record);
     }
 }
 

@@ -1,0 +1,56 @@
+{
+  "config": "config-c",
+  "board": "nucleo_f401re",
+  "calls": 35761,
+  "mismatches": 0,
+  "instructions": {
+    "step": {
+      "count": 35761,
+      "median": 3375,
+      "max": 4296
+    },
+    "load": {
+      "count": 35761,
+      "median": 18945,
+      "max": 18945
+    },
+    "save": {
+      "count": 18304,
+      "median": 30840.0,
+      "max": 277303
+    },
+    "saves_by_bank_writes": {
+      "0": {
+        "count": 18291,
+        "median": 30840,
+        "max": 30840
+      },
+      "2": {
+        "count": 13,
+        "median": 277303,
+        "max": 277303
+      }
+    },
+    "bank_writes": 26
+  },
+  "interrupt_stack_peak_bytes": 3392,
+  "interrupt_stack_bytes": 8256,
+  "footprint": {
+    "flash_text_plus_data": 34664,
+    "ram_data_plus_bss": 11644,
+    "config_table_object": 4831,
+    "symbols": {
+      "engine_arbitrate": 216,
+      "engine_fsm_step": 752,
+      "engine_guard_evaluate": 348,
+      "engine_guard_resolve_operand": 272,
+      "engine_persistence_load": 328,
+      "engine_persistence_save": 430,
+      "engine_persist_io_read": 60,
+      "engine_persist_io_write": 74,
+      "g_transitions": 1664,
+      "g_transitions_count": 4,
+      "z_interrupt_stacks": 8256
+    }
+  }
+}

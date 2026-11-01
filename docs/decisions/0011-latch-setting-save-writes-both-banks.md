@@ -2,6 +2,10 @@
 
 **Date:** 2026-10-14 (manuscript-review response, persistence track)
 
+**Superseded in part by decision 0012:** every content change now writes both
+banks, so the latch-only mirror and `PersistenceLayer(latch_names)` are gone,
+and the CRC now covers the sequence. The problem described here stays closed.
+
 ## Problem
 
 A review asked whether the deployment latch really survives "any

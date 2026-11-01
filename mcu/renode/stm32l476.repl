@@ -1,0 +1,116 @@
+// STM32L476RG, reduced to what the cepdt firmware touches. Renode ships no
+// STM32L4 platform, so peripherals with register-compatible Renode models
+// reuse them and RCC/FLASH are the small inline Python models below.
+
+nvic: IRQControllers.NVIC @ sysbus 0xE000E000
+    priorityMask: 0xF0
+    systickFrequency: 80000000
+    IRQ -> cpu@0
+
+cpu: CPU.CortexM @ sysbus
+    cpuType: "cortex-m4f"
+    nvic: nvic
+
+sram: Memory.MappedMemory @ sysbus 0x20000000
+    size: 0x18000
+
+flash: Memory.MappedMemory @ sysbus 0x08000000
+    size: 0x100000
+
+// Unused by the firmware, but the board enables it and Zephyr waits on it.
+usart1: UART.STM32F7_USART @ sysbus 0x40013800
+    frequency: 80000000
+    IRQ -> nvic@37
+
+usart2: UART.STM32F7_USART @ sysbus 0x40004400
+    frequency: 80000000
+    IRQ -> nvic@38
+
+gpioPortA: GPIOPort.STM32_GPIOPort @ sysbus <0x48000000, +0x400>
+    modeResetValue: 0xABFFFFFF
+    outputSpeedResetValue: 0x0C000000
+    pullUpPullDownResetValue: 0x64000000
+
+gpioPortB: GPIOPort.STM32_GPIOPort @ sysbus <0x48000400, +0x400>
+    modeResetValue: 0xFFFFFEBF
+    pullUpPullDownResetValue: 0x00000100
+
+gpioPortC: GPIOPort.STM32_GPIOPort @ sysbus <0x48000800, +0x400>
+    modeResetValue: 0xFFFFFFFF
+
+// Plain storage: Zephyr polls written bits back, and VOSF must read 0.
+pwr: Memory.ArrayMemory @ sysbus 0x40007000
+    size: 0x400
+
+// Registers read back what was written, plus the ready/status bits Zephyr's
+// clock init polls. No clock behaviour is modelled.
+rcc: Python.PythonPeripheral @ sysbus 0x40021000
+    size: 0x400
+    initable: true
+    script: '''
+CR, CFGR, BDCR, CSR = 0x00, 0x08, 0x90, 0x94
+
+if request.IsInit:
+    regs = {CR: 0x63}
+elif request.IsRead:
+    value = regs.get(request.Offset, 0)
+    if request.Offset == CR:
+        for on_bit, ready_bit in ((0, 1), (8, 10), (16, 17), (24, 25), (26, 27), (28, 29)):
+            value = (value & ~(1 << ready_bit)) | (((value >> on_bit) & 1) << ready_bit)
+    elif request.Offset in (BDCR, CSR):
+        value = (value & ~2) | ((value & 1) << 1)
+    elif request.Offset == CFGR:
+        value = (value & ~0xC) | ((value & 3) << 2)
+    request.Value = value
+elif request.IsWrite:
+    regs[request.Offset] = request.Value
+'''
+
+// Unlock sequence and page erase, which is all Zephyr's flash_stm32l4x.c
+// needs. Programming goes straight to the flash node, so PG is not enforced.
+// ECC is not computed: an uncorrectable error is injected by writing the
+// wanted ECCR value to the simulation-only offset INJECT_ECC, which also pends
+// the NMI (verify_flash_ecc_nmi.py). See docs/decisions/0013.
+flash_controller: Python.PythonPeripheral @ sysbus 0x40022000
+    size: 0x400
+    initable: true
+    script: '''
+KEYR, SR, CR, ECCR, OPTR, INJECT_ECC = 0x08, 0x10, 0x14, 0x18, 0x20, 0x3FC
+KEY1, KEY2 = 0x45670123, 0xCDEF89AB
+CR_PER, CR_BKER, CR_STRT, CR_LOCK = 1 << 1, 1 << 11, 1 << 16, 1 << 31
+FLASH_BASE, PAGE_SIZE, PAGES_PER_BANK = 0x08000000, 2048, 256
+
+if request.IsInit:
+    regs = {CR: 0xC0000000, OPTR: 0xFFEFF8AA}
+    last_key = 0
+elif request.IsRead:
+    request.Value = regs.get(request.Offset, 0)
+elif request.IsWrite:
+    value = request.Value
+    if request.Offset == KEYR:
+        if last_key == KEY1 and value == KEY2:
+            regs[CR] &= ~CR_LOCK
+        last_key = value
+    elif request.Offset == CR:
+        if not regs[CR] & CR_LOCK and value & CR_STRT and value & CR_PER:
+            page = ((value >> 3) & 0xFF) + (PAGES_PER_BANK if value & CR_BKER else 0)
+            base = FLASH_BASE + page * PAGE_SIZE
+            sysbus = self.GetMachine()["sysbus"]
+            for address in range(base, base + PAGE_SIZE):
+                sysbus.WriteByte(address, 0xFF)
+        regs[CR] = value & ~CR_STRT
+    elif request.Offset == ECCR:
+        regs[ECCR] = regs.get(ECCR, 0) & ~(value & 0xC0000000)
+    elif request.Offset == INJECT_ECC:
+        regs[ECCR] = value
+        sysbus = self.GetMachine()["sysbus"]
+        sysbus.WriteDoubleWord(0xE000ED04, 0x80000000)
+    elif request.Offset != SR:
+        regs[request.Offset] = value
+'''
+
+// FLASHSIZE_BASE, the factory value (in KiB) Zephyr sizes its flash page
+// layout from. Reading 0 here makes every flash erase fail range checks.
+sysbus:
+    init:
+        Tag <0x1FFF75E0, 0x1FFF75E3> "FLASHSIZE" 0x00000400

@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class EventChain:
     label: str
     config_id: str
     events: tuple[tuple[str, float], ...]
     latch_set_at_index: int
+
 
 CONFIG_A_PATH_B_FIRST = EventChain(
     label="config-a-path-b-confirms-first",

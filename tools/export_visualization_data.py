@@ -26,6 +26,7 @@ FAULT_INJECTION_TEST_FILES = (
     "tests/test_persistence.py",
 )
 
+
 def build_rq1_data(config_a: Config, config_b: Config) -> dict:
 
     def _summarize(cfg: Config) -> dict:
@@ -41,6 +42,7 @@ def build_rq1_data(config_a: Config, config_b: Config) -> dict:
         }
 
     return {"configs": [_summarize(config_a), _summarize(config_b)]}
+
 
 def compute_rq2_data() -> dict:
     result = subprocess.run(
@@ -60,6 +62,7 @@ def compute_rq2_data() -> dict:
         "passed": int(passed_match.group(1)),
         "failed": int(failed_match.group(1)) if failed_match else 0,
     }
+
 
 def build_rq3_data() -> dict:
     path = REPO_ROOT / "docs" / "policy-comparison-results.md"
@@ -101,9 +104,11 @@ def build_rq3_data() -> dict:
 
     return {"rows": rows, "answer": answer_match.group(1).strip()}
 
+
 _CI_VALUE_RE = re.compile(
     r"^([-\d.eE+]+)\s*\(n=(\d+),\s*95% CI \[([-\d.eE+]+),\s*([-\d.eE+]+)\]\)$"
 )
+
 
 def _parse_ci_value(cell: str) -> dict:
     match = _CI_VALUE_RE.match(cell.strip())
@@ -115,6 +120,7 @@ def _parse_ci_value(cell: str) -> dict:
         "ci_low": float(match.group(3)),
         "ci_high": float(match.group(4)),
     }
+
 
 def build_multi_seed_baseline_data() -> dict:
     path = REPO_ROOT / "docs" / "baseline-results.md"
@@ -167,6 +173,7 @@ def build_multi_seed_baseline_data() -> dict:
         raise RuntimeError(f"expected 2 multi-seed baseline sections in {path}, got {len(configs)}")
     return {"configs": configs}
 
+
 def build_multi_seed_policy_data() -> dict:
     path = REPO_ROOT / "docs" / "policy-comparison-results.md"
     lines = path.read_text().splitlines()
@@ -197,6 +204,7 @@ def build_multi_seed_policy_data() -> dict:
     if len(rows) != 6:
         raise RuntimeError(f"expected 6 multi-seed policy rows in {path}, got {len(rows)}")
     return {"rows": rows}
+
 
 def build_complexity_data() -> dict:
     path = REPO_ROOT / "docs" / "policy-complexity-analysis.md"
@@ -253,6 +261,7 @@ def build_complexity_data() -> dict:
     if len(configs) != 2:
         raise RuntimeError(f"expected 2 complexity sections in {path}, got {len(configs)}")
     return {"configs": configs}
+
 
 def build_sensitivity_data() -> dict:
     path = REPO_ROOT / "docs" / "sensitivity-analysis.md"
@@ -330,6 +339,7 @@ def build_sensitivity_data() -> dict:
 
     return {"parameters": parameters, "interpretation": interpretation}
 
+
 def build_power_uncertainty_data() -> dict:
     path = REPO_ROOT / "docs" / "sensitivity-analysis.md"
     lines = path.read_text().splitlines()
@@ -393,6 +403,7 @@ def build_power_uncertainty_data() -> dict:
         raise RuntimeError(f"expected 2 power-uncertainty classes in {path}, got {len(classes)}")
     return {"classes": classes}
 
+
 def build_model_checking_data() -> dict:
     path = REPO_ROOT / "docs" / "model-checking.md"
     lines = path.read_text().splitlines()
@@ -426,6 +437,7 @@ def build_model_checking_data() -> dict:
         raise RuntimeError(f"expected 2 model-checking rows in {path}, got {len(rows)}")
     return {"rows": rows}
 
+
 def build_replay_data(cfg: Config, *, seed: int, duration_s: float, dt_s: float) -> dict:
     ticks: list[dict] = []
 
@@ -456,10 +468,12 @@ def build_replay_data(cfg: Config, *, seed: int, duration_s: float, dt_s: float)
         "deliveries": deliveries,
     }
 
+
 TEMPLATE_PATH = REPO_ROOT / "tools" / "templates" / "visualization_template.html"
 DATA_PLACEHOLDER = "__DATA_JSON_PLACEHOLDER__"
 DEFAULT_DATA_OUTPUT_PATH = REPO_ROOT / "report" / "visualization" / "data.json"
 DEFAULT_HTML_OUTPUT_PATH = REPO_ROOT / "report" / "visualization" / "index.html"
+
 
 def build_visualization_data(
     *, seed: int = DEFAULT_SEED, duration_s: float = DEFAULT_DURATION_S, dt_s: float = DEFAULT_DT_S,
@@ -479,11 +493,13 @@ def build_visualization_data(
         "model_checking": build_model_checking_data(),
     }
 
+
 def render_html(data: dict) -> str:
     template = TEMPLATE_PATH.read_text()
     if DATA_PLACEHOLDER not in template:
         raise RuntimeError(f"template {TEMPLATE_PATH} is missing the {DATA_PLACEHOLDER!r} placeholder")
     return template.replace(DATA_PLACEHOLDER, json.dumps(data))
+
 
 def write_visualization_data(
     *,
@@ -497,10 +513,12 @@ def write_visualization_data(
     Path(data_output_path).write_text(json.dumps(data, indent=2))
     Path(html_output_path).write_text(render_html(data))
 
+
 def main() -> None:
     write_visualization_data()
     print(f"wrote {DEFAULT_DATA_OUTPUT_PATH}")
     print(f"wrote {DEFAULT_HTML_OUTPUT_PATH}")
+
 
 if __name__ == "__main__":
     main()

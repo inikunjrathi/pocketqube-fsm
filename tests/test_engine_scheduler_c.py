@@ -16,6 +16,7 @@ CC = shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
 
 pytestmark = pytest.mark.skipif(CC is None, reason="no C compiler (cc/gcc/clang) available on this host")
 
+
 @pytest.fixture(scope="module")
 def scheduler_harness(tmp_path_factory):
     build_dir = tmp_path_factory.mktemp("scheduler_equivalence_pytest")
@@ -26,12 +27,14 @@ def scheduler_harness(tmp_path_factory):
     finally:
         harness.close()
 
+
 @pytest.mark.parametrize("scenario", rse.build_scenarios(), ids=lambda s: s.name)
 def test_c_scheduler_matches_python_oracle(scenario, scheduler_harness):
     mismatches = rse.run_scenario(scheduler_harness, scenario, verbose=False)
     assert not mismatches, "\n" + "\n".join(
         f"step {m.step_index} {m.op!r}: python={m.python_result} c={m.c_result}" for m in mismatches
     )
+
 
 def test_scenario_count_regression_guard():
     assert len(rse.build_scenarios()) == 15

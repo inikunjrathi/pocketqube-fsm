@@ -18,6 +18,7 @@ CONFIG_B = REPO_ROOT / "config" / "config-b.yaml"
 SHORT_DURATION_S = 10 * ORBITAL_PERIOD_S
 SEED = 42
 
+
 def test_run_coverage_scenario_dual_station_has_at_least_as_much_contact():
     cfg = load_config(CONFIG_A)
     single = run_coverage_scenario(
@@ -34,12 +35,14 @@ def test_run_coverage_scenario_dual_station_has_at_least_as_much_contact():
     assert dual.contact_time_s >= single.contact_time_s
     assert dual.contact_time_s > single.contact_time_s
 
+
 def test_run_coverage_scenario_reports_contact_time_within_duration_bounds():
     cfg = load_config(CONFIG_A)
     row = run_coverage_scenario(
         cfg, seed=SEED, duration_s=SHORT_DURATION_S, dt_s=60.0, ground_stations=None,
     )
     assert 0.0 <= row.contact_time_s <= SHORT_DURATION_S
+
 
 def test_render_document_contains_required_content():
     single = CoverageRow(
@@ -58,6 +61,7 @@ def test_render_document_contains_required_content():
     assert "Svalbard" in doc
     assert "1000" in doc or "1,000" in doc
     assert "auto-generated" in doc.lower()
+
 
 def test_write_ground_station_analysis_writes_a_file(tmp_path):
     output_path = tmp_path / "ground-station-coverage-analysis.md"

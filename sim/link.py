@@ -8,12 +8,14 @@ from sim.scenario import (
     LINK_MARGIN_DB_PER_DEG,
 )
 
+
 @dataclass(frozen=True)
 class LinkState:
     elevation_deg: float
     is_up: bool
     margin_db: float
     meets_fade_margin: bool
+
 
 def link_state(
     elevation_deg: float, min_elevation_deg: float, fade_margin_db: float

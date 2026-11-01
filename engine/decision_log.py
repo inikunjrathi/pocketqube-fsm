@@ -5,12 +5,14 @@ from typing import Any, Mapping, Optional
 
 from engine.fsm import StepResult
 
+
 @dataclass(frozen=True)
 class DecisionLogEntry:
     now: float
     kind: str
     rationale: str
     details: Mapping[str, Any]
+
 
 class DecisionLogger:
     def __init__(self) -> None:

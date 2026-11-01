@@ -13,8 +13,10 @@ _START_TIMER_RE = re.compile(r"^start_(\w+)$")
 _NUMBER_RE = re.compile(r"^-?\d+(\.\d+)?$")
 _QUOTED_STRING_RE = re.compile(r"^'([^']*)'$|^\"([^\"]*)\"$")
 
+
 class FSMError(Exception):
     pass
+
 
 @dataclass(frozen=True)
 class StepResult:
@@ -24,6 +26,7 @@ class StepResult:
     transition_id: Optional[str]
     legal: bool
     guard_values: Optional[dict[str, Any]] = None
+
 
 def step(
     config: Config,
@@ -88,6 +91,7 @@ def step(
         guard_values=guard_values,
     )
 
+
 def _select_transition(
     config: Config,
     state: str,
@@ -111,6 +115,7 @@ def _select_transition(
             return t, guard_values
     return None, None
 
+
 def _resolve_target(
     config: Config,
     chosen: TransitionDef,
@@ -125,6 +130,7 @@ def _resolve_target(
             return persisted["state"], dict(persisted.get("context", {}))
         return config.initial_state, {}
     return chosen.to, dict(context)
+
 
 def _apply_actions(
     base_context: dict, actions: tuple[str, ...], now: float, latch_names: frozenset[str]
@@ -145,12 +151,14 @@ def _apply_actions(
             continue
     return new_context
 
+
 def _apply_latch_sets(context: dict, latches, transition_id: str) -> dict:
     new_context = dict(context)
     for latch in latches:
         if transition_id in latch.set_by:
             new_context[latch.name] = True
     return new_context
+
 
 def _parse_action_value(token: str) -> Any:
     if token == "true":

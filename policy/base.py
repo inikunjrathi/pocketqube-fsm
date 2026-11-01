@@ -16,6 +16,7 @@ FEATURE_NAMES = (
     "ticks_since_last_service",
 )
 
+
 @dataclass(frozen=True)
 class FeatureVector:
     battery_soc_pct: float
@@ -41,6 +42,7 @@ class FeatureVector:
             float(self.ticks_since_last_service),
         )
 
+
 @dataclass(frozen=True)
 class DecisionContext:
 
@@ -60,13 +62,16 @@ class DecisionContext:
     now: float
     dt_s: float
 
+
 class Policy(Protocol):
     def decide(self, features: FeatureVector, context: DecisionContext) -> str:
         ...
+
 
 class AlwaysServePolicy:
 
     def decide(self, features: FeatureVector, context: DecisionContext) -> str:
         return "serve"
+
 
 BASELINE_POLICY = AlwaysServePolicy()

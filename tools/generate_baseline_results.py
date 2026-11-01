@@ -30,6 +30,7 @@ DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "baseline-results.md"
 
 _NA = "—"
 
+
 @dataclass(frozen=True)
 class PerClassBreakdown:
 
@@ -37,6 +38,7 @@ class PerClassBreakdown:
     delivered_on_time: int
     delivered_late: int
     never_delivered: int
+
 
 def _per_class_breakdown(
     deliveries: list[DeliveryRecord], priority_order: list[str]
@@ -55,11 +57,13 @@ def _per_class_breakdown(
         cls: PerClassBreakdown(*counts) for cls, counts in breakdown.items()
     }
 
+
 @dataclass(frozen=True)
 class BaselineRow:
     config_id: str
     metrics: BaselineMetrics
     per_class_breakdown: dict[str, PerClassBreakdown]
+
 
 def run_baseline(
     cfg: Config, *, seed: int, duration_s: float, dt_s: float,
@@ -86,6 +90,7 @@ def run_baseline(
         per_class_breakdown=_per_class_breakdown(result.deliveries, priority_order),
     )
 
+
 def run_baseline_multi_seed(
     cfg: Config, *, seeds: tuple[int, ...], duration_s: float, dt_s: float,
     ground_stations: tuple[tuple[float, float, float], ...] | None = None,
@@ -99,8 +104,10 @@ def run_baseline_multi_seed(
     ]
     return aggregate_metrics(per_seed_metrics)
 
+
 def _fmt_ci(summary) -> str:  # noqa: ANN001 - MetricSummary, avoid import cycle in type hint
     return f"{summary.mean:.6g} (n={summary.n}, 95% CI [{summary.ci95_low:.6g}, {summary.ci95_high:.6g}])"
+
 
 def _render_multi_seed_section(config_id: str, agg: AggregatedMetrics) -> str:
     lines = [
@@ -130,14 +137,18 @@ def _render_multi_seed_section(config_id: str, agg: AggregatedMetrics) -> str:
     lines.append("")
     return "\n".join(lines)
 
+
 def _fmt_pct(value: float) -> str:
     return f"{value * 100:.2f}%"
+
 
 def _fmt_s(value: float | None) -> str:
     return _NA if value is None else f"{value:.3f}"
 
+
 def _fmt_energy(value: float | None) -> str:
     return _NA if value is None else f"{value:.6g}"
+
 
 def _render_row_section(row: BaselineRow) -> str:
     m = row.metrics
@@ -188,6 +199,7 @@ def _render_row_section(row: BaselineRow) -> str:
         lines.append(f"| {data_class} | {count} |")
     lines.append("")
     return "\n".join(lines)
+
 
 def render_document(
     rows: list[BaselineRow],
@@ -252,6 +264,7 @@ def render_document(
             parts.append(_render_multi_seed_section(row.config_id, agg))
     return "\n".join(parts)
 
+
 def write_baseline_results(
     output_path: str | Path = DEFAULT_OUTPUT_PATH,
     *,
@@ -291,9 +304,11 @@ def write_baseline_results(
 
     Path(output_path).write_text(render_document(rows, multi_seed=multi_seed))
 
+
 def main() -> None:
     write_baseline_results(DEFAULT_OUTPUT_PATH)
     print(f"wrote {DEFAULT_OUTPUT_PATH}")
+
 
 if __name__ == "__main__":
     main()

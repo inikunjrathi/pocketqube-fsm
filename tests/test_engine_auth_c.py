@@ -16,6 +16,7 @@ import run_auth_equivalence as rae  # noqa: E402
 
 CC = shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
 
+
 def _mbedtls_available() -> bool:
     if CC is None:
         return False
@@ -34,12 +35,14 @@ def _mbedtls_available() -> bool:
         )
         return result.returncode == 0
 
+
 MBEDTLS_AVAILABLE = _mbedtls_available()
 
 pytestmark = pytest.mark.skipif(
     not MBEDTLS_AVAILABLE,
     reason="no C compiler + linkable system mbedTLS (-lmbedcrypto) available on this host",
 )
+
 
 @pytest.fixture(scope="module")
 def auth_harness():
@@ -51,14 +54,17 @@ def auth_harness():
         finally:
             harness.close()
 
+
 def test_c_sign_command_matches_python_oracle_over_golden_vector_matrix(auth_harness):
     mismatches, n_matrix = rae.run_golden_vector_matrix(auth_harness, verbose=False)
     assert n_matrix > 0, "golden-vector matrix is empty -- check run_auth_equivalence.build_matrix()"
     assert not mismatches, "\n" + "\n".join(f"{m.label}: {m.detail}" for m in mismatches)
 
+
 def test_c_auth_domain_boundary_and_defensive_checks(auth_harness):
     mismatches = rae.run_domain_boundary_checks(auth_harness, verbose=False)
     assert not mismatches, "\n" + "\n".join(f"{m.label}: {m.detail}" for m in mismatches)
+
 
 def test_golden_vector_matrix_size_regression_guard():
     assert len(rae.build_matrix()) == 336

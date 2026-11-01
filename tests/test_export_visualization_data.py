@@ -26,6 +26,7 @@ CONFIG_B = REPO_ROOT / "config" / "config-b.yaml"
 
 SHORT_DURATION_S = 3 * ORBITAL_PERIOD_S
 
+
 @pytest.mark.requirement("R-26")
 def test_build_rq1_data_reflects_known_config_asymmetry():
     config_a = load_config(CONFIG_A)
@@ -33,13 +34,14 @@ def test_build_rq1_data_reflects_known_config_asymmetry():
     data = build_rq1_data(config_a, config_b)
     by_id = {c["config_id"]: c for c in data["configs"]}
     assert set(by_id) == {"config-a", "config-b"}
-    # R-26
+    # R-26 (docs/verification-matrix.md): Config A is autonomous-with-override,
     assert by_id["config-a"]["autonomous_recovery_capable"] is True
     assert by_id["config-b"]["autonomous_recovery_capable"] is False
     assert by_id["config-a"]["state_count"] == len(config_a.states)
     assert by_id["config-b"]["event_count"] == len(config_b.events)
     assert by_id["config-a"]["transition_count"] == len(config_a.transitions)
     assert by_id["config-a"]["name"] == config_a.name
+
 
 def test_compute_rq2_data_reports_all_passing():
     data = compute_rq2_data()
@@ -50,6 +52,7 @@ def test_compute_rq2_data_reports_all_passing():
         "tests/test_latch_fuzz.py",
         "tests/test_persistence.py",
     }
+
 
 def test_build_rq3_data_parses_six_rows_and_an_answer():
     data = build_rq3_data()
@@ -68,13 +71,16 @@ def test_build_rq3_data_parses_six_rows_and_an_answer():
     assert "|" not in data["answer"]
     assert "Multi-seed" not in data["answer"]
 
+
 def test_parse_ci_value_extracts_mean_n_and_ci_bounds():
     parsed = _parse_ci_value("0.920321 (n=20, 95% CI [0.916119, 0.924522])")
     assert parsed == {"mean": 0.920321, "n": 20, "ci_low": 0.916119, "ci_high": 0.924522}
 
+
 def test_parse_ci_value_rejects_malformed_cell():
     with pytest.raises(RuntimeError):
         _parse_ci_value("not a CI value")
+
 
 def test_build_multi_seed_baseline_data_has_both_configs():
     data = build_multi_seed_baseline_data()
@@ -88,6 +94,7 @@ def test_build_multi_seed_baseline_data_has_both_configs():
         assert 0.0 <= summary["mean"] <= 1.0
         assert summary["ci_low"] <= summary["mean"] <= summary["ci_high"]
 
+
 def test_build_multi_seed_policy_data_has_six_rows():
     data = build_multi_seed_policy_data()
     assert len(data["rows"]) == 6
@@ -98,6 +105,7 @@ def test_build_multi_seed_policy_data_has_six_rows():
     for r in data["rows"]:
         assert 0.0 <= r["delivery_success"]["mean"] <= 1.0
 
+
 def test_build_complexity_data_has_both_configs_and_ratio():
     data = build_complexity_data()
     assert len(data["configs"]) == 2
@@ -105,6 +113,7 @@ def test_build_complexity_data_has_both_configs_and_ratio():
         policy_names = {p["policy"] for p in c["policies"]}
         assert policy_names == {"baseline", "tree", "oracle"}
         assert c["oracle_to_tree_ratio"] > 1
+
 
 def test_build_sensitivity_data_has_four_parameters_and_interpretation():
     data = build_sensitivity_data()
@@ -117,6 +126,7 @@ def test_build_sensitivity_data_has_four_parameters_and_interpretation():
     assert data["interpretation"]["P-015"] == "real sensitivity"
     assert data["interpretation"]["P-019"] == "no movement"
 
+
 def test_build_power_uncertainty_data_has_both_classes():
     data = build_power_uncertainty_data()
     assert len(data["classes"]) == 2
@@ -126,6 +136,7 @@ def test_build_power_uncertainty_data_has_both_classes():
         assert len(c["rows"]) == 3
         assert c["range_low"] < c["range_high"]
 
+
 def test_build_model_checking_data_reports_no_errors():
     data = build_model_checking_data()
     assert len(data["rows"]) == 2
@@ -133,6 +144,7 @@ def test_build_model_checking_data_reports_no_errors():
         assert r["result"] == "No error found"
         assert r["states_declared"] > 0
         assert r["states_reached"] > 0
+
 
 def test_build_replay_data_produces_ticks_and_deliveries():
     cfg = load_config(CONFIG_A)
@@ -159,6 +171,7 @@ def test_build_replay_data_produces_ticks_and_deliveries():
             "item_id", "data_class", "arrival_time_s", "delivered",
             "delivery_time_s", "latency_s", "deadline_missed",
         }
+
 
 def test_write_visualization_data_writes_both_files(tmp_path):
     from tools.export_visualization_data import write_visualization_data

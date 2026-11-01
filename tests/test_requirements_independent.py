@@ -21,17 +21,20 @@ _TELEMETRY = [
     for e, b, f in itertools.product((-90, 90), (0, 100), (0, 99))
 ]
 
+
 def _norm(context: dict) -> frozenset:
     return frozenset(
         (k, 0 if isinstance(v, (int, float)) and not isinstance(v, bool) else v)
         for k, v in context.items()
     )
 
+
 def _variants(cfg: Config, event: str):
     guarded = any(t.guard for t in cfg.transitions if t.event == event)
     if not guarded:
         return [({}, 0)]
     return [(tel, now) for tel in _TELEMETRY for now in (0, _LONG_AGO)]
+
 
 def explore(cfg: Config):
     init = ((cfg.initial_state, frozenset()), None)
@@ -56,7 +59,9 @@ def explore(cfg: Config):
                         queue.append(dst)
     return seen, edges
 
+
 _EXPLORED = {}
+
 
 def _explored(config_id: str):
     if config_id not in _EXPLORED:
@@ -64,8 +69,10 @@ def _explored(config_id: str):
         _EXPLORED[config_id] = (cfg, *explore(cfg))
     return _EXPLORED[config_id]
 
+
 def _flag(ctx: frozenset, name: str) -> bool:
     return dict(ctx).get(name, False) is True
+
 
 def check(cfg: Config, nodes, edges, req: dict) -> dict[str, list]:
     name = {s.id: s.name for s in cfg.states.values()}
@@ -114,6 +121,7 @@ def check(cfg: Config, nodes, edges, req: dict) -> dict[str, list]:
     bad["ResetAlwaysAvailable"] = [n for n in nodes if n not in reset_from]
     return bad
 
+
 KNOWN_VIOLATIONS: set[tuple[str, str]] = set()
 
 PROPERTIES = (
@@ -123,11 +131,13 @@ PROPERTIES = (
     "DurableNeverClears",
 )
 
+
 def _param(config_id, prop):
     marks = []
     if (config_id, prop) in KNOWN_VIOLATIONS:
         marks.append(pytest.mark.xfail(strict=True, reason="known config defect, see module comment"))
     return pytest.param(config_id, prop, id=f"{config_id}:{prop}", marks=marks)
+
 
 @pytest.mark.parametrize(
     "config_id,prop", [_param(c, p) for c in CONFIG_IDS for p in PROPERTIES]
@@ -137,11 +147,13 @@ def test_engine_satisfies_independent_requirement(config_id, prop):
     violations = check(cfg, nodes, edges, REQUIREMENTS[config_id])[prop]
     assert violations == [], violations[:3]
 
+
 @pytest.mark.parametrize("config_id", CONFIG_IDS)
 def test_exploration_exercises_every_transition_row(config_id):
     cfg, _, edges = _explored(config_id)
     fired = {tid for *_, tid in edges}
     assert fired == {t.id for t in cfg.transitions}
+
 
 def test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning():
     cfg = load_config(REPO_ROOT / "config" / "config-a.yaml")

@@ -20,6 +20,7 @@ CONFIG_A = REPO_ROOT / "config" / "config-a.yaml"
 REFERENCE_POSITION_ECI_KM = (6903.0, 0.0, 0.0)
 REFERENCE_WHEN = datetime(2026, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
 
+
 def test_soc_stays_in_bounds():
     battery = BatteryState(soc_pct=5.0)
     high_draw = draw_for_state_category("COMMS_SSTV")
@@ -47,6 +48,7 @@ def test_soc_stays_in_bounds():
         )
         assert battery.soc_pct <= 100.0
 
+
 def test_illuminated_charges_more_than_eclipsed():
     start = BatteryState(soc_pct=50.0)
     draw_w = draw_for_state_category("IDLE")
@@ -71,13 +73,16 @@ def test_illuminated_charges_more_than_eclipsed():
     assert illuminated_result.soc_pct >= eclipsed_result.soc_pct
     assert start.soc_pct == 50.0
 
+
 def test_comms_mode_draws_more_than_idle():
     assert draw_for_state_category("COMMS_SSTV") > draw_for_state_category("IDLE")
+
 
 def test_comms_burst_draw_active_at_mode_entry():
     from sim.scenario import DRAW_W_COMMS_TTC
 
     assert draw_for_state_category("COMMS_TTC", time_in_state_s=0.0) == DRAW_W_COMMS_TTC
+
 
 def test_comms_burst_draw_still_active_just_before_burst_ends():
     from sim.scenario import DRAW_W_COMMS_TTC
@@ -86,6 +91,7 @@ def test_comms_burst_draw_still_active_just_before_burst_ends():
         draw_for_state_category("COMMS_TTC", time_in_state_s=COMMS_BURST_DURATION_S - 1.0)
         == DRAW_W_COMMS_TTC
     )
+
 
 def test_comms_draw_falls_back_to_idle_after_burst_window_elapses():
     from sim.scenario import DRAW_W_IDLE
@@ -99,16 +105,19 @@ def test_comms_draw_falls_back_to_idle_after_burst_window_elapses():
         == DRAW_W_IDLE
     )
 
+
 def test_idle_category_ignores_time_in_state():
     from sim.scenario import DRAW_W_IDLE
 
     assert draw_for_state_category("IDLE", time_in_state_s=0.0) == DRAW_W_IDLE
     assert draw_for_state_category("IDLE", time_in_state_s=1_000_000.0) == DRAW_W_IDLE
 
+
 def test_draw_for_state_category_defaults_to_burst_active():
     from sim.scenario import DRAW_W_COMMS_TTC
 
     assert draw_for_state_category("COMMS_TTC") == DRAW_W_COMMS_TTC
+
 
 def test_low_power_scenario_crosses_guard_threshold():
     cfg_a = load_config(CONFIG_A)
@@ -147,11 +156,13 @@ def test_low_power_scenario_crosses_guard_threshold():
     )
     assert result is True
 
+
 def test_is_illuminated_is_deterministic():
     first = is_illuminated(REFERENCE_POSITION_ECI_KM, REFERENCE_WHEN)
     second = is_illuminated(REFERENCE_POSITION_ECI_KM, REFERENCE_WHEN)
     assert first == second
     assert isinstance(first, bool)
+
 
 def test_no_network_access():
     import sim.power as power_module
@@ -173,6 +184,7 @@ def test_no_network_access():
         f"sim/power.py imports network modules: {imported_modules & banned}"
     )
 
+
 import dataclasses
 import hashlib
 
@@ -188,8 +200,10 @@ from sim.power import (
 )
 from sim.scenario import DRAW_W_COMMS_TTC, DRAW_W_IDLE
 
+
 def _cfg(letter):
     return load_config(REPO_ROOT / "config" / f"config-{letter}.yaml")
+
 
 def test_transmit_class_map_matches_each_shipped_config():
     assert transmit_class_map(_cfg("a")) == {
@@ -198,10 +212,12 @@ def test_transmit_class_map_matches_each_shipped_config():
     for letter in "bc":
         assert transmit_class_map(_cfg(letter)) == {"S-05": SERVED_CLASS, "S-06": None}
 
+
 def test_transmit_class_map_rejects_unknown_config():
     cfg = dataclasses.replace(_cfg("b"), config_id="config-x")
     with pytest.raises(PowerModelError, match="no transmit-class row"):
         transmit_class_map(cfg)
+
 
 @pytest.mark.parametrize("bad_row", [
     {"S-05": SERVED_CLASS},
@@ -213,6 +229,7 @@ def test_transmit_class_map_rejects_rows_that_contradict_the_config(monkeypatch,
     monkeypatch.setitem(STATE_TRANSMIT_CLASS, "config-b", bad_row)
     with pytest.raises(PowerModelError):
         transmit_class_map(_cfg("b"))
+
 
 def test_served_state_follows_served_class_and_burst_window():
     table = transmit_class_map(_cfg("b"))
@@ -226,6 +243,7 @@ def test_served_state_follows_served_class_and_burst_window():
     for name, dc in (("COMMS_TTC", "TTC"), ("COMMS_SSTV", "SSTV"), ("COMMS_VOICE", "CODEC2_M17")):
         assert draw_for_state_category(name) == transmit_draw_w(dc)
 
+
 def _seed42_trace(letter):
     from sim.driver import run_simulation
 
@@ -236,12 +254,14 @@ def _seed42_trace(letter):
     )
     return r, soc
 
+
 def test_config_a_seed42_is_bit_identical_to_pre_0009_name_mapping():
     r, soc = _seed42_trace("a")
     digest = hashlib.sha256(repr((
         [(d.item_id, d.delivery_time_s, d.energy_wh) for d in r.deliveries], soc,
     )).encode()).hexdigest()
     assert digest == "6220aca3012f17815bd4a3a1fb2aaca293016b94beb1a0ca0266ad3c85dc144b"
+
 
 def test_config_b_downlink_is_charged_transmit_draw_not_idle():
     a, _ = _seed42_trace("a")

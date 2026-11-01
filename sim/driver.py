@@ -58,8 +58,10 @@ _GROUND_OVERRIDE_EXIT_EVENT_NAME = "GROUND_OVERRIDE_EXIT_SAFE"
 
 _BATTERY_RECOVERY_THRESHOLD_PARAM_NAME = "battery_soc_safe_mode_recovery_threshold_pct"
 
+
 class DriverError(Exception):
     pass
+
 
 @dataclass
 class DeliveryRecord:
@@ -72,12 +74,14 @@ class DeliveryRecord:
     deadline_missed: bool
     energy_wh: float | None
 
+
 @dataclass
 class SimulationResult:
     config_id: str
     deliveries: list[DeliveryRecord]
     decision_log: list
     final_context: dict
+
 
 def run_simulation(
     cfg: Config,
@@ -111,7 +115,7 @@ def run_simulation(
         rate_per_class_per_hour=rate_per_class_per_hour,
     )
 
-    persistence = PersistenceLayer(latch.name for latch in cfg.latches)
+    persistence = PersistenceLayer()
     logger = DecisionLogger()
 
     params_by_name = {p.name: p.value for p in cfg.parameters.values()}
@@ -315,6 +319,7 @@ def run_simulation(
         final_context=dict(context),
     )
 
+
 def _mark_delivered(
     record: DeliveryRecord,
     item: Item,
@@ -332,6 +337,7 @@ def _mark_delivered(
     record.energy_wh = (
         transmit_draw_w(transmit_class, time_in_state_s) * item_transmit_time_s / 3600.0
     )
+
 
 def _run_bootstrap(
     cfg: Config, persistence: PersistenceLayer, logger: DecisionLogger
@@ -361,11 +367,14 @@ def _run_bootstrap(
         )
     return state, context
 
+
 def _edf_key(item) -> float:
     return item.deadline if item.deadline is not None else math.inf
 
+
 def _item_transmit_time_s(item: Item) -> float:
     return (item.size_bytes * 8) / LINK_DATA_RATE_BPS
+
 
 def _item_energy_wh(
     state_name: str, time_in_state_s: float, item_transmit_time_s: float,
@@ -374,6 +383,7 @@ def _item_energy_wh(
         draw_for_state_category(state_name, time_in_state_s)
         * item_transmit_time_s / 3600.0
     )
+
 
 def _try_fire(
     cfg: Config,
@@ -406,6 +416,7 @@ def _try_fire(
     logger.record_transition(now=now, from_state=state, event=event_id, result=result)
     return result.new_state, result.context, True
 
+
 def _raise_tick_events(
     cfg: Config, event_map, state: str, telemetry: dict, now: float,
     params_by_name: dict, min_elevation_deg: float,
@@ -434,6 +445,7 @@ def _raise_tick_events(
         PendingEvent(resolve(event_map, n), now) for n in names if n in event_map.by_name
     ]
 
+
 def _service_pending(
     cfg: Config, event_map, pending: list[PendingEvent], state: str, context: dict,
     telemetry: dict, now: float, persistence: PersistenceLayer, logger: DecisionLogger,
@@ -448,6 +460,7 @@ def _service_pending(
         if fired:
             return state, context, ordered[i + 1:]
     return state, context, []
+
 
 def _maybe_recover_from_safe_mode(
     cfg: Config,
@@ -488,6 +501,7 @@ def _maybe_recover_from_safe_mode(
 
     return state, context, False
 
+
 def _reenter_comms_mode(
     cfg: Config, state: str, context: dict, persistence: PersistenceLayer,
     logger: DecisionLogger, now: float,
@@ -507,6 +521,7 @@ def _reenter_comms_mode(
         persistence.save(state, context)
         logger.record_transition(now=now, from_state=from_state, event=event_id, result=result)
     return state, context
+
 
 def _find_bootstrap_path(
     cfg: Config, start_state: str | None = None
@@ -560,6 +575,7 @@ def _find_bootstrap_path(
             queue.append((new_state, result.context, new_path))
 
     raise DriverError("no bootstrap path from the initial state to a comms-mode state")
+
 
 def _epoch_datetime(sat) -> datetime:
     year = sat.epochyr + 2000 if sat.epochyr < 57 else sat.epochyr + 1900

@@ -10,6 +10,7 @@ from tools.generate_policy_comparison import (
 _DURATION_S = 6 * ORBITAL_PERIOD_S
 _DT_S = 60.0
 
+
 def test_run_policy_baselines_share_arrivals_and_never_hold():
     fifo = run_policy("config-a", "reference", "baseline-fifo", 12345,
                       duration_s=_DURATION_S, dt_s=_DT_S)
@@ -20,12 +21,14 @@ def test_run_policy_baselines_share_arrivals_and_never_hold():
     for r in (fifo, edf):
         assert 0.0 <= r.deadline_success <= r.window_delivery <= 1.0
 
+
 def test_paired_bootstrap_ci_is_deterministic_and_brackets_mean():
     diffs = [0.1, -0.2, 0.3, 0.0, 0.05]
     mean, lo, hi = paired_bootstrap_ci(diffs, n_resamples=2000)
     assert (mean, lo, hi) == paired_bootstrap_ci(diffs, n_resamples=2000)
     assert lo <= mean <= hi
     assert paired_bootstrap_ci([0.0, 0.0, 0.0]) == (0.0, 0.0, 0.0)
+
 
 def test_write_policy_comparison_writes_all_sections(tmp_path):
     out = tmp_path / "policy-comparison-results.md"

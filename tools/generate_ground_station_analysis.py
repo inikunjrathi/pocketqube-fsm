@@ -27,6 +27,7 @@ CONFIG_PATHS: tuple[tuple[str, Path], ...] = (
     ("config-c", REPO_ROOT / "config" / "config-c.yaml"),
 )
 
+
 @dataclasses.dataclass(frozen=True)
 class CoverageRow:
     config_id: str
@@ -37,6 +38,7 @@ class CoverageRow:
     ttc_latency_p95_s: float | None
     energy_per_delivered_bit_j: float | None
     deadline_success_ratio: float = 0.0
+
 
 def run_coverage_scenario(
     cfg: Config,
@@ -80,11 +82,14 @@ def run_coverage_scenario(
         deadline_success_ratio=metrics.deadline_success_ratio,
     )
 
+
 def _fmt_energy(value: float | None) -> str:
     return "—" if value is None else f"{value:.6g}"
 
+
 def _fmt_s(value: float | None) -> str:
     return "—" if value is None else f"{value:.2f}"
+
 
 def _render_config_section(config_id: str, rows: tuple[CoverageRow, CoverageRow]) -> str:
     single, dual = rows
@@ -118,6 +123,7 @@ def _render_config_section(config_id: str, rows: tuple[CoverageRow, CoverageRow]
     )
     lines.append("")
     return "\n".join(lines)
+
 
 def render_document(rows_by_config: dict[str, tuple[CoverageRow, CoverageRow]]) -> str:
     parts = [
@@ -163,6 +169,7 @@ def render_document(rows_by_config: dict[str, tuple[CoverageRow, CoverageRow]]) 
     parts.append("")
     return "\n".join(parts)
 
+
 def write_ground_station_analysis(
     output_path: str | Path = DEFAULT_OUTPUT_PATH,
     *,
@@ -183,9 +190,11 @@ def write_ground_station_analysis(
         rows_by_config[config_id] = (single, dual)
     Path(output_path).write_text(render_document(rows_by_config))
 
+
 def main() -> None:
     write_ground_station_analysis(DEFAULT_OUTPUT_PATH)
     print(f"wrote {DEFAULT_OUTPUT_PATH}")
+
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 def pytest_collection_modifyitems(items):
     for item in items:
         marker = item.get_closest_marker("requirement")

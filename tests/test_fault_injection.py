@@ -12,10 +12,13 @@ from engine.persistence import PersistenceLayer
 from tests.fixtures.event_chains import ALL_CHAINS
 from tests.fixtures.transition_cases import ALL_CONFIGS, legal_cases
 
+
 def _reset_event_for(cfg: Config) -> str:
     return next(e.id for e in cfg.events.values() if e.name == "RESET")
 
+
 _START_TIMER_RE = re.compile(r"^start_(\w+)$")
+
 
 def _reset_transition_for(cfg: Config):
     reset_event = _reset_event_for(cfg)
@@ -23,17 +26,21 @@ def _reset_transition_for(cfg: Config):
     assert len(matches) == 1, f"expected exactly one RESET transition targeting reload_from_persistence in {cfg.config_id}"
     return matches[0]
 
+
 def _rearmed_timer_keys(actions) -> frozenset[str]:
     return frozenset(m.group(1) for a in actions if (m := _START_TIMER_RE.match(a)))
 
+
 def _legal_case_id(case) -> str:
     return f"{case.config.config_id}:{case.transition.id}:{case.origin_state}"
+
 
 LEGAL_PARAMS = [
     pytest.param(case, id=_legal_case_id(case))
     for cfg in ALL_CONFIGS
     for case in legal_cases(cfg)
 ]
+
 
 @pytest.mark.parametrize("case", LEGAL_PARAMS)
 def test_reset_at_every_transition_boundary_round_trips_state_and_context(case):
@@ -61,6 +68,7 @@ def test_reset_at_every_transition_boundary_round_trips_state_and_context(case):
     for key in rearmed:
         assert reset_result.context[key] == reset_now
 
+
 def _run_corruption_sweep(chain):
     cfg = {c.config_id: c for c in ALL_CONFIGS}[chain.config_id]
     reset_event = _reset_event_for(cfg)
@@ -78,7 +86,7 @@ def _run_corruption_sweep(chain):
 
         assert context["deployment_confirmed"] is True
 
-        # R-29
+        # test_integration.py's existing R-29 pattern to every boundary
         persistence.save(state, context)
         persistence.corrupt(persistence.last_written_bank)
 
@@ -94,6 +102,7 @@ def _run_corruption_sweep(chain):
         assert reset_result.context["deployment_confirmed"] is True
 
         persistence.save(reset_result.new_state, reset_result.context)
+
 
 @pytest.mark.parametrize("chain", ALL_CHAINS, ids=lambda c: c.label)
 def test_latch_survives_corruption_at_every_boundary_after_it_is_set(chain):

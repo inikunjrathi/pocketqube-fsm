@@ -20,6 +20,7 @@ from mcu.host_bridge.uart_bridge import (  # noqa: E402
     UartBridge,
 )
 
+
 def compute_contact_windows(
     *,
     duration_s: float,
@@ -35,14 +36,17 @@ def compute_contact_windows(
     )
     return passes, epoch
 
+
 def simulated_time_to_utc(now_s: float, epoch: datetime) -> datetime:
     return epoch + timedelta(seconds=now_s)
+
 
 def in_any_window(when: datetime, windows: Sequence[Pass]) -> Optional[Pass]:
     for p in windows:
         if p.aos <= when <= p.los:
             return p
     return None
+
 
 @dataclasses.dataclass(frozen=True)
 class GateDecision:
@@ -53,6 +57,7 @@ class GateDecision:
     window: Optional[Pass]
     reason: str
     response: Optional[ResponseLine] = None
+
 
 class GroundContactGate:
 

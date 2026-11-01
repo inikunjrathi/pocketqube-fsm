@@ -45,6 +45,7 @@ static bool parse_value(const char *token, bool *is_bool, bool *bool_value, doub
     return true;
 }
 
+
 static size_t parse_kv_list(char *str, kv_entry_t *out, size_t max_entries)
 {
     size_t count = 0;
@@ -131,6 +132,7 @@ static const transition_t *find_transition(const char *id)
     }
     return NULL;
 }
+
 
 static int split_fields(char *line, char *fields[4])
 {

@@ -15,6 +15,7 @@ _TEST_SEEDS = (1, 2)
 _TEST_DURATION_S = 6 * ORBITAL_PERIOD_S
 _TEST_DT_S = 60.0
 
+
 def test_generate_dataset_produces_rows_with_valid_labels():
     cfg = load_config(CONFIG_A)
     rows = generate_dataset([cfg], seeds=_TEST_SEEDS, duration_s=_TEST_DURATION_S, dt_s=_TEST_DT_S)
@@ -24,6 +25,7 @@ def test_generate_dataset_produces_rows_with_valid_labels():
         assert isinstance(row.features, FeatureVector)
         assert row.label in ("serve", "hold")
 
+
 def test_generate_dataset_is_deterministic():
     cfg = load_config(CONFIG_A)
     rows1 = generate_dataset([cfg], seeds=_TEST_SEEDS, duration_s=_TEST_DURATION_S, dt_s=_TEST_DT_S)
@@ -31,6 +33,7 @@ def test_generate_dataset_is_deterministic():
     assert len(rows1) == len(rows2)
     assert [r.label for r in rows1] == [r.label for r in rows2]
     assert [r.features for r in rows1] == [r.features for r in rows2]
+
 
 def test_generate_dataset_covers_both_configs():
     config_a = load_config(CONFIG_A)

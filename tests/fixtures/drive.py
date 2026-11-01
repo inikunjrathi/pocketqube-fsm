@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from engine.fsm import step
 
+
 def _drive(cfg, events, persistence):
     # R-29
     state, context = cfg.initial_state, {}

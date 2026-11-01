@@ -12,6 +12,7 @@ from tools.codegen_c_table import c_ident  # noqa: E402
 
 SRC_DIR = REPO_ROOT / "mcu" / "firmware" / "app" / "src"
 
+
 def render_arbitration_source(cfg: Config) -> str:
     keys = event_static_keys(cfg)
     lines = [
@@ -32,11 +33,13 @@ def render_arbitration_source(cfg: Config) -> str:
     lines += ["};", ""]
     return "\n".join(lines)
 
+
 def write_arbitration_table(config_id: str, out_dir: Path = SRC_DIR) -> Path:
     cfg = load_config(REPO_ROOT / "config" / f"{config_id}.yaml")
     path = out_dir / "engine_arbitration_table.c"
     path.write_text(render_arbitration_source(cfg))
     return path
+
 
 if __name__ == "__main__":
     print(write_arbitration_table(sys.argv[1] if len(sys.argv) > 1 else "config-a"))

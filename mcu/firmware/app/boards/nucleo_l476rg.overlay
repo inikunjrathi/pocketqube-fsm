@@ -1,0 +1,13 @@
+&flash0 {
+	partitions {
+		slot0_partition: partition@7f800 {
+			label = "image-0";
+			reg = <0x0007f800 DT_SIZE_K(2)>;
+		};
+
+		slot1_partition: partition@f7800 {
+			label = "image-1";
+			reg = <0x000f7800 DT_SIZE_K(2)>;
+		};
+	};
+};

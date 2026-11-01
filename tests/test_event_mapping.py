@@ -24,6 +24,7 @@ COMMON_EVENT_NAMES = (
     "GROUND_SAFE_MODE_CMD",
 )
 
+
 def test_config_a_resolves_per_class_events():
     cfg_a = load_config(CONFIG_A)
     event_map = build_event_map(cfg_a)
@@ -33,6 +34,7 @@ def test_config_a_resolves_per_class_events():
     assert names == ["SCHEDULER_SELECT_TTC"]
     assert names[0] in event_map.by_name
     assert resolve(event_map, names[0]) == event_map.by_name["SCHEDULER_SELECT_TTC"]
+
 
 def test_config_b_resolves_collapsed_events():
     cfg_b = load_config(CONFIG_B)
@@ -45,6 +47,7 @@ def test_config_b_resolves_collapsed_events():
     assert resolve(event_map, names[0]) == event_map.by_name["SCHEDULER_SELECT_ACTIVE"]
 
     assert "SCHEDULER_SELECT_TTC" not in event_map.by_name
+
 
 def test_no_config_id_branching():
     import sim.event_mapping as event_mapping_module
@@ -70,6 +73,7 @@ def test_no_config_id_branching():
         "never by checking cfg.config_id (see Global Constraints)"
     )
 
+
 def test_resolve_missing_event_raises_named_error():
     cfg_a = load_config(CONFIG_A)
     event_map = build_event_map(cfg_a)
@@ -80,6 +84,7 @@ def test_resolve_missing_event_raises_named_error():
     assert "NOT_A_REAL_EVENT" in str(exc_info.value)
     assert isinstance(exc_info.value, KeyError)
 
+
 def test_common_events_resolve_in_both_configs():
     for config_path in (CONFIG_A, CONFIG_B):
         cfg = load_config(config_path)
@@ -88,6 +93,7 @@ def test_common_events_resolve_in_both_configs():
             assert name in event_map.by_name
             resolved_id = resolve(event_map, name)
             assert resolved_id == event_map.by_name[name]
+
 
 def test_all_real_data_classes_resolve_in_both_configs():
     for config_path in (CONFIG_A, CONFIG_B):
@@ -110,6 +116,7 @@ def test_all_real_data_classes_resolve_in_both_configs():
     assert scheduler_select_event_names(event_map_a, "CODEC2_M17") == [
         "SCHEDULER_SELECT_VOICE"
     ]
+
 
 def test_no_network_access():
     import sim.event_mapping as event_mapping_module

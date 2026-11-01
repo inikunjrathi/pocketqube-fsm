@@ -1,3 +1,5 @@
+# R-29
+
 from __future__ import annotations
 
 import shutil
@@ -19,6 +21,7 @@ SOURCES = [
     SRC_DIR / "engine_persistence.c",
     SRC_DIR / "engine_config_table.c",
 ]
+
 
 def run(*, zephyr_base: Path) -> int:
     crc32_sw_c = zephyr_base / "lib" / "crc" / "crc32_sw.c"
@@ -56,6 +59,7 @@ def run(*, zephyr_base: Path) -> int:
     print("Persistence host-compile check: gcc + clang both clean, all checks passed.", file=sys.stderr)
     return 0
 
+
 def main(argv: Optional[list[str]] = None) -> int:
     import argparse
 
@@ -64,6 +68,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     args = parser.parse_args(argv)
     zephyr_base = Path(args.zephyr_base) if args.zephyr_base else ZEPHYR_BASE_DEFAULT
     return run(zephyr_base=zephyr_base)
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

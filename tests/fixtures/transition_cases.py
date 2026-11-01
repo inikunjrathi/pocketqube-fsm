@@ -11,8 +11,10 @@ CONFIG_B = load_config(REPO_ROOT / "config" / "config-b.yaml")
 CONFIG_C = load_config(REPO_ROOT / "config" / "config-c.yaml")
 ALL_CONFIGS = (CONFIG_A, CONFIG_B, CONFIG_C)
 
+
 class FixtureMissingError(Exception):
     pass
+
 
 @dataclass(frozen=True)
 class TransitionFixture:
@@ -20,12 +22,14 @@ class TransitionFixture:
     telemetry: dict
     now: float
 
+
 @dataclass(frozen=True)
 class LegalCase:
     config: Config
     transition: TransitionDef
     origin_state: str
     fixture: TransitionFixture
+
 
 FIXTURES: dict[tuple[str, str], TransitionFixture] = {
     ("config-a", "T-01"): TransitionFixture({}, {}, 0),
@@ -85,6 +89,7 @@ FIXTURES: dict[tuple[str, str], TransitionFixture] = {
     ("config-c", "T-16"): TransitionFixture({}, {"battery_soc": 35}, 0),
 }
 
+
 def fixture_for(cfg: Config, transition: TransitionDef) -> TransitionFixture:
     key = (cfg.config_id, transition.id)
     try:
@@ -94,6 +99,7 @@ def fixture_for(cfg: Config, transition: TransitionDef) -> TransitionFixture:
             f"no FIXTURES entry for {cfg.config_id}:{transition.id} — "
             "add one to tests/fixtures/transition_cases.py"
         ) from None
+
 
 def legal_cases(cfg: Config) -> list[LegalCase]:
     # RB-05 RB-07 RB-08
@@ -105,6 +111,7 @@ def legal_cases(cfg: Config) -> list[LegalCase]:
         for origin in origins:
             cases.append(LegalCase(config=cfg, transition=t, origin_state=origin, fixture=fixture))
     return cases
+
 
 def illegal_pairs(cfg: Config) -> list[tuple[Config, str, str]]:
     pairs = []

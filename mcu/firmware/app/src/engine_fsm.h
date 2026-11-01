@@ -11,7 +11,9 @@
 extern "C" {
 #endif
 
+
 #define ENGINE_CONTEXT_MAX_ENTRIES 8
+
 
 #define ENGINE_TELEMETRY_MAX_ENTRIES 6
 
@@ -37,6 +39,7 @@ typedef struct {
 
 void engine_context_init(engine_context_t *ctx);
 
+
 bool engine_context_set(engine_context_t *ctx, const char *name, val_t value);
 
 bool engine_context_get(const engine_context_t *ctx, const char *name, val_t *out_value);
@@ -45,12 +48,15 @@ void engine_context_copy(engine_context_t *dst, const engine_context_t *src);
 
 void engine_telemetry_init(engine_telemetry_t *tlm);
 
+
 bool engine_telemetry_set(engine_telemetry_t *tlm, const char *name, double value);
 
 bool engine_telemetry_get(const engine_telemetry_t *tlm, const char *name, double *out_value);
 
+
 bool engine_lookup_state(const char *id, state_id_t *out_state);
 bool engine_lookup_event(const char *id, event_id_t *out_event);
+
 
 typedef struct {
     state_id_t new_state;
@@ -66,14 +72,17 @@ typedef enum {
     ENGINE_STEP_ERR_GUARD_TELEMETRY_MISSING,
 } engine_step_status_t;
 
+
 typedef struct {
     state_id_t state;
     engine_context_t context;
 } engine_persisted_snapshot_t;
 
+
 #ifndef ENGINE_GROUND_AUTH_ENABLED
 #define ENGINE_GROUND_AUTH_ENABLED 0
 #endif
+
 
 engine_step_status_t engine_fsm_step(state_id_t state,
                                       event_id_t event,

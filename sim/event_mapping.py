@@ -10,16 +10,20 @@ _DATA_CLASS_EVENT_SUFFIX_ALIASES = {"CODEC2_M17": "VOICE"}
 
 _IDLE_EVENT_NAME = "SCHEDULER_SELECT_IDLE"
 
+
 class EventMappingError(KeyError):
     pass
+
 
 @dataclass(frozen=True)
 class EventMap:
 
     by_name: dict[str, str]
 
+
 def build_event_map(cfg: Config) -> EventMap:
     return EventMap(by_name={event.name: event.id for event in cfg.events.values()})
+
 
 def resolve(event_map: EventMap, name: str) -> str:
     try:
@@ -28,6 +32,7 @@ def resolve(event_map: EventMap, name: str) -> str:
         raise EventMappingError(
             f"event name not defined by this config: {name!r}"
         ) from None
+
 
 def scheduler_select_event_names(
     event_map: EventMap, data_class: str | None

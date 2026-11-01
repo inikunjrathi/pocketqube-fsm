@@ -9,6 +9,7 @@ from engine.auth import sign_command
 from engine.config_loader import load_config
 from engine.fsm import FSMError, step
 
+
 def make_config(tmp_path: Path, *, states, events, transitions, parameters=None, latches=None) -> "Config":
     conflict_resolution = [
         {"rank": i + 1, "category": f"cat-{e['id']}", "member_events": [e["id"]]}
@@ -27,6 +28,7 @@ def make_config(tmp_path: Path, *, states, events, transitions, parameters=None,
     path.write_text(yaml.safe_dump(raw, sort_keys=False))
     return load_config(path)
 
+
 STATES = [
     {"id": "S-01", "name": "A", "is_initial": True},
     {"id": "S-02", "name": "B", "is_initial": False},
@@ -39,6 +41,7 @@ EVENTS = [
     {"id": "E-03", "name": "ADVANCE", "source": "onboard"},
     {"id": "E-16", "name": "RESET", "source": "harness"},
 ]
+
 
 def test_unconditional_transition_changes_state_and_applies_context_action(tmp_path):
     cfg = make_config(
@@ -56,6 +59,7 @@ def test_unconditional_transition_changes_state_and_applies_context_action(tmp_p
     assert result.context == {"flag": True}
     assert result.transition_id == "T-01"
     assert result.actions == ("set context.flag = true",)
+
 
 def test_guarded_transition_uses_telemetry_and_param(tmp_path):
     cfg = make_config(
@@ -76,6 +80,7 @@ def test_guarded_transition_uses_telemetry_and_param(tmp_path):
     assert blocked.legal is False
     assert blocked.guard_values is None
 
+
 def test_unconditional_transition_has_no_guard_values(tmp_path):
     cfg = make_config(
         tmp_path,
@@ -87,6 +92,7 @@ def test_unconditional_transition_has_no_guard_values(tmp_path):
     )
     result = step(cfg, "S-01", "E-01", {}, now=0)
     assert result.guard_values is None
+
 
 def test_null_target_is_self_loop_but_still_fires_actions(tmp_path):
     cfg = make_config(
@@ -104,6 +110,7 @@ def test_null_target_is_self_loop_but_still_fires_actions(tmp_path):
     assert result.context == {"x": 1}
     assert result.actions == ("log_command_received",)
 
+
 def test_illegal_state_event_pair_is_closed_world_noop(tmp_path):
     cfg = make_config(
         tmp_path,
@@ -119,6 +126,7 @@ def test_illegal_state_event_pair_is_closed_world_noop(tmp_path):
     assert result.context == {"x": 1}
     assert result.actions == ()
     assert result.transition_id is None
+
 
 def test_start_timer_action_arms_context_and_elapsed_guard_reads_it(tmp_path):
     cfg = make_config(
@@ -143,6 +151,7 @@ def test_start_timer_action_arms_context_and_elapsed_guard_reads_it(tmp_path):
     assert enough_time.legal is True
     assert enough_time.new_state == "S-03"
 
+
 def test_reload_from_persistence_restores_persisted_state_and_context(tmp_path):
     cfg = make_config(
         tmp_path,
@@ -161,6 +170,7 @@ def test_reload_from_persistence_restores_persisted_state_and_context(tmp_path):
     assert result.new_state == "S-01"
     assert result.context == {"deployment_confirmed": True}
     assert result.actions == ("reload_from_nvm",)
+
 
 def test_reload_from_persistence_action_can_restart_a_stale_timer(tmp_path):
     cfg = make_config(
@@ -181,6 +191,7 @@ def test_reload_from_persistence_action_can_restart_a_stale_timer(tmp_path):
     assert result.context["deployment_confirmed"] is True
     assert result.context["my_timer"] == 500
 
+
 def test_reload_from_persistence_with_no_snapshot_falls_back_to_initial_state(tmp_path):
     cfg = make_config(
         tmp_path,
@@ -194,6 +205,7 @@ def test_reload_from_persistence_with_no_snapshot_falls_back_to_initial_state(tm
     result = step(cfg, "S-02", "E-16", {"garbage": 1}, now=0, persisted=None)
     assert result.new_state == cfg.initial_state == "S-01"
     assert result.context == {}
+
 
 def test_first_matching_guard_wins_in_table_order(tmp_path):
     cfg = make_config(
@@ -213,6 +225,7 @@ def test_first_matching_guard_wins_in_table_order(tmp_path):
     moves = step(cfg, "S-01", "E-01", {"confirmed": True}, now=0)
     assert moves.transition_id == "T-02" and moves.new_state == "S-02"
 
+
 def test_latch_set_by_transition_id_lands_in_context_even_via_opaque_action(tmp_path):
     cfg = make_config(
         tmp_path,
@@ -226,6 +239,7 @@ def test_latch_set_by_transition_id_lands_in_context_even_via_opaque_action(tmp_
     )
     result = step(cfg, "S-01", "E-01", {}, now=0)
     assert result.context == {"deployment_confirmed": True}
+
 
 def test_latch_cannot_be_cleared_once_set(tmp_path):
     cfg = make_config(
@@ -242,6 +256,7 @@ def test_latch_cannot_be_cleared_once_set(tmp_path):
     result = step(cfg, "S-01", "E-01", {"deployment_confirmed": True}, now=0)
     assert result.context == {"deployment_confirmed": True}
 
+
 def test_malformed_context_mutation_action_raises_fsm_error(tmp_path):
     cfg = make_config(
         tmp_path,
@@ -255,8 +270,10 @@ def test_malformed_context_mutation_action_raises_fsm_error(tmp_path):
     with pytest.raises(FSMError):
         step(cfg, "S-01", "E-01", {}, now=0)
 
+
 SECRET = b"test-secret-key-do-not-use-in-production"
 WRONG_SECRET = b"a-wrong-secret-key"
+
 
 def test_ground_event_fires_unchanged_when_no_secret_configured(tmp_path):
     cfg = make_config(
@@ -271,6 +288,7 @@ def test_ground_event_fires_unchanged_when_no_secret_configured(tmp_path):
     assert result.legal is True
     assert result.new_state == "S-02"
 
+
 def test_ground_event_without_signature_is_rejected_when_secret_configured(tmp_path):
     cfg = make_config(
         tmp_path,
@@ -283,6 +301,7 @@ def test_ground_event_without_signature_is_rejected_when_secret_configured(tmp_p
     result = step(cfg, "S-01", "E-02", {}, now=0, ground_auth_secret=SECRET)
     assert result.legal is False
     assert result.new_state == "S-01"
+
 
 def test_ground_event_with_wrong_signature_is_rejected(tmp_path):
     cfg = make_config(
@@ -301,6 +320,7 @@ def test_ground_event_with_wrong_signature_is_rejected(tmp_path):
     assert result.legal is False
     assert result.new_state == "S-01"
 
+
 def test_ground_event_with_valid_signature_fires(tmp_path):
     cfg = make_config(
         tmp_path,
@@ -317,6 +337,7 @@ def test_ground_event_with_valid_signature_fires(tmp_path):
     )
     assert result.legal is True
     assert result.new_state == "S-02"
+
 
 def test_onboard_event_unaffected_by_auth_enforcement(tmp_path):
     cfg = make_config(

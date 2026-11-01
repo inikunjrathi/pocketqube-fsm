@@ -34,6 +34,6 @@ echo "cepdt/mcu: ZEPHYR_BASE=${ZEPHYR_BASE}" >&2
 echo "cepdt/mcu: ZEPHYR_SDK_INSTALL_DIR=${ZEPHYR_SDK_INSTALL_DIR}" >&2
 echo "cepdt/mcu: building ${APP_DIR} -> ${BUILD_DIR} (board: nucleo_f401re)" >&2
 
-"${WEST}" build -b nucleo_f401re -d "${BUILD_DIR}" "${APP_DIR}" --pristine "$@"
+"${WEST}" build -b "${CEPDT_BOARD:-nucleo_f401re}" -d "${BUILD_DIR}" "${APP_DIR}" --pristine "$@"
 
 echo "cepdt/mcu: build OK -> ${BUILD_DIR}/zephyr/zephyr.elf" >&2

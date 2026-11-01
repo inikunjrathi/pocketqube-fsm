@@ -1,6 +1,7 @@
 :name: cepdt Nucleo-F401RE (Phase 8 Task 1)
 :description: Headless boot of the cepdt Zephyr firmware on a Renode-simulated Nucleo-F401RE, UART exposed on a host pty.
 
+
 using sysbus
 
 $name?="nucleo_f401re"

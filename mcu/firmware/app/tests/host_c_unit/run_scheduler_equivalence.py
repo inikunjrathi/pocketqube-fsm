@@ -21,38 +21,48 @@ from engine.scheduler import Item, Scheduler, SchedulerError  # noqa: E402
 
 PRIORITY = ["TTC", "SSTV", "CODEC2_M17"]
 
+
 class HarnessError(Exception):
     pass
+
 
 @dataclasses.dataclass(frozen=True)
 class InsertOp:
     item: Item
 
+
 @dataclasses.dataclass(frozen=True)
 class SelectOp:
     edf: bool = False
+
 
 @dataclasses.dataclass(frozen=True)
 class PeekClassOp:
     pass
 
+
 @dataclasses.dataclass(frozen=True)
 class CandidatesOp:
     pass
+
 
 @dataclasses.dataclass(frozen=True)
 class IsEmptyOp:
     pass
 
+
 @dataclasses.dataclass(frozen=True)
 class AllItemsOp:
     pass
+
 
 @dataclasses.dataclass(frozen=True)
 class InsertExpectFullOp(InsertOp):
     pass
 
+
 Op = Union[InsertOp, SelectOp, PeekClassOp, CandidatesOp, IsEmptyOp, AllItemsOp, InsertExpectFullOp]
+
 
 @dataclasses.dataclass(frozen=True)
 class Scenario:
@@ -60,8 +70,10 @@ class Scenario:
     priority: list
     ops: list
 
+
 def _edf_key(item: Item):
     return item.deadline if item.deadline is not None else math.inf
+
 
 def build_scenarios() -> list[Scenario]:
     return [
@@ -193,11 +205,13 @@ def build_scenarios() -> list[Scenario]:
         ),
     ]
 
+
 @dataclasses.dataclass(frozen=True)
 class OpResult:
 
     kind: str
     value: object
+
 
 def apply_python(sched: Scheduler, op: Op) -> OpResult:
     if isinstance(op, InsertOp):
@@ -219,12 +233,14 @@ def apply_python(sched: Scheduler, op: Op) -> OpResult:
         return OpResult("id_set", frozenset(item.id for item in sched.all_items()))
     raise HarnessError(f"unhandled op type: {op!r}")
 
+
 def find_cc() -> str:
     for candidate in ("cc", "gcc", "clang"):
         path = shutil.which(candidate)
         if path:
             return path
     raise HarnessError("no C compiler (cc/gcc/clang) found on PATH")
+
 
 def build_harness(build_dir: Path, cc: str) -> Path:
     exe = build_dir / "scheduler_harness"
@@ -238,6 +254,7 @@ def build_harness(build_dir: Path, cc: str) -> Path:
     if result.returncode != 0:
         raise HarnessError(f"C build failed:\n{result.stderr}")
     return exe
+
 
 class SchedulerHarness:
 
@@ -305,6 +322,7 @@ class SchedulerHarness:
             return OpResult("id_set", frozenset() if ids_str == "NONE" else frozenset(ids_str.split(",")))
         raise HarnessError(f"unhandled op type: {op!r}")
 
+
 def _parse_field(reply: str, field: str, *, label: str) -> str:
     marker = f"{field}="
     idx = reply.find(marker)
@@ -313,6 +331,7 @@ def _parse_field(reply: str, field: str, *, label: str) -> str:
     rest = reply[idx + len(marker):]
     return rest.split(" ", 1)[0]
 
+
 @dataclasses.dataclass
 class StepMismatch:
     scenario: str
@@ -320,6 +339,7 @@ class StepMismatch:
     op: Op
     python_result: OpResult
     c_result: OpResult
+
 
 def run_scenario(harness: SchedulerHarness, scenario: Scenario, verbose: bool) -> list[StepMismatch]:
     sched = Scheduler(list(scenario.priority))
@@ -339,6 +359,7 @@ def run_scenario(harness: SchedulerHarness, scenario: Scenario, verbose: bool) -
         if not match:
             mismatches.append(StepMismatch(scenario.name, i, op, py_result, c_result))
     return mismatches
+
 
 def main(argv: Optional[list] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -373,6 +394,7 @@ def main(argv: Optional[list] = None) -> int:
 
     print("All C engine_scheduler.c results match engine.scheduler.Scheduler exactly.")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

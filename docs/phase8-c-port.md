@@ -17,6 +17,7 @@ when run inside a Renode-simulated Nucleo-F401RE (Cortex-M4) under Zephyr.
   Cortex-M4 cycle timing, cache effects, or bus contention; nothing here
   supports a physical-hardware latency claim.
 - Not an RF architecture exercise. Frequency band, antenna, and
+  ground-station network selection remain explicitly out of scope per
   ground-station network selection remain explicitly out of scope, in Task 9's contact-window stretch goal as everywhere
   else.
 - Not a reopening of Phase 0–7D. `engine/*.py` and `sim/*.py` are never
@@ -505,11 +506,29 @@ and why that is a genuine, not a contrived, fix for the actual problem
 (“the host bridge can send `INJECT` at any simulated time regardless of
 pass geometry”).
 
+## Second target: Nucleo-L476RG
+
+The firmware also builds for and runs on a Renode-simulated Nucleo-L476RG. The
+F401RE remains the default and the only target the paper's figures describe.
+Scope, results and the flash-ECC handler are in
+[decision 0013](decisions/0013-nucleo-l476rg-target.md). Everything below takes
+the same `CEPDT_BOARD` variable:
+
+```
+export CEPDT_BOARD=nucleo_l476rg
+mcu/scripts/build_firmware.sh
+python3 mcu/host_bridge/verify_persistence_ab_bank.py
+python3 mcu/host_bridge/verify_flash_ecc_nmi.py
+python3 mcu/host_bridge/replay_baseline.py --config config-a --out-dir /tmp/l476
+```
+
+Always pass `--out-dir` to `replay_baseline.py` for this board, or it overwrites
+the F401 evidence archive.
+
 ## Later tasks
 
 Tasks 2–9 (config codegen through the scheduler.py port, the finalized
 UART protocol, the full seed=42 baseline equivalence run, and the
-contact-window-gated ground command stretch goal) are all complete — see
-this file's protocol reference / Task 8 / Task 9 sections
-above. **Phase 8 (all 9 tasks, including the optional Task 9 stretch) is
+contact-window-gated ground command stretch goal) are all complete — see this file's protocol reference / Task 8 / Task 9
+sections above. **Phase 8 (all 9 tasks, including the optional Task 9 stretch) is
 now fully closed out.**

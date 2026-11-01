@@ -10,8 +10,10 @@ _PARAM_REF_RE = re.compile(r"^[A-Z]+-\d{3}$")
 _NUMBER_RE = re.compile(r"^-?\d+(\.\d+)?$")
 _QUOTED_STRING_RE = re.compile(r"^'([^']*)'$|^\"([^\"]*)\"$")
 
+
 class GuardError(Exception):
     pass
+
 
 def evaluate_guard(
     guard: str,
@@ -40,6 +42,7 @@ def evaluate_guard(
         return lhs < rhs
     return lhs > rhs
 
+
 def resolve_operands(
     guard: str,
     *,
@@ -57,6 +60,7 @@ def resolve_operands(
         "rhs": {"token": rhs_str, "value": rhs},
     }
 
+
 def _split(guard: str) -> tuple[str, str, str]:
     match = _OPERATOR_RE.search(guard)
     if not match:
@@ -68,6 +72,7 @@ def _split(guard: str) -> tuple[str, str, str]:
     if not lhs_str or not rhs_str:
         raise GuardError(f"malformed guard: {guard!r}")
     return lhs_str, op, rhs_str
+
 
 def _resolve_operand(
     token: str,

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 cmake_minimum_required(VERSION 3.20.0)
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
@@ -19,6 +21,7 @@ endif()
 
 target_sources(app PRIVATE src/engine_persistence.c)
 target_sources(app PRIVATE src/engine_persistence_io_zephyr.c)
+target_sources_ifdef(CONFIG_SOC_SERIES_STM32L4X app PRIVATE src/engine_flash_ecc_stm32l4.c)
 
 if(CEPDT_ENGINE_PERSIST_TESTHOOKS_ENABLED)
   target_compile_definitions(app PRIVATE ENGINE_PERSIST_TESTHOOKS_ENABLED=1)

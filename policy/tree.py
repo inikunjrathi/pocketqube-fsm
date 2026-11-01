@@ -9,6 +9,7 @@ MAX_DEPTH = 4
 
 MIN_SAMPLES_LEAF = 5
 
+
 @dataclass
 class TreeNode:
     feature_index: Optional[int] = None
@@ -16,6 +17,7 @@ class TreeNode:
     left: Optional["TreeNode"] = None
     right: Optional["TreeNode"] = None
     prediction: Optional[str] = None
+
 
 def _gini(labels: list[str]) -> float:
     if not labels:
@@ -26,16 +28,19 @@ def _gini(labels: list[str]) -> float:
     n = len(labels)
     return 1.0 - sum((count / n) ** 2 for count in counts.values())
 
+
 def _majority_label(labels: list[str]) -> str:
     counts: dict[str, int] = {}
     for label in labels:
         counts[label] = counts.get(label, 0) + 1
     return max(counts, key=lambda label: (counts[label], label))
 
+
 def _gini_counts(counts: dict[str, int], n: int) -> float:
     if n == 0:
         return 0.0
     return 1.0 - sum((count / n) ** 2 for count in counts.values())
+
 
 def _best_split(
     rows: list[tuple[tuple[float, ...], str]]
@@ -70,6 +75,7 @@ def _best_split(
                 best = (feature_index, (value + next_value) / 2.0, weighted)
     return best
 
+
 def fit(rows: list[tuple[tuple[float, ...], str]], *, depth: int = 0) -> TreeNode:
     if not rows:
         raise ValueError("fit() requires at least one training row")
@@ -89,6 +95,7 @@ def fit(rows: list[tuple[tuple[float, ...], str]], *, depth: int = 0) -> TreeNod
         left=fit(left_rows, depth=depth + 1), right=fit(right_rows, depth=depth + 1),
     )
 
+
 def predict(node: TreeNode, features: tuple[float, ...]) -> str:
     if node.prediction is not None:
         return node.prediction
@@ -96,8 +103,10 @@ def predict(node: TreeNode, features: tuple[float, ...]) -> str:
         return predict(node.left, features)
     return predict(node.right, features)
 
+
 def export_if_else(node: TreeNode) -> str:
     return "def predict_exported(features):\n" + _export_body(node, indent=1)
+
 
 def _export_body(node: TreeNode, *, indent: int) -> str:
     pad = "    " * indent
@@ -111,8 +120,10 @@ def _export_body(node: TreeNode, *, indent: int) -> str:
         f"{_export_body(node.right, indent=indent + 1)}"
     )
 
+
 def export_text(node: TreeNode) -> str:
     return _export_text(node, depth=0)
+
 
 def _export_text(node: TreeNode, *, depth: int) -> str:
     pad = "|   " * depth + "|--- "
@@ -126,6 +137,7 @@ def _export_text(node: TreeNode, *, depth: int) -> str:
         f"{_export_text(node.right, depth=depth + 1)}"
     )
 
+
 class TreePolicy:
 
     def __init__(self, root: TreeNode) -> None:
@@ -133,6 +145,7 @@ class TreePolicy:
 
     def decide(self, features, context=None) -> str:
         return predict(self._root, features.as_tuple())
+
 
 def train(rows) -> TreePolicy:
     data = [(row.features.as_tuple(), row.label) for row in rows]

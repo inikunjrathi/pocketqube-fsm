@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+
 static void copy_truncated(char *dst, size_t dst_size, const char *src)
 {
     if (dst_size == 0) {
@@ -14,6 +15,7 @@ static void copy_truncated(char *dst, size_t dst_size, const char *src)
     memcpy(dst, src, n);
     dst[n] = '\0';
 }
+
 
 void engine_scheduler_init(engine_scheduler_t *sched, const char *const *priority_order, uint8_t n_classes)
 {
@@ -30,6 +32,7 @@ void engine_scheduler_init(engine_scheduler_t *sched, const char *const *priorit
 
 }
 
+
 static bool lookup_rank(const engine_scheduler_t *sched, const char *data_class, int16_t *out_rank)
 {
     for (uint8_t i = 0; i < sched->n_classes; i++) {
@@ -40,6 +43,7 @@ static bool lookup_rank(const engine_scheduler_t *sched, const char *data_class,
     }
     return false;
 }
+
 
 engine_sched_status_t engine_scheduler_insert(engine_scheduler_t *sched, const engine_sched_item_t *item)
 {
@@ -60,6 +64,7 @@ engine_sched_status_t engine_scheduler_insert(engine_scheduler_t *sched, const e
     return ENGINE_SCHED_OK;
 }
 
+
 static int find_min_entry(const engine_scheduler_t *sched)
 {
     if (sched->count == 0) {
@@ -76,6 +81,7 @@ static int find_min_entry(const engine_scheduler_t *sched)
     return best;
 }
 
+
 static bool find_top_rank(const engine_scheduler_t *sched, int16_t *out_rank)
 {
     if (sched->count == 0) {
@@ -91,6 +97,7 @@ static bool find_top_rank(const engine_scheduler_t *sched, int16_t *out_rank)
     return true;
 }
 
+
 static void remove_entry_at(engine_scheduler_t *sched, int index)
 {
     sched->count--;
@@ -98,6 +105,7 @@ static void remove_entry_at(engine_scheduler_t *sched, int index)
         sched->entries[index] = sched->entries[sched->count];
     }
 }
+
 
 double engine_scheduler_edf_key(const engine_sched_item_t *item)
 {
@@ -123,6 +131,7 @@ bool engine_scheduler_select_next(engine_scheduler_t *sched, engine_sched_key_fn
         return true;
     }
 
+
     int16_t top_rank;
     find_top_rank(sched, &top_rank);
 
@@ -145,6 +154,7 @@ bool engine_scheduler_select_next(engine_scheduler_t *sched, engine_sched_key_fn
     remove_entry_at(sched, chosen);
     return true;
 }
+
 
 bool engine_scheduler_peek_next_class(const engine_scheduler_t *sched, char *out_class, size_t out_size)
 {

@@ -5,6 +5,7 @@ import random
 
 from policy.bound import fluid_completions, moore_hodgson
 
+
 def test_moore_hodgson_matches_brute_force():
     rng = random.Random(3)
     for _ in range(50):
@@ -19,6 +20,7 @@ def test_moore_hodgson_matches_brute_force():
                 if ok:
                     best = max(best, r)
         assert moore_hodgson(jobs) == best
+
 
 def test_fluid_completions_capacity_and_rerouting():
     assert fluid_completions([(0, 1, 4)] * 3, 1, 10) == 2.5

@@ -12,6 +12,7 @@ _BITS_PER_BYTE = 8
 _P50 = 0.50
 _P95 = 0.95
 
+
 @dataclass(frozen=True)
 class BaselineMetrics:
     delivery_success_rate: float
@@ -24,6 +25,7 @@ class BaselineMetrics:
     deadline_success_ratio: float = 0.0
     deadline_success_ratio_by_class: dict[str, float] = field(default_factory=dict)
 
+
 def _percentile(sorted_values: list[float], p: float) -> float:
     n = len(sorted_values)
     if n == 1:
@@ -35,6 +37,7 @@ def _percentile(sorted_values: list[float], p: float) -> float:
         return sorted_values[lo]
     frac = rank - lo
     return sorted_values[lo] + frac * (sorted_values[hi] - sorted_values[lo])
+
 
 def compute_metrics(
     deliveries: list[DeliveryRecord],
@@ -107,7 +110,9 @@ def compute_metrics(
         deadline_success_ratio_by_class=deadline_success_ratio_by_class,
     )
 
+
 _Z_95 = 1.96
+
 
 @dataclass(frozen=True)
 class MetricSummary:
@@ -118,6 +123,7 @@ class MetricSummary:
     ci95_low: float
     ci95_high: float
 
+
 @dataclass(frozen=True)
 class AggregatedMetrics:
 
@@ -127,6 +133,7 @@ class AggregatedMetrics:
     energy_per_delivered_bit_j: MetricSummary | None
     deadline_success_ratio: MetricSummary | None = None
     deadline_success_ratio_by_class: dict[str, MetricSummary] = field(default_factory=dict)
+
 
 def _summarize(values: list[float]) -> MetricSummary:
     n = len(values)
@@ -140,6 +147,7 @@ def _summarize(values: list[float]) -> MetricSummary:
     return MetricSummary(
         n=n, mean=mean, stdev=stdev, ci95_low=mean - margin, ci95_high=mean + margin
     )
+
 
 def aggregate_metrics(runs: list[BaselineMetrics]) -> AggregatedMetrics:
     if not runs:

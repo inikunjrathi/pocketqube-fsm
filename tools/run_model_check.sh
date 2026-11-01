@@ -45,6 +45,25 @@ for module in config_a config_b config_c; do
 done
 
 echo ""
+echo "=== TLC: persistence_ab ==="
+if ! (cd "$SPEC_DIR" && java -cp "$JAR" tlc2.TLC -metadir "$tmp/persistence_ab" \
+      -config persistence_ab.cfg persistence_ab.tla); then
+  status=1
+fi
+for mutant in raw_target single_write skip_either; do
+  sed "s/Mutant = \"none\"/Mutant = \"$mutant\"/" "$SPEC_DIR/persistence_ab.cfg" > "$tmp/$mutant.cfg"
+  echo "--- persistence_ab: mutant $mutant (expected: violated) ---"
+  (cd "$SPEC_DIR" && java -cp "$JAR" tlc2.TLC -metadir "$tmp/$mutant" \
+      -config "$tmp/$mutant.cfg" persistence_ab.tla) > "$tmp/$mutant.out" 2>&1 || true
+  if grep -q "is violated" "$tmp/$mutant.out"; then
+    echo "ok: $(grep -m1 "is violated" "$tmp/$mutant.out")"
+  else
+    echo "UNEXPECTED: mutant $mutant passes -- persistence_ab is vacuous?" >&2
+    status=1
+  fi
+done
+
+echo ""
 if [[ "$status" -ne 0 ]]; then
   echo "One or more checks failed -- see output above." >&2
 else

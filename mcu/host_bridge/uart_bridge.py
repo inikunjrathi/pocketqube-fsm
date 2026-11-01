@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Mapping, Optional, Union
+from typing import Any, Mapping, Optional, Sequence, Union
 
 try:
     import serial
@@ -27,8 +27,13 @@ DEFAULT_BOOT_TIMEOUT_S = 30.0
 DEFAULT_BOOT_POLL_INTERVAL_S = 0.2
 DEFAULT_READ_TIMEOUT_S = 5.0
 
+
+_READY_POLL_S = 0.5
+
+
 class UartBridgeError(Exception):
     pass
+
 
 class RenodeSession:
 
@@ -133,12 +138,14 @@ class RenodeSession:
         except subprocess.TimeoutExpired:
             pass
 
+
 def format_wire_value(value: Any) -> str:
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, (int, float)):
         return str(value)
     return str(value)
+
 
 def format_inject_line(
     event_id: str,
@@ -160,9 +167,33 @@ def format_inject_line(
         parts.append(signature)
     return " ".join(parts)
 
+
+def format_service_line(
+    state_id: str,
+    now: float,
+    context: Mapping[str, Any],
+    telemetry: Mapping[str, Any],
+    pending: Sequence[tuple[str, float]],
+) -> str:
+    parts = ["SERVICE", state_id, format_wire_value(now)]
+    parts += [f"{k}={format_wire_value(v)}" for k, v in context.items()]
+    parts.append(";")
+    parts += [f"{k}={format_wire_value(v)}" for k, v in telemetry.items()]
+    parts.append(";")
+    parts += [f"{event_id}@{format_wire_value(t)}" for event_id, t in pending]
+    return " ".join(parts)
+
+
 @dataclasses.dataclass(frozen=True)
 class Ready:
     pass
+
+
+@dataclasses.dataclass(frozen=True)
+class Serviced:
+
+    remaining: tuple[str, ...]
+
 
 @dataclasses.dataclass(frozen=True)
 class Decision:
@@ -178,18 +209,22 @@ class Decision:
     def as_comparison_tuple(self) -> tuple[str, Optional[str], tuple[str, ...], bool]:
         return (self.to_state, self.transition_id, self.actions, self.legal)
 
+
 @dataclasses.dataclass(frozen=True)
 class Error:
 
     reason: str
     detail: Optional[str]
 
+
 @dataclasses.dataclass(frozen=True)
 class Raw:
 
     text: str
 
-ResponseLine = Union[Ready, Decision, Error, Raw]
+
+ResponseLine = Union[Ready, Decision, Serviced, Error, Raw]
+
 
 def parse_response_line(line: str) -> ResponseLine:
     line = line.rstrip("\r\n")
@@ -203,13 +238,17 @@ def parse_response_line(line: str) -> ResponseLine:
         return Error(reason=parts[0], detail=parts[1] if len(parts) > 1 else None)
     if line.startswith("DECISION"):
         return _parse_decision_line(line)
+    if line == "SERVICED" or line.startswith("SERVICED "):
+        return Serviced(remaining=tuple(line.split()[1:]))
     return Raw(text=line)
+
 
 def _split_first_token(s: str) -> tuple[str, str]:
     idx = s.find(" ")
     if idx == -1:
         return s, ""
     return s[:idx], s[idx + 1:]
+
 
 def _parse_decision_line(line: str) -> Decision:
     prefix = "DECISION "
@@ -253,6 +292,7 @@ def _parse_decision_line(line: str) -> Decision:
         actions=actions,
     )
 
+
 class UartBridge:
     def __init__(self, port: str, *, baud_rate: int = DEFAULT_BAUD_RATE, timeout_s: float = DEFAULT_READ_TIMEOUT_S) -> None:
         self._ser = serial.Serial(port, baud_rate, timeout=timeout_s)
@@ -270,12 +310,12 @@ class UartBridge:
     def wait_for_ready(self, timeout_s: float = DEFAULT_READ_TIMEOUT_S) -> None:
         deadline = time.monotonic() + timeout_s
         while time.monotonic() < deadline:
-            remaining = max(0.05, deadline - time.monotonic())
-            line = self._read_line(timeout_s=remaining)
-            if line is None:
-                continue
-            parsed = parse_response_line(line)
-            if isinstance(parsed, Ready):
+            self._ser.write(b"PING\n")
+            self._ser.flush()
+            line = self._read_line(timeout_s=_READY_POLL_S)
+            if line is not None and isinstance(parse_response_line(line), Ready):
+                while self._read_line(timeout_s=_READY_POLL_S) is not None:
+                    pass
                 return
         raise UartBridgeError(f"no READY line received within {timeout_s:.0f}s")
 
@@ -290,6 +330,18 @@ class UartBridge:
         signature: Optional[str] = None,
     ) -> None:
         line = format_inject_line(event_id, state_id, now, context, telemetry, signature=signature)
+        self._ser.write((line + "\n").encode("ascii"))
+        self._ser.flush()
+
+    def send_service(
+        self,
+        state_id: str,
+        now: float,
+        context: Mapping[str, Any],
+        telemetry: Mapping[str, Any],
+        pending: Sequence[tuple[str, float]],
+    ) -> None:
+        line = format_service_line(state_id, now, context, telemetry, pending)
         self._ser.write((line + "\n").encode("ascii"))
         self._ser.flush()
 

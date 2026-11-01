@@ -2,7 +2,16 @@
 
 #include <string.h>
 
+#include <zephyr/devicetree.h>
 #include <zephyr/storage/flash_map.h>
+#include <zephyr/sys/util.h>
+#include <zephyr/toolchain.h>
+
+#define FLASH_WRITE_BLOCK DT_PROP(DT_CHOSEN(zephyr_flash), write_block_size)
+#define RECORD_WRITE_SIZE ROUND_UP(sizeof(engine_persist_record_t), FLASH_WRITE_BLOCK)
+
+BUILD_ASSERT(RECORD_WRITE_SIZE <= DT_REG_SIZE(DT_NODELABEL(slot0_partition)));
+BUILD_ASSERT(RECORD_WRITE_SIZE <= DT_REG_SIZE(DT_NODELABEL(slot1_partition)));
 
 static bool open_bank(engine_persist_bank_t bank, const struct flash_area **out_fa)
 {
@@ -43,7 +52,15 @@ bool engine_persist_io_write(engine_persist_bank_t bank, const engine_persist_re
 
     int rc = flash_area_erase(fa, 0, fa->fa_size);
     if (rc == 0) {
-        rc = flash_area_write(fa, 0, record, sizeof(*record));
+        if (RECORD_WRITE_SIZE == sizeof(*record)) {
+            rc = flash_area_write(fa, 0, record, sizeof(*record));
+        } else {
+            static uint8_t padded[RECORD_WRITE_SIZE];
+
+            memset(padded, 0xFF, sizeof(padded));
+            memcpy(padded, record, sizeof(*record));
+            rc = flash_area_write(fa, 0, padded, sizeof(padded));
+        }
     }
     flash_area_close(fa);
     return rc == 0;

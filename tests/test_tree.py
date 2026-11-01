@@ -7,6 +7,7 @@ import pytest
 from policy.base import FEATURE_NAMES
 from policy.tree import MAX_DEPTH, export_if_else, fit, predict
 
+
 def test_fit_predict_on_separable_data():
     rows = [
         ((0.0, 0.0), "hold"), ((0.0, 1.0), "hold"), ((1.0, 0.0), "hold"),
@@ -16,6 +17,7 @@ def test_fit_predict_on_separable_data():
     assert predict(tree, (0.0, 0.0)) == "hold"
     assert predict(tree, (10.0, 1.0)) == "serve"
     assert predict(tree, (10.5, 0.5)) == "serve"
+
 
 def test_max_depth_is_respected():
     def depth_of(node, d=0):
@@ -30,6 +32,7 @@ def test_max_depth_is_respected():
     ]
     tree = fit(rows)
     assert depth_of(tree) <= MAX_DEPTH
+
 
 def test_export_if_else_matches_predict():
     n = len(FEATURE_NAMES)
@@ -51,15 +54,18 @@ def test_export_if_else_matches_predict():
         assert predict(tree, features) == expected
         assert predict_exported(feature_dict) == expected
 
+
 def test_fit_on_single_class_returns_a_leaf():
     rows = [((0.0,), "serve")] * 6
     tree = fit(rows)
     assert tree.prediction == "serve"
     assert tree.feature_index is None
 
+
 def test_fit_on_empty_rows_raises_value_error():
     with pytest.raises(ValueError):
         fit([])
+
 
 def test_train_produces_a_policy_matching_predict():
     from policy.dataset import TrainingRow
@@ -83,6 +89,7 @@ def test_train_produces_a_policy_matching_predict():
     assert decision_low == "hold"
     assert decision_high == "serve"
     assert decision_low == predict(policy._root, fv(5.0).as_tuple())
+
 
 def test_sweep_best_split_matches_brute_force_rescan():
     from policy.tree import MIN_SAMPLES_LEAF, _best_split, _gini

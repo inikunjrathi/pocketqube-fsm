@@ -5,10 +5,13 @@
 #include <stdio.h>
 #include <string.h>
 
+
 static uint8_t g_secret[ENGINE_AUTH_SECRET_MAX_LEN];
 static size_t g_secret_len;
 
+
 #define ENGINE_AUTH_MESSAGE_BUF_SIZE 128u
+
 
 static bool now_is_signable(double now, long long *out_int_now)
 {
@@ -24,6 +27,7 @@ static bool now_is_signable(double now, long long *out_int_now)
     return true;
 }
 
+
 static void hex_encode_lower(const uint8_t *bytes, size_t len, char *out)
 {
     static const char digits[] = "0123456789abcdef";
@@ -34,6 +38,7 @@ static void hex_encode_lower(const uint8_t *bytes, size_t len, char *out)
     }
     out[2 * len] = '\0';
 }
+
 
 static bool constant_time_hex_equal(const char *a, const char *b)
 {

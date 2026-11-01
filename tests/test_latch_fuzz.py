@@ -20,6 +20,7 @@ ELAPSED_TIMER_KEYS: dict[tuple[str, str], str] = {
     ("config-c", "T-15"): "ground_contact_timer",
 }
 
+
 def _available_transitions(cfg, state_id):
     seen_ids: set[str] = set()
     available = []
@@ -35,6 +36,7 @@ def _available_transitions(cfg, state_id):
             available.append((t, fixture))
     return available
 
+
 def _apply_fixture(cfg, t, now, context, fixture):
     new_context = dict(context)
     new_context.update(fixture.context)
@@ -44,9 +46,10 @@ def _apply_fixture(cfg, t, now, context, fixture):
     new_context[timer_key] = now
     return now + fixture.now, new_context
 
+
 def _run_walk(cfg, seed):
     rng = random.Random(seed)
-    persistence = PersistenceLayer(latch.name for latch in cfg.latches)
+    persistence = PersistenceLayer()
     state, context, now = cfg.initial_state, {}, 0
     latch_ever_true = False
     reset_event = next(e.id for e in cfg.events.values() if e.name == "RESET")
@@ -83,6 +86,7 @@ def _run_walk(cfg, seed):
             now += 1
             persistence.save(state, context)
             _check_latch("after a random RESET injection")
+
 
 @pytest.mark.parametrize("cfg", ALL_CONFIGS, ids=lambda c: c.config_id)
 @pytest.mark.parametrize("seed", SEEDS)

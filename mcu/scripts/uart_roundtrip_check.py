@@ -35,6 +35,7 @@ TEST_CASES = [
     bytes(range(1, 128)),
 ]
 
+
 def wait_for_pty(path, timeout_s, poll_interval_s):
     deadline = time.monotonic() + timeout_s
     while time.monotonic() < deadline:
@@ -42,6 +43,7 @@ def wait_for_pty(path, timeout_s, poll_interval_s):
             return True
         time.sleep(poll_interval_s)
     return False
+
 
 def run_roundtrip(pty_path):
     ser = serial.Serial(pty_path, BAUD_RATE, timeout=SERIAL_TIMEOUT_S)
@@ -63,6 +65,7 @@ def run_roundtrip(pty_path):
         return failures
     finally:
         ser.close()
+
 
 def main():
     if os.path.islink(UART_PTY) or os.path.exists(UART_PTY):
@@ -134,6 +137,7 @@ def main():
             except OSError:
                 pass
 
+
 def _terminate_group(proc):
     if proc.poll() is not None:
         return
@@ -159,6 +163,7 @@ def _terminate_group(proc):
     except subprocess.TimeoutExpired:
         pass
 
+
 def _dump_log(log_path):
     print("--- Renode subprocess log (%s) ---" % log_path, file=sys.stderr)
     try:
@@ -166,6 +171,7 @@ def _dump_log(log_path):
             sys.stderr.write(f.read())
     except OSError as exc:
         print("(could not read log: %r)" % exc, file=sys.stderr)
+
 
 if __name__ == "__main__":
     sys.exit(main())

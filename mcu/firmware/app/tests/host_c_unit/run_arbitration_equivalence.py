@@ -21,6 +21,7 @@ CONFIG_IDS = ("config-a", "config-b", "config-c")
 N_RANDOM = 2000
 TIMESTAMPS = (0.0, 10.0, 10.0, 25.5, 172800.0)
 
+
 def build_cases(cfg: Config, seed: int = 19) -> list[list[tuple[int, float]]]:
     n = len(cfg.events)
     cases = [[(i, 0.0)] for i in range(n)]
@@ -35,11 +36,13 @@ def build_cases(cfg: Config, seed: int = 19) -> list[list[tuple[int, float]]]:
         cases.append([(rng.randrange(n), rng.choice(TIMESTAMPS)) for _ in range(k)])
     return cases
 
+
 def python_order(cfg: Config, case: list[tuple[int, float]]) -> list[int]:
     ids = list(cfg.events)
     plain = [PendingEvent(ids[e], t) for e, t in case]
     pos = {id(p): k for k, p in enumerate(plain)}
     return [pos[id(p)] for p in arbitrate(cfg, plain)]
+
 
 def build_harness(cfg: Config, build_dir: Path, cc: str) -> Path:
     tables = generate_tables(cfg)
@@ -58,6 +61,7 @@ def build_harness(cfg: Config, build_dir: Path, cc: str) -> Path:
         raise RuntimeError(f"C build failed:\n{r.stderr}")
     return exe
 
+
 def run_config(config_id: str, cc: str) -> tuple[int, list[str]]:
     cfg = load_config(REPO_ROOT / "config" / f"{config_id}.yaml")
     cases = build_cases(cfg)
@@ -73,6 +77,7 @@ def run_config(config_id: str, cc: str) -> tuple[int, list[str]]:
             mismatches.append(f"{config_id} {case}: python={py} c={line}")
     return len(cases), mismatches
 
+
 def main() -> int:
     cc = shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
     total, bad = 0, []
@@ -84,6 +89,7 @@ def main() -> int:
     for m in bad[:20]:
         print(m)
     return 1 if bad else 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

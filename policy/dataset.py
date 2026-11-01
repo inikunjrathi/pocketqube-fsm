@@ -11,10 +11,12 @@ DEFAULT_SEEDS = tuple(range(1000, 1020))
 DATASET_DURATION_S = 172_800.0
 DATASET_DT_S = 10.0
 
+
 @dataclass(frozen=True)
 class TrainingRow:
     features: FeatureVector
     label: str
+
 
 def generate_dataset(
     configs: list[Config],

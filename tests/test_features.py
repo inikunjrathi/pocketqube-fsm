@@ -7,6 +7,7 @@ from policy.features import build_features
 
 PRIORITY = ["TTC", "SSTV", "CODEC2_M17"]
 
+
 def test_build_features_basic_snapshot():
     item = Item(id="i1", data_class="SSTV", deadline=150.0)
     fv = build_features(
@@ -29,6 +30,7 @@ def test_build_features_basic_snapshot():
     assert fv.top_class_deadline_slack_s == 50.0
     assert fv.ticks_since_last_service == 3
 
+
 def test_build_features_no_deadline_is_inf():
     item = Item(id="i1", data_class="TTC", deadline=None)
     fv = build_features(
@@ -37,6 +39,7 @@ def test_build_features_no_deadline_is_inf():
         ticks_since_last_service=0,
     )
     assert fv.top_class_deadline_slack_s == math.inf
+
 
 def test_build_features_top_class_rank_for_ttc():
     item = Item(id="i1", data_class="TTC", deadline=None)

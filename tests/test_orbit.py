@@ -16,11 +16,13 @@ from sim.scenario import (
 
 TLE_EPOCH = datetime(2025, 1, 21, 21, 45, 38, 676096, tzinfo=timezone.utc)
 
+
 def test_reference_tle_is_valid_leo():
     sat = load_satellite()
     x, y, z = propagate(sat, TLE_EPOCH)
     radius_km = (x**2 + y**2 + z**2) ** 0.5
     assert 6800.0 <= radius_km <= 7000.0
+
 
 def test_propagate_is_deterministic():
     sat = load_satellite()
@@ -28,6 +30,7 @@ def test_propagate_is_deterministic():
     r1 = propagate(sat, when)
     r2 = propagate(sat, when)
     assert r1 == r2
+
 
 def test_elevation_at_subsatellite_point_is_near_90():
     sat = load_satellite()
@@ -42,6 +45,7 @@ def test_elevation_at_subsatellite_point_is_near_90():
         best = max(best, el)
         t += step
     assert best > 80.0
+
 
 def test_find_passes_returns_sane_passes_over_one_day():
     sat = load_satellite()
@@ -60,6 +64,7 @@ def test_find_passes_returns_sane_passes_over_one_day():
         duration_min = (p.los - p.aos).total_seconds() / 60.0
         assert duration_min < 15.0
 
+
 def test_find_passes_default_stations_matches_single_station_call():
     sat = load_satellite()
     start = TLE_EPOCH
@@ -76,6 +81,7 @@ def test_find_passes_default_stations_matches_single_station_call():
 
     assert default_passes == explicit_single
 
+
 def test_find_passes_with_second_station_has_at_least_as_much_contact():
     sat = load_satellite()
     start = TLE_EPOCH
@@ -91,6 +97,7 @@ def test_find_passes_with_second_station_has_at_least_as_much_contact():
 
     assert dual_contact_s >= single_contact_s
     assert dual_contact_s > single_contact_s
+
 
 def test_no_network_access():
     import sim.orbit as orbit_module

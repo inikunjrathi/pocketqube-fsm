@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+
 static int compare(const engine_pending_event_t *a, const engine_pending_event_t *b)
 {
     const engine_arbitration_key_t *ka = &g_event_arbitration[a->event];

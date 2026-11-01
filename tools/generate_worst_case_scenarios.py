@@ -39,6 +39,7 @@ STORM_RATE_PER_CLASS_PER_HOUR: dict[str, float] = {
     "CODEC2_M17": 40.0,
 }
 
+
 def with_overridden_parameters(cfg: Config, overrides: dict[str, float]) -> Config:
     new_parameters = dict(cfg.parameters)
     for param_id, new_value in overrides.items():
@@ -49,6 +50,7 @@ def with_overridden_parameters(cfg: Config, overrides: dict[str, float]) -> Conf
         )
     return dataclasses.replace(cfg, parameters=new_parameters)
 
+
 @dataclasses.dataclass(frozen=True)
 class ScenarioResult:
     label: str
@@ -56,6 +58,7 @@ class ScenarioResult:
     ttc_latency_p95_s: float | None
     energy_per_delivered_bit_j: float | None
     deadline_success_ratio: float = 0.0
+
 
 def run_scenario(
     cfg: Config,
@@ -93,6 +96,7 @@ def run_scenario(
         deadline_success_ratio=metrics.deadline_success_ratio,
     )
 
+
 STRESS_CASES: tuple[tuple[str, str, dict], ...] = (
     (
         "ST-1 depleted start",
@@ -114,6 +118,7 @@ STRESS_CASES: tuple[tuple[str, str, dict], ...] = (
     ),
 )
 
+
 @dataclasses.dataclass(frozen=True)
 class StressResult:
     label: str
@@ -126,6 +131,7 @@ class StressResult:
     delivery_success_rate: float
     deadline_success_ratio: float
     energy_per_delivered_bit_j: float | None
+
 
 def run_stress_case(
     cfg: Config, label: str, kwargs: dict, *, seed: int, duration_s: float, dt_s: float,
@@ -166,6 +172,7 @@ def run_stress_case(
         deadline_success_ratio=metrics.deadline_success_ratio,
         energy_per_delivered_bit_j=metrics.energy_per_delivered_bit_j,
     )
+
 
 def _render_stress_section(stress_by_config: dict[str, list[StressResult]]) -> str:
     def _h(v: float | None) -> str:
@@ -212,11 +219,14 @@ def _render_stress_section(stress_by_config: dict[str, list[StressResult]]) -> s
     ]
     return "\n".join(lines)
 
+
 def _fmt_energy(value: float | None) -> str:
     return "—" if value is None else f"{value:.6g}"
 
+
 def _fmt_s(value: float | None) -> str:
     return "—" if value is None else f"{value:.2f}"
+
 
 def _render_config_section(
     config_id: str, results: tuple[ScenarioResult, ScenarioResult]
@@ -246,6 +256,7 @@ def _render_config_section(
     )
     lines.append("")
     return "\n".join(lines)
+
 
 def render_document(
     rows_by_config: dict[str, tuple[ScenarioResult, ScenarioResult]],
@@ -288,6 +299,7 @@ def render_document(
         parts.append(_render_stress_section(stress_by_config))
     return "\n".join(parts)
 
+
 def write_worst_case_scenarios(
     output_path: str | Path = DEFAULT_OUTPUT_PATH,
     *,
@@ -315,9 +327,11 @@ def write_worst_case_scenarios(
         ]
     Path(output_path).write_text(render_document(rows_by_config, stress_by_config))
 
+
 def main() -> None:
     write_worst_case_scenarios(DEFAULT_OUTPUT_PATH)
     print(f"wrote {DEFAULT_OUTPUT_PATH}")
+
 
 if __name__ == "__main__":
     main()

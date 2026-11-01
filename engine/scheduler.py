@@ -5,8 +5,10 @@ import itertools
 from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
+
 class SchedulerError(Exception):
     pass
+
 
 @dataclass(frozen=True)
 class Item:
@@ -14,6 +16,7 @@ class Item:
     data_class: str
     size_bytes: int = 0
     deadline: Optional[float] = None
+
 
 class Scheduler:
     def __init__(self, priority_order: list[str]) -> None:

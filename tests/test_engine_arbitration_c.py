@@ -20,6 +20,7 @@ pytestmark = [
     pytest.mark.requirement("R-19"),
 ]
 
+
 @pytest.mark.parametrize("config_id", rae.CONFIG_IDS)
 def test_c_arbitration_matches_python(config_id):
     n, mismatches = rae.run_config(config_id, CC)

@@ -1,6 +1,6 @@
 {
   "title": "pocketqube-fsm: configuration-driven, model-checked decision engine for PocketQube deployment and downlink scheduling",
-  "description": "Code, configurations and evidence for the paper \"Mission-agnostic mode management for PocketQubes: a configuration-driven, model-checked decision engine for deployment and downlink scheduling\". Includes the Python engine and three YAML mission configurations, the POQUITO-based simulation, the policy comparison, generated TLA+ specifications, the 1,213-test suite, the Zephyr C port for STM32F401RE, and the archived Renode replay logs (35,763 decisions, no mismatches).",
+  "description": "Code, configurations and evidence for the paper \"Configuration-driven mode logic for resource-constrained embedded systems: requirement-based model checking, torn-write persistence and a PocketQube case study\". Includes the Python engine and three YAML mission configurations, the POQUITO-based simulation, the policy comparison, generated and hand-written TLA+ specifications, the 1,218-test suite, the Zephyr C port for STM32F401RE and STM32L476RG, the archived Renode replay logs for all three configurations (35,763, 35,761 and 35,761 decisions, no mismatches) and the firmware measurements.",
   "upload_type": "software",
   "license": "MIT",
   "creators": [

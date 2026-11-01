@@ -1,5 +1,40 @@
+# Hand-written safety requirements, one block per configuration.
+#
+# Written from docs/requirements/requirements-config-{a,b,c}.md and the
+# use-case constraints (RF silence before deployment, dual/single-path
+# confirmation, ground override from the RF-enabled states, declared
+# safe-mode exits). NOT derived from config/*.yaml: states and events are
+# referred to by NAME, never by S-xx/E-xx/T-xx id, and no field here is
+# computed from the transition table. This is the independent oracle for
+# the common-mode argument: if a config edit (or a generator bug) changes
+# behaviour, TLC (tools/generate_tla_spec.py) and the engine explorer
+# (tests/test_requirements_independent.py) check the result against this
+# file, not against the YAML that produced it.
+#
+# Field meanings (all names):
+#   latch               the deployment latch's context name
+#   pre_latch_states    states in which the latch may still be false
+#                       (R-05/R-08 style: every other state needs it set)
+#   latch_events        the only events whose step may raise the latch
+#   latch_requires      context flags that must be true when it rises (R-03)
+#   rf_silent_states    states in which RF must still be off (R-02/R-08)
+#   rf_enable_events    the only events that may leave the silent states
+#   safe_state          the safe-mode state
+#   safe_exit_events    the only events whose step may leave safe_state
+#                       (RESET / COMMS_LOSS_TIMEOUT reload the last persisted
+#                       state, which can be pre-safe after a torn save)
+#   safe_entry_events   the only events whose step may enter safe_state
+#   ground_safe_event   ground safe-mode command
+#   ground_safe_from    exactly the states from which ground_safe_event
+#                       must be able to reach safe_state (R-22/RB-08/RC-08)
+#   reset_event         must be available from every state (R-27)
+#   scheduler_events    may only fire inside comms_states and stay there
+#   comms_states        the comms-mode states (R-10/R-14)
+
 config-a:
   latch: deployment_confirmed
+  # SAFE_MODE is allowed before the latch: R-22 makes ground safe-mode the
+  # escalation path from DEPLOY_CONFIRM_PENDING if confirmation stalls.
   pre_latch_states: [STOWED, RF_INHIBIT, DEPLOY_CONFIRM_PENDING, SAFE_MODE]
   latch_events: [DEPLOY_CONFIRM_PATH_A, DEPLOY_CONFIRM_PATH_B]
   latch_requires: [path_a_confirmed, path_b_confirmed]
@@ -22,6 +57,7 @@ config-b:
   rf_silent_states: [STOWED, DEPLOY_CONFIRM_PENDING]
   rf_enable_events: [SWITCH_DEBOUNCE_ELAPSED]
   safe_state: SAFE_MODE
+  # RB-09: ground-only exit; RB-12: comms-loss reset does not fire from SAFE_MODE.
   safe_exit_events: [GROUND_OVERRIDE_EXIT_SAFE, RESET]
   safe_entry_events: [FAULT_DETECTED, POWER_LOW, WATCHDOG_TIMEOUT, GROUND_SAFE_MODE_CMD, RESET, COMMS_LOSS_TIMEOUT]
   ground_safe_event: GROUND_SAFE_MODE_CMD
@@ -38,6 +74,7 @@ config-c:
   rf_silent_states: [STOWED, DEPLOY_CONFIRM_PENDING]
   rf_enable_events: [SWITCH_DEBOUNCE_ELAPSED]
   safe_state: SAFE_MODE
+  # RC-09: ground override or autonomous recovery; RC-12: no comms-loss reset from SAFE_MODE.
   safe_exit_events: [GROUND_OVERRIDE_EXIT_SAFE, AUTONOMOUS_RECOVERY_CONDITIONS_MET, RESET]
   safe_entry_events: [FAULT_DETECTED, POWER_LOW, WATCHDOG_TIMEOUT, GROUND_SAFE_MODE_CMD, RESET, COMMS_LOSS_TIMEOUT]
   ground_safe_event: GROUND_SAFE_MODE_CMD

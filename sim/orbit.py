@@ -16,12 +16,15 @@ from sim.scenario import (
     REFERENCE_TLE_LINE2,
 )
 
+
 def load_satellite() -> Satrec:
     return Satrec.twoline2rv(REFERENCE_TLE_LINE1, REFERENCE_TLE_LINE2)
+
 
 def propagate(sat: Satrec, when: datetime) -> tuple[float, float, float]:
     jd, fr = _jday_of(when)
     return _propagate_jd(sat, when, jd, fr)
+
 
 def _propagate_jd(
     sat: Satrec, when: datetime, jd: float, fr: float
@@ -30,6 +33,7 @@ def _propagate_jd(
     if error_code != 0:
         raise ValueError(f"sgp4 propagation error {error_code} at {when!r}")
     return r
+
 
 def elevation_deg(
     sat: Satrec, when: datetime, lat_deg: float, lon_deg: float, alt_m: float
@@ -59,11 +63,13 @@ def elevation_deg(
 
     return math.degrees(math.asin(up_component / range_km))
 
+
 @dataclass(frozen=True)
 class Pass:
     aos: datetime
     los: datetime
     max_elevation_deg: float
+
 
 def find_passes(
     sat: Satrec,
@@ -111,6 +117,7 @@ def find_passes(
 
     return passes
 
+
 def _jday_of(when: datetime) -> tuple[float, float]:
     return jday(
         when.year,
@@ -120,6 +127,7 @@ def _jday_of(when: datetime) -> tuple[float, float]:
         when.minute,
         when.second + when.microsecond / 1e6,
     )
+
 
 def _gmst_rad(jd: float, fr: float) -> float:
     jd_full = jd + fr
@@ -132,6 +140,7 @@ def _gmst_rad(jd: float, fr: float) -> float:
     )
     gmst_deg %= 360.0
     return math.radians(gmst_deg)
+
 
 def _eci_to_ecef(
     r_eci: tuple[float, float, float], jd: float, fr: float

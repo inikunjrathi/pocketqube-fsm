@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+
 guard_status_t engine_guard_resolve_operand(const guard_operand_t *operand,
                                              const guard_env_t *env,
                                              double now,
@@ -78,9 +79,11 @@ guard_status_t engine_guard_resolve_operand(const guard_operand_t *operand,
         }
     }
 
+
     *out_value = (val_t){ .kind = VAL_NONE };
     return GUARD_OK;
 }
+
 
 static bool as_num(val_t v, double *out)
 {
@@ -111,6 +114,7 @@ static bool values_equal(val_t a, val_t b)
 
     return false;
 }
+
 
 static bool compare_ordered(guard_op_t op, val_t lhs, val_t rhs)
 {
@@ -151,6 +155,7 @@ static bool compare_values(guard_op_t op, val_t lhs, val_t rhs)
     }
     return false;
 }
+
 
 guard_status_t engine_guard_evaluate(const guard_expr_t *guard,
                                       const guard_env_t *env,

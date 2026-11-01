@@ -18,10 +18,12 @@ _DURATION_S = 6 * ORBITAL_PERIOD_S
 _DT_S = 60.0
 _SEED = 12345
 
+
 def _trained_tree_policy():
     cfg = load_config(CONFIG_A)
     rows = generate_dataset([cfg], seeds=(1, 2), duration_s=_DURATION_S, dt_s=_DT_S)
     return train(rows)
+
 
 def test_all_three_policies_complete_on_config_a():
     cfg = load_config(CONFIG_A)
@@ -29,6 +31,7 @@ def test_all_three_policies_complete_on_config_a():
     for policy in (BASELINE_POLICY, OraclePolicy(), tree_policy):
         result = run_simulation(cfg, duration_s=_DURATION_S, dt_s=_DT_S, seed=_SEED, policy=policy)
         assert result.config_id == "config-a"
+
 
 def test_all_three_policies_complete_on_config_b():
     cfg = load_config(CONFIG_B)

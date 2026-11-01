@@ -19,6 +19,7 @@ DEFAULT_ZEPHYR_BASE = Path(os.environ.get("ZEPHYR_BASE", Path.home() / "zephyrpr
 
 COMPILERS = ("gcc", "clang")
 
+
 def _random_payloads(count: int, max_len: int, seed: int) -> list[bytes]:
     rng = random.Random(seed)
     payloads: list[bytes] = [b"", b"A", b"hello world", bytes(range(256)), b"\x00" * 556]
@@ -26,6 +27,7 @@ def _random_payloads(count: int, max_len: int, seed: int) -> list[bytes]:
         n = rng.randint(0, max_len)
         payloads.append(bytes(rng.randrange(256) for _ in range(n)))
     return payloads
+
 
 def run(*, zephyr_base: Path, case_count: int = 200, verbose: bool = False) -> int:
     crc32_sw_c = zephyr_base / "lib" / "crc" / "crc32_sw.c"
@@ -86,6 +88,7 @@ def run(*, zephyr_base: Path, case_count: int = 200, verbose: bool = False) -> i
         )
         return 1 if mismatches else 0
 
+
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--zephyr-base", default=None)
@@ -95,6 +98,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     zephyr_base = Path(args.zephyr_base) if args.zephyr_base else DEFAULT_ZEPHYR_BASE
     return run(zephyr_base=zephyr_base, case_count=args.cases, verbose=args.verbose)
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

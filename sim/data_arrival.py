@@ -27,6 +27,7 @@ _DEADLINE_WINDOW_S_BY_CLASS: dict[str, float] = {
 }
 _DEFAULT_DEADLINE_WINDOW_S = 1800.0
 
+
 def generate_arrivals(
     priority_order: list[str],
     duration_s: float,

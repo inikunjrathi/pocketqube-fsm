@@ -11,8 +11,10 @@ _RESET = "RESET"
 _SELECT_PREFIX = "SCHEDULER_SELECT_"
 _SELECT_IDLE = "SCHEDULER_SELECT_IDLE"
 
+
 class ArbitrationError(Exception):
     pass
+
 
 @dataclass(frozen=True)
 class PendingEvent:
@@ -20,12 +22,14 @@ class PendingEvent:
     timestamp: float
     command_signature: Optional[str] = None
 
+
 @dataclass(frozen=True)
 class ArbitrationResult:
     result: Optional[StepResult]
     serviced: Optional[PendingEvent]
     dropped: tuple[PendingEvent, ...]
     remaining: tuple[PendingEvent, ...]
+
 
 def _rule(tie_break: str) -> str:
     text = tie_break.lower()
@@ -36,6 +40,7 @@ def _rule(tie_break: str) -> str:
     if text == "" or "timestamp" in text:
         return "timestamp"
     raise ArbitrationError(f"unrecognised conflict_resolution tie_break: {tie_break!r}")
+
 
 def _class_key(config: Config, name: str) -> int:
     n = len(config.data_class_priority)
@@ -50,6 +55,7 @@ def _class_key(config: Config, name: str) -> int:
         return n + 1
     return 0
 
+
 def event_static_keys(config: Config) -> dict[str, tuple[int, int, int]]:
     keys: dict[str, tuple[int, int, int]] = {}
     for row in config.conflict_resolution:
@@ -60,6 +66,7 @@ def event_static_keys(config: Config) -> dict[str, tuple[int, int, int]]:
             reset_key = (0 if name == _RESET else 1) if rule == "reset_wins" else 0
             keys[eid] = (row.rank, class_key, reset_key)
     return keys
+
 
 def arbitrate(config: Config, pending: Sequence[PendingEvent]) -> list[PendingEvent]:
     keys = event_static_keys(config)
@@ -73,12 +80,14 @@ def arbitrate(config: Config, pending: Sequence[PendingEvent]) -> list[PendingEv
 
     return sorted(pending, key=key)
 
+
 def merge_pending(queued: Sequence[PendingEvent], raised: Sequence[PendingEvent]) -> list[PendingEvent]:
     by_id: dict[str, PendingEvent] = {}
     for p in [*queued, *raised]:
         if p.event_id not in by_id or p.timestamp < by_id[p.event_id].timestamp:
             by_id[p.event_id] = p
     return list(by_id.values())
+
 
 def step_many(
     config: Config,
@@ -101,6 +110,7 @@ def step_many(
         if r.legal:
             return ArbitrationResult(r, p, tuple(ordered[:i]), tuple(ordered[i + 1:]))
     return ArbitrationResult(None, None, tuple(ordered), ())
+
 
 def describe(config: Config, arb: ArbitrationResult) -> str:
     if arb.serviced is None:

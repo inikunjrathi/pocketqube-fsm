@@ -19,10 +19,12 @@ CC = shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
 
 pytestmark = pytest.mark.skipif(CC is None, reason="no C compiler (cc/gcc/clang) available on this host")
 
+
 @pytest.fixture(scope="module")
 def build_root():
     with tempfile.TemporaryDirectory(prefix="guard_equivalence_pytest_") as tmp:
         yield Path(tmp)
+
 
 @pytest.mark.parametrize("config_id", ["config-a", "config-b", "config-c"])
 def test_c_guard_evaluator_matches_python_oracle(config_id, build_root):
@@ -35,6 +37,7 @@ def test_c_guard_evaluator_matches_python_oracle(config_id, build_root):
         f"c={'error:' + r.c_error if not r.c_ok else r.c_value}"
         for r in failures
     )
+
 
 def test_every_guarded_transition_across_all_three_configs_is_exercised():
     total_guarded = 0

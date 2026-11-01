@@ -111,10 +111,13 @@ step, never simultaneously with the events above, so CR-04's
 `engine.arbitration.event_static_keys()` by
 `mcu/host_bridge/codegen_arbitration_table.py`.
 `tests/test_engine_arbitration_c.py` diffs the C order against Python on
-about 2,400–2,800 generated pending sets per config (A, B and C). Only the
-ordering function is ported. The UART bridge still injects one event per
-`INJECT`, so the firmware does not yet call it, and the linker drops it
-from the image.
+about 2,400–2,800 generated pending sets per config (A, B and C). The
+firmware's `SERVICE` command (`main.c:handle_service()`) orders a tick's
+pending events with it and applies `step_many()`'s servicing rule.
+`replay_baseline.py` sends every `_service_pending` call that way and
+compares the attempt order and the kept queue with Python. No baseline call
+keeps an event queued, so `verify_arbitration_over_uart.py` adds random
+pending sets with `step_many()` as the oracle.
 
 **Effect on recorded results.** On the seed-42 reference runs of Configs A,
 B and C, the metrics, deliveries and decision logs are identical before and

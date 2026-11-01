@@ -5,10 +5,12 @@ from pathlib import Path
 
 from sim import scenario
 
+
 def test_ground_station_coordinates_are_physically_valid():
     assert -90.0 <= scenario.GROUND_STATION_LAT_DEG <= 90.0
     assert -180.0 <= scenario.GROUND_STATION_LON_DEG <= 180.0
     assert scenario.GROUND_STATION_ALT_M >= 0.0
+
 
 def test_battery_and_draw_constants_are_positive():
     assert scenario.BATTERY_CAPACITY_WH > 0.0
@@ -20,6 +22,7 @@ def test_battery_and_draw_constants_are_positive():
         scenario.DRAW_W_COMMS_VOICE,
     ):
         assert draw_w > 0.0
+
 
 def test_no_network_access():
     source = Path(scenario.__file__).read_text()

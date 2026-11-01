@@ -19,6 +19,7 @@ CONFIG_A = REPO_ROOT / "config" / "config-a.yaml"
 SHORT_DURATION_S = 10 * ORBITAL_PERIOD_S
 SEED = 42
 
+
 def test_with_overridden_parameters_replaces_all_targets():
     cfg = load_config(CONFIG_A)
     overrides = {"P-013": 99.0, "P-015": 88.0}
@@ -32,6 +33,7 @@ def test_with_overridden_parameters_replaces_all_targets():
             assert swept.parameters[param_id].value == cfg.parameters[param_id].value
     assert cfg.parameters["P-013"].value != 99.0
 
+
 def test_run_scenario_baseline_matches_run_baseline_delivery_rate():
     from tools.generate_baseline_results import run_baseline
 
@@ -43,6 +45,7 @@ def test_run_scenario_baseline_matches_run_baseline_delivery_rate():
     assert isinstance(scenario, ScenarioResult)
     assert scenario.delivery_success_rate == baseline_row.metrics.delivery_success_rate
 
+
 def test_run_scenario_worst_case_is_no_better_than_baseline():
     cfg = load_config(CONFIG_A)
     baseline = run_scenario(
@@ -53,6 +56,7 @@ def test_run_scenario_worst_case_is_no_better_than_baseline():
         duration_s=SHORT_DURATION_S, dt_s=60.0, ground_stations=None,
     )
     assert worst.delivery_success_rate <= baseline.delivery_success_rate
+
 
 def test_render_document_contains_required_content():
     baseline = ScenarioResult(
@@ -68,6 +72,7 @@ def test_render_document_contains_required_content():
     assert "config-a" in doc
     assert "compounding" in doc.lower()
     assert "auto-generated" in doc.lower()
+
 
 def test_write_worst_case_scenarios_writes_a_file(tmp_path):
     output_path = tmp_path / "worst-case-scenario-analysis.md"

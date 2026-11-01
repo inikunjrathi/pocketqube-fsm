@@ -18,6 +18,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from engine.auth import sign_command, verify_command  # noqa: E402
 
+
 EVENT_IDS = (
     "E-01",
     "E-13",
@@ -48,11 +49,13 @@ SECRETS = (
     b"phase8-task5-test-harness-secret-do-not-use-in-flight",
 )
 
+
 @dataclass(frozen=True)
 class GoldenCase:
     event_id: str
     now: float
     secret: bytes
+
 
 def build_matrix() -> list[GoldenCase]:
     return [
@@ -62,8 +65,10 @@ def build_matrix() -> list[GoldenCase]:
         for s in SECRETS
     ]
 
+
 class HarnessError(Exception):
     pass
+
 
 def find_cc() -> str:
     for candidate in ("cc", "gcc", "clang"):
@@ -71,6 +76,7 @@ def find_cc() -> str:
         if path:
             return path
     raise HarnessError("no C compiler (cc/gcc/clang) found on PATH")
+
 
 def build_auth_harness(build_dir: Path, cc: str) -> Path:
     (build_dir / "engine_auth.h").write_text((SRC_DIR / "engine_auth.h").read_text())
@@ -89,15 +95,19 @@ def build_auth_harness(build_dir: Path, cc: str) -> Path:
         raise HarnessError(f"C build failed:\n{result.stderr}")
     return exe
 
+
 def _hex(b: bytes) -> str:
     return b.hex()
+
 
 def encode_sign_line(case: GoldenCase) -> str:
     return f"SIGN|{case.event_id}|{case.now!r}|{_hex(case.secret)}"
 
+
 def encode_verify_line(event_id: str, now: float, secret: bytes, signature) -> str:
     sig_field = "NULL" if signature is None else signature
     return f"VERIFY|{event_id}|{now!r}|{_hex(secret)}|{sig_field}"
+
 
 class AuthHarness:
 
@@ -141,10 +151,12 @@ class AuthHarness:
             raise HarnessError(f"VERIFY errored unexpectedly: {out!r}")
         return status[1] == "true"
 
+
 @dataclass
 class Mismatch:
     label: str
     detail: str
+
 
 def run_golden_vector_matrix(harness: AuthHarness, verbose: bool) -> tuple[list[Mismatch], int]:
     mismatches: list[Mismatch] = []
@@ -160,6 +172,7 @@ def run_golden_vector_matrix(harness: AuthHarness, verbose: bool) -> tuple[list[
         elif verbose:
             print(f"[OK] {label}: {python_hex}")
     return mismatches, len(matrix)
+
 
 def run_domain_boundary_checks(harness: AuthHarness, verbose: bool) -> list[Mismatch]:
     mismatches: list[Mismatch] = []
@@ -221,6 +234,7 @@ def run_domain_boundary_checks(harness: AuthHarness, verbose: bool) -> list[Mism
 
     return mismatches
 
+
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("-v", "--verbose", action="store_true", help="print every case, not just failures")
@@ -268,6 +282,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         "matrix, and all domain-boundary/defensive checks passed."
     )
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

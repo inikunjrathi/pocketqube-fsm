@@ -20,8 +20,10 @@ from mcu.host_bridge.codegen_arbitration_table import write_arbitration_table  #
 
 CONFIG_IDS = ("config-a", "config-b", "config-c")
 
+
 class FirmwareBuildError(Exception):
     pass
+
 
 def _write_config_table(config_id: str) -> None:
     config_path = REPO_ROOT / "config" / f"{config_id}.yaml"
@@ -31,8 +33,10 @@ def _write_config_table(config_id: str) -> None:
     (SRC_DIR / "engine_config_table.c").write_text(render_source(cfg, tables))
     write_arbitration_table(config_id, SRC_DIR)
 
+
 def restore_committed_config_a_table() -> None:
     _write_config_table("config-a")
+
 
 def build_firmware_for_config(
     config_id: str,

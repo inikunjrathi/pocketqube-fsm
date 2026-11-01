@@ -34,8 +34,10 @@ _OPERATOR_TO_C = {
     ">": "GUARD_OP_GT",
 }
 
+
 class CodegenError(Exception):
     pass
+
 
 @dataclass(frozen=True)
 class Operand:
@@ -49,7 +51,9 @@ class Operand:
     bool_value: bool = False
     str_value: Optional[str] = None
 
+
 NONE_OPERAND = Operand(kind="NONE")
+
 
 @dataclass(frozen=True)
 class GuardExpr:
@@ -58,7 +62,9 @@ class GuardExpr:
     lhs: Operand = NONE_OPERAND
     rhs: Operand = NONE_OPERAND
 
+
 NO_GUARD = GuardExpr(has_guard=False)
+
 
 @dataclass(frozen=True)
 class Action:
@@ -69,11 +75,13 @@ class Action:
     timer_index: int = -1
     value: Operand = NONE_OPERAND
 
+
 @dataclass(frozen=True)
 class ParsedTransition:
     source: TransitionDef
     guard: GuardExpr
     actions: tuple[Action, ...]
+
 
 def _split_guard(guard: str) -> tuple[str, str, str]:
     match = _OPERATOR_RE.search(guard)
@@ -85,6 +93,7 @@ def _split_guard(guard: str) -> tuple[str, str, str]:
     if not lhs_str or not rhs_str:
         raise CodegenError(f"malformed guard: {guard!r}")
     return lhs_str, op, rhs_str
+
 
 def _classify_operand(token: str) -> Operand:
     if token == "true":
@@ -114,6 +123,7 @@ def _classify_operand(token: str) -> Operand:
 
     raise CodegenError(f"malformed guard operand: {token!r}")
 
+
 def _parse_guard(guard: Optional[str]) -> GuardExpr:
     if guard is None:
         return NO_GUARD
@@ -124,6 +134,7 @@ def _parse_guard(guard: Optional[str]) -> GuardExpr:
         lhs=_classify_operand(lhs_str),
         rhs=_classify_operand(rhs_str),
     )
+
 
 def _parse_action_value(token: str) -> Operand:
     if token == "true":
@@ -137,6 +148,7 @@ def _parse_action_value(token: str) -> Operand:
         value = quoted.group(1) if quoted.group(1) is not None else quoted.group(2)
         return Operand(kind="LIT_STR", str_value=value)
     raise CodegenError(f"malformed context-mutation action value: {token!r}")
+
 
 def _parse_action(action: str) -> Action:
     m = _SET_CONTEXT_RE.match(action)
@@ -153,6 +165,7 @@ def _parse_action(action: str) -> Action:
         return Action(kind="START_TIMER", raw=action, timer_name=m.group(1))
     return Action(kind="OPAQUE", raw=action)
 
+
 def _parse_transition(t: TransitionDef) -> ParsedTransition:
     return ParsedTransition(
         source=t,
@@ -160,10 +173,12 @@ def _parse_transition(t: TransitionDef) -> ParsedTransition:
         actions=tuple(_parse_action(a) for a in t.actions),
     )
 
+
 def _guard_operands(guard: GuardExpr) -> tuple[Operand, ...]:
     if not guard.has_guard:
         return ()
     return (guard.lhs, guard.rhs)
+
 
 def _referenced_param_ids(parsed: list[ParsedTransition]) -> set[str]:
     return {
@@ -173,6 +188,7 @@ def _referenced_param_ids(parsed: list[ParsedTransition]) -> set[str]:
         if op.kind == "PARAM"
     }
 
+
 def _referenced_timer_ids(parsed: list[ParsedTransition]) -> set[str]:
     return {
         op.name
@@ -181,6 +197,7 @@ def _referenced_timer_ids(parsed: list[ParsedTransition]) -> set[str]:
         if op.kind == "ELAPSED"
     }
 
+
 def _armed_timer_ids(parsed: list[ParsedTransition]) -> set[str]:
     return {
         a.timer_name
@@ -188,6 +205,7 @@ def _armed_timer_ids(parsed: list[ParsedTransition]) -> set[str]:
         for a in pt.actions
         if a.kind == "START_TIMER"
     }
+
 
 def _validate_params(cfg: Config, parsed: list[ParsedTransition], referenced: set[str]) -> None:
     for pt in parsed:
@@ -216,6 +234,7 @@ def _validate_params(cfg: Config, parsed: list[ParsedTransition], referenced: se
                 f"from firmware, not emitted here)"
             )
 
+
 def _validate_timers(
     cfg: Config, parsed: list[ParsedTransition], referenced: set[str], armed: set[str]
 ) -> None:
@@ -242,10 +261,12 @@ def _validate_timers(
         f"fix the config's action/guard identifiers to match exactly."
     )
 
+
 @dataclass(frozen=True)
 class ParamRow:
     id: str
     value: float
+
 
 @dataclass(frozen=True)
 class TransitionRow:
@@ -258,11 +279,13 @@ class TransitionRow:
     to_state_index: int
     actions: tuple[Action, ...]
 
+
 @dataclass(frozen=True)
 class LatchRow:
 
     name: str
     set_by_indices: tuple[int, ...]
+
 
 @dataclass(frozen=True)
 class GeneratedTables:
@@ -277,12 +300,14 @@ class GeneratedTables:
     latches: tuple[LatchRow, ...]
     initial_state_index: int
 
+
 def _resolve_operand_indices(op: Operand, param_index: dict[str, int], timer_index: dict[str, int]) -> Operand:
     if op.kind == "PARAM":
         return replace(op, param_index=param_index[op.param_id])
     if op.kind == "ELAPSED":
         return replace(op, timer_index=timer_index[op.name])
     return op
+
 
 def _resolve_guard_indices(guard: GuardExpr, param_index: dict[str, int], timer_index: dict[str, int]) -> GuardExpr:
     if not guard.has_guard:
@@ -293,10 +318,12 @@ def _resolve_guard_indices(guard: GuardExpr, param_index: dict[str, int], timer_
         rhs=_resolve_operand_indices(guard.rhs, param_index, timer_index),
     )
 
+
 def _resolve_action_indices(action: Action, timer_index: dict[str, int]) -> Action:
     if action.kind == "START_TIMER":
         return replace(action, timer_index=timer_index.get(action.timer_name, -1))
     return action
+
 
 def generate_tables(cfg: Config) -> GeneratedTables:
     if len(cfg.states) > 32:
@@ -382,8 +409,10 @@ def generate_tables(cfg: Config) -> GeneratedTables:
         initial_state_index=state_index[cfg.initial_state],
     )
 
+
 def c_ident(raw: str) -> str:
     return raw.replace("-", "_")
+
 
 def _c_string(s: Optional[str]) -> str:
     if s is None:
@@ -391,11 +420,14 @@ def _c_string(s: Optional[str]) -> str:
     escaped = s.replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
 
+
 def _c_bool(b: bool) -> str:
     return "true" if b else "false"
 
+
 def _c_double(x: float) -> str:
     return repr(float(x))
+
 
 def _render_operand(op: Operand) -> str:
     kind = {
@@ -415,6 +447,7 @@ def _render_operand(op: Operand) -> str:
         f".str_value = {_c_string(op.str_value)} }}"
     )
 
+
 def _render_guard(guard: GuardExpr, indent: str) -> list[str]:
     op = _OPERATOR_TO_C[guard.op] if guard.has_guard else "GUARD_OP_EQ /* unused: has_guard == false */"
     lines = [
@@ -427,6 +460,7 @@ def _render_guard(guard: GuardExpr, indent: str) -> list[str]:
     ]
     return lines
 
+
 def _render_action(a: Action) -> str:
     kind = {"OPAQUE": "ACTION_OPAQUE", "SET_CONTEXT": "ACTION_SET_CONTEXT", "START_TIMER": "ACTION_START_TIMER"}[a.kind]
     return (
@@ -434,6 +468,7 @@ def _render_action(a: Action) -> str:
         f".context_name = {_c_string(a.context_name)}, .timer_name = {_c_string(a.timer_name)}, "
         f".timer_index = {a.timer_index}, .value = {_render_operand(a.value)} }},"
     )
+
 
 def render_header(cfg: Config, tables: GeneratedTables) -> str:
     lines = [
@@ -619,6 +654,7 @@ def render_header(cfg: Config, tables: GeneratedTables) -> str:
     )
     return "\n".join(lines) + "\n"
 
+
 def render_source(cfg: Config, tables: GeneratedTables) -> str:
     lines = [
         "/* AUTO-GENERATED FILE -- DO NOT HAND-EDIT.",
@@ -714,6 +750,7 @@ def render_source(cfg: Config, tables: GeneratedTables) -> str:
     lines.append("")
     return "\n".join(lines)
 
+
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
@@ -754,6 +791,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         f"{len(tables.timers)} guard-referenced timers"
     )
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -7,6 +7,7 @@ from typing import Any, Iterable, Optional
 
 _BANK_NAMES = ("A", "B")
 
+
 @dataclass(frozen=True)
 class BankRecord:
     sequence: int
@@ -14,48 +15,58 @@ class BankRecord:
     crc32: int
 
     def is_valid(self) -> bool:
-        return zlib.crc32(self.payload) == self.crc32
+        return _crc(self.sequence, self.payload) == self.crc32
+
+
+def _crc(sequence: int, payload: bytes) -> int:
+    return zlib.crc32(b"%d:" % sequence + payload)
+
 
 def _serialize(sequence: int, state: str, context: dict) -> bytes:
     return json.dumps(
         {"sequence": sequence, "state": state, "context": context}, sort_keys=True
     ).encode("utf-8")
 
+
 def _make_record(sequence: int, state: str, context: dict) -> BankRecord:
     payload = _serialize(sequence, state, context)
-    return BankRecord(sequence=sequence, payload=payload, crc32=zlib.crc32(payload))
+    return BankRecord(sequence=sequence, payload=payload, crc32=_crc(sequence, payload))
+
 
 class PersistenceLayer:
-    def __init__(self, latch_names: Iterable[str] = ()) -> None:
+    def __init__(self) -> None:
         self._banks: dict[str, Optional[BankRecord]] = {name: None for name in _BANK_NAMES}
         self._last_written: Optional[str] = None
-        self._latch_names = tuple(latch_names)
 
     def save(self, state: str, context: dict) -> str:
-        target = "B" if self._last_written == "A" else "A"
-        self._write(target, state, context)
+        newest = self._newest_bank()
+        target = "B" if newest == "A" else "A"
         other = "B" if target == "A" else "A"
-        if any(context.get(name) is True and not self._holds_latch(other, name)
-               for name in self._latch_names):
+        if self._holds(target, state, context) and self._holds(other, state, context):
+            return newest
+        self._write(target, state, context)
+        if not self._holds(other, state, context):
             self._write(other, state, context)
         return self._last_written
+
+    def _newest_bank(self) -> Optional[str]:
+        valid = [n for n, b in self._banks.items() if b is not None and b.is_valid()]
+        return max(valid, key=lambda n: self._banks[n].sequence, default=None)
 
     def _write(self, bank: str, state: str, context: dict) -> None:
         self._banks[bank] = _make_record(self._next_sequence(), state, context)
         self._last_written = bank
 
-    def _holds_latch(self, bank: str, name: str) -> bool:
+    def _holds(self, bank: str, state: str, context: dict) -> bool:
         record = self._banks[bank]
-        if record is None or not record.is_valid():
-            return False
-        return json.loads(record.payload)["context"].get(name) is True
+        return (record is not None and record.is_valid()
+                and record.payload == _serialize(record.sequence, state, context))
 
     def load(self) -> Optional[dict[str, Any]]:
-        valid = [b for b in self._banks.values() if b is not None and b.is_valid()]
-        if not valid:
+        newest = self._newest_bank()
+        if newest is None:
             return None
-        best = max(valid, key=lambda b: b.sequence)
-        data = json.loads(best.payload)
+        data = json.loads(self._banks[newest].payload)
         return {"state": data["state"], "context": data["context"]}
 
     @property
@@ -73,5 +84,5 @@ class PersistenceLayer:
         )
 
     def _next_sequence(self) -> int:
-        known = [b.sequence for b in self._banks.values() if b is not None]
-        return (max(known) + 1) if known else 0
+        newest = self._newest_bank()
+        return self._banks[newest].sequence + 1 if newest is not None else 0

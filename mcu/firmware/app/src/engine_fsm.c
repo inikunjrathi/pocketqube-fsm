@@ -4,6 +4,7 @@
 
 #include "engine_auth.h"
 
+
 void engine_context_init(engine_context_t *ctx)
 {
     ctx->count = 0;
@@ -75,6 +76,7 @@ bool engine_telemetry_get(const engine_telemetry_t *tlm, const char *name, doubl
     return false;
 }
 
+
 bool engine_lookup_state(const char *id, state_id_t *out_state)
 {
     for (uint32_t i = 0; i < STATE_COUNT; i++) {
@@ -96,6 +98,7 @@ bool engine_lookup_event(const char *id, event_id_t *out_event)
     }
     return false;
 }
+
 
 typedef struct {
     const engine_context_t *context;
@@ -141,11 +144,13 @@ static bool bridge_get_timer_started_at(void *user_data, int32_t timer_index, do
     return true;
 }
 
+
 static bool transition_applies_from(const transition_t *t, state_id_t state)
 {
 
     return (t->from_mask & (1u << (uint32_t)state)) != 0;
 }
+
 
 static const char *missing_telemetry_field_name(const guard_expr_t *guard)
 {
@@ -157,6 +162,7 @@ static const char *missing_telemetry_field_name(const guard_expr_t *guard)
     }
     return "(unknown)";
 }
+
 
 static bool select_transition(state_id_t state,
                                event_id_t event,
@@ -211,6 +217,7 @@ static bool select_transition(state_id_t state,
     return false;
 }
 
+
 static void resolve_target(const transition_t *chosen,
                             state_id_t state,
                             const engine_context_t *context,
@@ -239,6 +246,7 @@ static void resolve_target(const transition_t *chosen,
         return;
     }
 }
+
 
 static bool is_latch_name(const char *name)
 {
@@ -295,6 +303,7 @@ static void apply_actions(engine_context_t *ctx, const action_t *actions, uint8_
     }
 }
 
+
 static void apply_latch_sets(engine_context_t *ctx, uint32_t chosen_transition_index)
 {
     for (uint32_t i = 0; i < g_latches_count; i++) {
@@ -307,6 +316,7 @@ static void apply_latch_sets(engine_context_t *ctx, uint32_t chosen_transition_i
         }
     }
 }
+
 
 engine_step_status_t engine_fsm_step(state_id_t state,
                                       event_id_t event,
@@ -321,6 +331,7 @@ engine_step_status_t engine_fsm_step(state_id_t state,
 {
     *out_error_field = NULL;
 
+
     if (ENGINE_GROUND_AUTH_ENABLED && strcmp(g_events[event].source, "ground") == 0) {
         if (!engine_auth_verify_command(g_events[event].id, now, ground_command_signature)) {
             out_result->new_state = state;
@@ -333,6 +344,7 @@ engine_step_status_t engine_fsm_step(state_id_t state,
         }
     }
 
+
     const transition_t *chosen = NULL;
     uint32_t chosen_index = 0;
     engine_step_status_t status = ENGINE_STEP_OK;
@@ -341,6 +353,7 @@ engine_step_status_t engine_fsm_step(state_id_t state,
     if (status != ENGINE_STEP_OK) {
         return status;
     }
+
 
     if (!matched) {
         out_result->new_state = state;
@@ -352,9 +365,11 @@ engine_step_status_t engine_fsm_step(state_id_t state,
         return ENGINE_STEP_OK;
     }
 
+
     state_id_t new_state;
     engine_context_t base_context;
     resolve_target(chosen, state, context, persisted, &new_state, &base_context);
+
 
     engine_context_t new_context;
     engine_context_copy(&new_context, &base_context);

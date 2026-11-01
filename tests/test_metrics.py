@@ -14,6 +14,7 @@ SSTV = "SSTV"
 VOICE = "CODEC2_M17"
 PRIORITY_ORDER = [TTC, SSTV, VOICE]
 
+
 def _record(
     item_id: str,
     data_class: str,
@@ -36,6 +37,7 @@ def _record(
         energy_wh=energy_wh,
     )
 
+
 def test_empty_input_does_not_raise():
     metrics = compute_metrics(
         [], ttc_class_name=TTC, priority_order=PRIORITY_ORDER, size_bytes_by_item={}
@@ -48,6 +50,7 @@ def test_empty_input_does_not_raise():
     assert metrics.ttc_latency_max_s is None
     assert metrics.energy_per_delivered_bit_j is None
     assert metrics.deadline_misses_by_class == {cls: 0 for cls in PRIORITY_ORDER}
+
 
 def test_delivery_success_rate_computed_correctly():
     deliveries = [
@@ -67,8 +70,9 @@ def test_delivery_success_rate_computed_correctly():
 
     assert metrics.delivery_success_rate == pytest.approx(3 / 5)
 
+
 def test_ttc_latency_distribution_matches_hand_computed_values():
-    # R-7
+    # method / Hyndman-Fan R-7), rank = p * (n - 1) using 0-based sorted
     latencies = [1.0, 2.0, 3.0, 4.0, 5.0]
     deliveries = [
         _record(f"i{i}", TTC, delivered=True, latency_s=lat)
@@ -86,6 +90,7 @@ def test_ttc_latency_distribution_matches_hand_computed_values():
     assert metrics.ttc_latency_median_s == pytest.approx(statistics.median(latencies))
     assert metrics.ttc_latency_p95_s == pytest.approx(4.8)
     assert metrics.ttc_latency_max_s == pytest.approx(5.0)
+
 
 def test_non_ttc_deliveries_excluded_from_latency():
     deliveries = [
@@ -107,6 +112,7 @@ def test_non_ttc_deliveries_excluded_from_latency():
     assert metrics.ttc_latency_p95_s == pytest.approx(10.0)
     assert metrics.ttc_latency_max_s == pytest.approx(10.0)
 
+
 def test_energy_per_bit_computed_correctly():
     deliveries = [
         _record("i1", TTC, delivered=True, latency_s=1.0, energy_wh=0.001),
@@ -123,6 +129,7 @@ def test_energy_per_bit_computed_correctly():
     )
 
     assert metrics.energy_per_delivered_bit_j == pytest.approx(0.0045)
+
 
 def test_deadline_misses_grouped_by_class_including_zero():
     deliveries = [
@@ -141,6 +148,7 @@ def test_deadline_misses_grouped_by_class_including_zero():
 
     assert metrics.deadline_misses_by_class == {TTC: 2, SSTV: 1, VOICE: 0}
 
+
 def _metrics(
     delivery_success_rate: float,
     ttc_latency_p95_s: float | None,
@@ -156,9 +164,11 @@ def _metrics(
         deadline_misses_by_class={},
     )
 
+
 def test_aggregate_metrics_empty_runs_raises():
     with pytest.raises(ValueError):
         aggregate_metrics([])
+
 
 def test_aggregate_metrics_single_run_has_zero_stdev_and_ci_width():
     agg = aggregate_metrics([_metrics(0.9185, 39819.859, 3.389e-4)])
@@ -169,6 +179,7 @@ def test_aggregate_metrics_single_run_has_zero_stdev_and_ci_width():
     assert agg.delivery_success_rate.stdev == 0.0
     assert agg.delivery_success_rate.ci95_low == pytest.approx(0.9185)
     assert agg.delivery_success_rate.ci95_high == pytest.approx(0.9185)
+
 
 def test_aggregate_metrics_hand_computed_mean_and_ci():
     runs = [
@@ -192,6 +203,7 @@ def test_aggregate_metrics_hand_computed_mean_and_ci():
     assert agg.energy_per_delivered_bit_j is not None
     assert agg.energy_per_delivered_bit_j.mean == pytest.approx(2e-4)
 
+
 def test_aggregate_metrics_skips_none_valued_runs_for_optional_metrics():
     runs = [
         _metrics(0.5, None, None),
@@ -210,6 +222,7 @@ def test_aggregate_metrics_skips_none_valued_runs_for_optional_metrics():
     assert agg.energy_per_delivered_bit_j.n == 2
     assert agg.energy_per_delivered_bit_j.mean == pytest.approx(2e-4)
 
+
 def test_aggregate_metrics_all_none_optional_metric_yields_none():
     runs = [_metrics(0.5, None, None), _metrics(0.6, None, None)]
 
@@ -217,6 +230,7 @@ def test_aggregate_metrics_all_none_optional_metric_yields_none():
 
     assert agg.ttc_latency_p95_s is None
     assert agg.energy_per_delivered_bit_j is None
+
 
 def test_no_network_access():
     import sim.metrics as metrics_module
@@ -237,6 +251,7 @@ def test_no_network_access():
     assert not (imported_modules & banned), (
         f"sim/metrics.py imports network modules: {imported_modules & banned}"
     )
+
 
 def test_deadline_success_ratio_counts_only_on_time_deliveries_over_generated():
     records = [

@@ -33,6 +33,7 @@ CONFIG_PATHS = {
     "config-c": REPO_ROOT / "config" / "config-c.yaml",
 }
 
+
 @dataclasses.dataclass(frozen=True)
 class ReplayCase:
 
@@ -44,6 +45,7 @@ class ReplayCase:
     context: dict
     telemetry: dict
     expected_transition_id: Optional[str]
+
 
 def iter_replay_cases(cfg: Config) -> Iterator[ReplayCase]:
     for case in legal_cases(cfg):
@@ -69,6 +71,7 @@ def iter_replay_cases(cfg: Config) -> Iterator[ReplayCase]:
             expected_transition_id=None,
         )
 
+
 def replay_config(
     config_id: str, bridge: UartBridge, cases: Optional[list[ReplayCase]] = None
 ) -> Iterator[tuple[ReplayCase, ResponseLine]]:
@@ -80,6 +83,7 @@ def replay_config(
         bridge.send_inject(case.event_id, case.from_state, case.now, case.context, case.telemetry)
         response = bridge.read_response()
         yield case, response
+
 
 def run_full_replay(
     config_id: str,
@@ -98,6 +102,7 @@ def run_full_replay(
         with UartBridge(pty) as bridge:
             bridge.wait_for_ready()
             return list(replay_config(config_id, bridge))
+
 
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -158,6 +163,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     return exit_code
 
+
 def _response_to_dict(response: ResponseLine) -> dict:
     if isinstance(response, Decision):
         return {
@@ -173,6 +179,7 @@ def _response_to_dict(response: ResponseLine) -> dict:
     if isinstance(response, Error):
         return {"kind": "ERROR", "reason": response.reason, "detail": response.detail}
     return {"kind": "RAW", "text": getattr(response, "text", repr(response))}
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

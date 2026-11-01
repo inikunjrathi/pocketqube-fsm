@@ -7,7 +7,7 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
@@ -31,6 +31,7 @@ from mcu.host_bridge.uart_bridge import (  # noqa: E402
     Error,
     RenodeSession,
     ResponseLine,
+    Serviced,
     UartBridge,
     UartBridgeError,
 )
@@ -44,6 +45,7 @@ CONFIG_PATHS = {
 EVIDENCE_ROOT = Path(__file__).resolve().parent / "evidence" / "task8_baseline_seed42"
 
 _EXCLUDED_CALLERS = frozenset({"_find_bootstrap_path"})
+
 
 @dataclasses.dataclass(frozen=True)
 class TraceEntry:
@@ -63,10 +65,31 @@ class TraceEntry:
     def oracle_tuple(self) -> tuple[str, Optional[str], tuple, bool]:
         return (self.oracle_new_state, self.oracle_transition_id, tuple(self.oracle_actions), self.oracle_legal)
 
+
+@dataclasses.dataclass(frozen=True)
+class ServiceGroup:
+
+    start: int
+    count: int
+    pending: tuple[tuple[str, float], ...]
+    remaining: tuple[str, ...]
+
+
 def capture_baseline_trace(
     cfg: Config, *, seed: int, duration_s: float, dt_s: float
 ):
     trace: list[TraceEntry] = []
+    groups: list[ServiceGroup] = []
+
+    def _recording_service_pending(cfg, event_map, pending, state, context, telemetry, *args, **kwargs):
+        start = len(trace)
+        queued = tuple((p.event_id, p.timestamp) for p in pending)
+        result = original_service_pending(cfg, event_map, pending, state, context, telemetry, *args, **kwargs)
+        if len(trace) > start:
+            groups.append(ServiceGroup(
+                start, len(trace) - start, queued, tuple(p.event_id for p in result[2]),
+            ))
+        return result
 
     def _recording_step(
         config: Config,
@@ -111,15 +134,19 @@ def capture_baseline_trace(
         return result
 
     original_step = driver_module.step
+    original_service_pending = driver_module._service_pending
     driver_module.step = _recording_step
+    driver_module._service_pending = _recording_service_pending
     try:
         sim_result = driver_module.run_simulation(
             cfg, duration_s=duration_s, dt_s=dt_s, seed=seed
         )
     finally:
         driver_module.step = original_step
+        driver_module._service_pending = original_service_pending
 
-    return trace, sim_result
+    return trace, sim_result, groups
+
 
 def verify_trace_cross_check(trace: list[TraceEntry], sim_result) -> None:
     n_legal_in_trace = sum(1 for e in trace if e.oracle_legal)
@@ -138,6 +165,25 @@ def verify_trace_cross_check(trace: list[TraceEntry], sim_result) -> None:
             f"decision_log's scheduler-entry count ({n_scheduler_log_entries})"
         )
 
+
+def _replay_service_group(
+    bridge: UartBridge, entries: list[TraceEntry], group: ServiceGroup
+) -> list[tuple[TraceEntry, ResponseLine]]:
+    first = entries[0]
+    bridge.send_service(first.from_state, first.now, first.context, first.telemetry, group.pending)
+    results: list[tuple[TraceEntry, ResponseLine]] = []
+    for entry in entries:
+        response = bridge.read_response()
+        results.append((entry, response))
+        if not isinstance(response, Decision):
+            return results + [(e, response) for e in entries[len(results):]]
+    end = bridge.read_response()
+    if not isinstance(end, Serviced) or end.remaining != group.remaining:
+        last = results[-1][0]
+        results[-1] = (last, Error("service_end_mismatch", f"python={group.remaining} firmware={end!r}"))
+    return results
+
+
 def replay_trace_over_uart(
     config_id: str,
     trace: list[TraceEntry],
@@ -147,6 +193,7 @@ def replay_trace_over_uart(
     zephyr_base: Optional[Path] = None,
     renode_log_path: Optional[Path] = None,
     progress_every: int = 2000,
+    groups: Sequence[ServiceGroup] = (),
 ) -> list[tuple[TraceEntry, ResponseLine]]:
     elf = build_firmware_for_config(
         config_id, west=west, zephyr_sdk_dir=zephyr_sdk_dir, zephyr_base=zephyr_base
@@ -157,19 +204,28 @@ def replay_trace_over_uart(
         with UartBridge(pty) as bridge:
             bridge.wait_for_ready()
             t0 = time.monotonic()
-            for entry in trace:
-                bridge.send_inject(entry.event_id, entry.from_state, entry.now, entry.context, entry.telemetry)
-                response = bridge.read_response()
-                results.append((entry, response))
-                if progress_every and entry.index % progress_every == 0 and entry.index > 0:
+            by_start = {g.start: g for g in groups}
+            next_progress = progress_every
+            while len(results) < len(trace):
+                entry = trace[len(results)]
+                group = by_start.get(entry.index)
+                if group is not None and entry.index + group.count <= len(trace):
+                    entries = trace[entry.index:entry.index + group.count]
+                    results += _replay_service_group(bridge, entries, group)
+                else:
+                    bridge.send_inject(entry.event_id, entry.from_state, entry.now, entry.context, entry.telemetry)
+                    results.append((entry, bridge.read_response()))
+                if progress_every and len(results) >= next_progress:
+                    next_progress += progress_every
                     elapsed = time.monotonic() - t0
-                    rate = entry.index / elapsed if elapsed > 0 else 0.0
+                    rate = len(results) / elapsed if elapsed > 0 else 0.0
                     print(
-                        f"  ... {entry.index}/{len(trace)} replayed "
+                        f"  ... {len(results)}/{len(trace)} replayed "
                         f"({elapsed:.1f}s elapsed, {rate:.0f} calls/s)",
                         file=sys.stderr,
                     )
     return results
+
 
 @dataclasses.dataclass(frozen=True)
 class CaseOutcome:
@@ -177,6 +233,7 @@ class CaseOutcome:
     response: ResponseLine
     match: bool
     detail: str
+
 
 def diff_trace_results(results: list[tuple[TraceEntry, ResponseLine]]) -> list[CaseOutcome]:
     outcomes = []
@@ -191,13 +248,21 @@ def diff_trace_results(results: list[tuple[TraceEntry, ResponseLine]]) -> list[C
             )
             continue
         actual = response.as_comparison_tuple()
-        if actual == expected:
+        if response.event_id != entry.event_id:
+            outcomes.append(
+                CaseOutcome(
+                    entry, response, False,
+                    f"python attempted {entry.event_id} but firmware attempted {response.event_id}",
+                )
+            )
+        elif actual == expected:
             outcomes.append(CaseOutcome(entry, response, True, "match"))
         else:
             outcomes.append(
                 CaseOutcome(entry, response, False, f"python={expected} firmware={actual}")
             )
     return outcomes
+
 
 def _response_to_dict(response: ResponseLine) -> dict:
     if isinstance(response, Decision):
@@ -214,6 +279,7 @@ def _response_to_dict(response: ResponseLine) -> dict:
     if isinstance(response, Error):
         return {"kind": "ERROR", "reason": response.reason, "detail": response.detail}
     return {"kind": "RAW", "text": getattr(response, "text", repr(response))}
+
 
 def write_python_trace_jsonl(path: Path, trace: list[TraceEntry]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -236,12 +302,14 @@ def write_python_trace_jsonl(path: Path, trace: list[TraceEntry]) -> None:
             }
             f.write(json.dumps(record) + "\n")
 
+
 def write_firmware_log_jsonl(path: Path, results: list[tuple[TraceEntry, ResponseLine]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with gzip.open(path, "wt") as f:
         for entry, response in results:
             record = {"index": entry.index, "response": _response_to_dict(response)}
             f.write(json.dumps(record) + "\n")
+
 
 def run_baseline_equivalence(
     config_id: str,
@@ -259,7 +327,7 @@ def run_baseline_equivalence(
 ) -> list[CaseOutcome]:
     cfg = load_config(CONFIG_PATHS[config_id])
     print(f"capturing real step() trace for {config_id} (seed={seed}, duration_s={duration_s}, dt_s={dt_s}) ...", file=sys.stderr)
-    trace, sim_result = capture_baseline_trace(cfg, seed=seed, duration_s=duration_s, dt_s=dt_s)
+    trace, sim_result, groups = capture_baseline_trace(cfg, seed=seed, duration_s=duration_s, dt_s=dt_s)
     verify_trace_cross_check(trace, sim_result)
     print(
         f"captured {len(trace)} real step() calls "
@@ -276,7 +344,7 @@ def run_baseline_equivalence(
     print(f"booting one continuous Renode session and replaying {len(trace)} INJECT calls ...", file=sys.stderr)
     results = replay_trace_over_uart(
         config_id, trace, west=west, zephyr_sdk_dir=zephyr_sdk_dir,
-        zephyr_base=zephyr_base, renode_log_path=renode_log_path,
+        zephyr_base=zephyr_base, renode_log_path=renode_log_path, groups=groups,
     )
 
     outcomes = diff_trace_results(results)
@@ -298,6 +366,7 @@ def run_baseline_equivalence(
 
     print(f"{config_id}: {len(outcomes)} cases, {n_mismatch} mismatches", file=sys.stderr)
     return outcomes
+
 
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -346,6 +415,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         file=sys.stderr,
     )
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -51,6 +51,7 @@ COMPARISONS = (
     ("tree", "lookahead"),
 )
 
+
 def scenario_setup(cfg: Config, scenario: str) -> tuple[Config, dict]:
     if scenario == "reference":
         return cfg, {}
@@ -63,12 +64,15 @@ def scenario_setup(cfg: Config, scenario: str) -> tuple[Config, dict]:
         return cfg, {"ground_stations": GROUND_STATIONS_DUAL}
     raise ValueError(f"unknown scenario {scenario!r}")
 
+
 @lru_cache(maxsize=None)
 def _scenario(config_id: str, scenario: str) -> tuple[Config, dict]:
     return scenario_setup(load_config(CONFIG_PATHS[config_id]), scenario)
 
+
 def _fifo_key(item) -> float:
     return 0.0
+
 
 @dataclass(frozen=True)
 class RunResult:
@@ -88,6 +92,7 @@ class RunResult:
     @property
     def deadline_success(self) -> float:
         return self.n_on_time / self.n_generated if self.n_generated else 0.0
+
 
 def run_policy(
     config_id: str, scenario: str, policy_name: str, seed: int, *,
@@ -142,9 +147,11 @@ def run_policy(
     )
     return (res, rows) if record else res
 
+
 def _bound(config_id, scenario, seed, duration_s, dt_s) -> ScenarioBound:
     cfg, kwargs = _scenario(config_id, scenario)
     return scenario_bound(cfg, seed=seed, duration_s=duration_s, dt_s=dt_s, **kwargs)
+
 
 def paired_bootstrap_ci(
     diffs: list[float], *, n_resamples: int = BOOTSTRAP_RESAMPLES, seed: int = 0,
@@ -154,6 +161,7 @@ def paired_bootstrap_ci(
     rng = random.Random(seed)
     means = sorted(statistics.fmean(rng.choices(diffs, k=n)) for _ in range(n_resamples))
     return mean, means[int(0.025 * n_resamples)], means[int(0.975 * n_resamples) - 1]
+
 
 @dataclass
 class Experiment:
@@ -167,6 +175,7 @@ class Experiment:
     bounds: dict = field(default_factory=dict)
     trees: dict = field(default_factory=dict)
     train_stats: dict = field(default_factory=dict)
+
 
 def run_experiment(
     *, scenarios=SCENARIOS, config_ids=("config-a", "config-b"),
@@ -204,6 +213,7 @@ def run_experiment(
         exp.bounds = {k: f.result() for k, f in bound_f.items()}
     return exp
 
+
 _METRICS = (
     ("Window delivery", lambda r: r.window_delivery, lambda v: f"{v * 100:.2f}%", None),
     ("Deadline success", lambda r: r.deadline_success, lambda v: f"{v * 100:.2f}%", None),
@@ -212,8 +222,10 @@ _METRICS = (
     ("Energy drawn (Wh)", lambda r: r.drawn_wh, lambda v: f"{v:.4f}", {"config-a"}),
 )
 
+
 def _metrics_for(config_id):
     return [m for m in _METRICS if m[3] is None or config_id in m[3]]
+
 
 def _render_summary(exp: Experiment, s: str, c: str) -> list[str]:
     seeds = [x for x in exp.eval_seeds if x != REFERENCE_SEED]
@@ -239,6 +251,7 @@ def _render_summary(exp: Experiment, s: str, c: str) -> list[str]:
     lines.append(f"| *relaxation bound* | {w * 100:.2f}% | {d * 100:.2f}% |"
                  + " -- |" * (len(metrics) - 2) + " -- |")
     return lines
+
 
 def _render_legacy_tables(exp: Experiment) -> list[str]:
     if "reference" not in exp.scenarios or REFERENCE_SEED not in exp.eval_seeds:
@@ -272,6 +285,7 @@ def _render_legacy_tables(exp: Experiment) -> list[str]:
             out.append(f"| {c} | {shown} | {cells[0]} | {cells[1]} |")
     return out + [""]
 
+
 def _render_paired(exp: Experiment, s: str, c: str) -> list[str]:
     seeds = [x for x in exp.eval_seeds if x != REFERENCE_SEED]
     lines = ["| Comparison | Metric | Mean paired diff | 95% bootstrap CI | A better / tie / B better |",
@@ -295,6 +309,7 @@ def _render_paired(exp: Experiment, s: str, c: str) -> list[str]:
             lines.append(f"| {a} - {b} | {label} | {g(mean)} | [{g(lo)}, {g(hi)}] | "
                          f"{better} / {len(diffs) - better - worse} / {worse} (n={len(diffs)}) |")
     return lines
+
 
 def _render_per_seed(exp: Experiment, s: str, c: str) -> list[str]:
     short = {"baseline-fifo": "FIFO", "baseline-edf": "EDF", "lookahead": "LA", "tree": "Tree"}
@@ -324,6 +339,7 @@ def _render_per_seed(exp: Experiment, s: str, c: str) -> list[str]:
     c2 = ["Seed", *(f"{short[p]} p95 (s)" for p in P), *(f"{short[p]} J/bit" for p in P),
           *(f"{short[p]} Wh" for p in P), "LA holds", "Tree holds"]
     return [*table(c1, counts), "", *table(c2, other)]
+
 
 def render_document(exp: Experiment) -> str:
     n_eval = len([x for x in exp.eval_seeds if x != REFERENCE_SEED])
@@ -393,6 +409,7 @@ def render_document(exp: Experiment) -> str:
             parts += [f"### {s} / {c}", "", *_render_per_seed(exp, s, c), ""]
     return "\n".join(parts)
 
+
 def _rq3_verdict(exp: Experiment) -> str:
     seeds = [x for x in exp.eval_seeds if x != REFERENCE_SEED]
     out = []
@@ -406,13 +423,16 @@ def _rq3_verdict(exp: Experiment) -> str:
                        f"({mean * 100:+.3f} pp, CI [{lo * 100:+.3f}, {hi * 100:+.3f}])")
     return "; ".join(out) + "."
 
+
 def write_policy_comparison(output_path: str | Path = DEFAULT_OUTPUT_PATH, **kwargs) -> Experiment:
     exp = run_experiment(**kwargs)
     Path(output_path).write_text(render_document(exp))
     return exp
 
+
 COMPLEXITY_DOC = REPO_ROOT / "docs" / "policy-complexity-analysis.md"
 _SECTION_MARK = "<!-- same-input benchmark (tools/generate_policy_comparison.py) -->"
+
 
 def append_same_input_benchmark(tree: TreeNode, path: Path = COMPLEXITY_DOC) -> str:
     from tools.benchmark_policies import benchmark_policies, render_same_input_section
@@ -425,11 +445,13 @@ def append_same_input_benchmark(tree: TreeNode, path: Path = COMPLEXITY_DOC) -> 
     path.write_text(text)
     return section
 
+
 def main() -> None:
     exp = write_policy_comparison(DEFAULT_OUTPUT_PATH)
     print(f"wrote {DEFAULT_OUTPUT_PATH}")
     append_same_input_benchmark(exp.trees["reference"])
     print(f"updated {COMPLEXITY_DOC}")
+
 
 if __name__ == "__main__":
     main()

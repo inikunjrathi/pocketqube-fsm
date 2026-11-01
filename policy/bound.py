@@ -16,6 +16,7 @@ from sim.scenario import (
     LINK_DATA_RATE_BPS,
 )
 
+
 @dataclass(frozen=True)
 class ScenarioBound:
     n_generated: int
@@ -23,6 +24,7 @@ class ScenarioBound:
     n_reachable_deadline: int
     window_bound: int
     deadline_bound: int
+
 
 def _up_tick_times(cfg: Config, duration_s, dt_s, ground_stations) -> list[float]:
     from sim.driver import _epoch_datetime
@@ -40,6 +42,7 @@ def _up_tick_times(cfg: Config, duration_s, dt_s, ground_stations) -> list[float
             times.append(t)
     return times
 
+
 def moore_hodgson(jobs: list[tuple[float, int]]) -> int:
     heap: list[int] = []
     load = 0
@@ -49,6 +52,7 @@ def moore_hodgson(jobs: list[tuple[float, int]]) -> int:
         if load > deadline:
             load += heapq.heappop(heap)
     return len(heap)
+
 
 def fluid_completions(jobs: list[tuple[int, int, int]], n_slots: int, slot_cap: int) -> float:
     free = [slot_cap] * n_slots
@@ -74,6 +78,7 @@ def fluid_completions(jobs: list[tuple[int, int, int]], n_slots: int, slot_cap: 
             got += delta
         total += got / need
     return total
+
 
 def _augment(j, jobs, free, flow, want) -> int:
     n_slots = len(free)
@@ -124,6 +129,7 @@ def _augment(j, jobs, free, flow, want) -> int:
         if not flow[sp][k]:
             del flow[sp][k]
         s = sp
+
 
 def scenario_bound(
     cfg: Config,

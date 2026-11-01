@@ -21,6 +21,7 @@ static int hex_nibble(char c)
     return -1;
 }
 
+
 static long hex_decode(const char *hex, uint8_t *out, size_t out_cap)
 {
     size_t len = strlen(hex);
@@ -41,6 +42,7 @@ static long hex_decode(const char *hex, uint8_t *out, size_t out_cap)
     }
     return (long)n;
 }
+
 
 static int split_fields(char *line, char *fields[], int max_fields)
 {

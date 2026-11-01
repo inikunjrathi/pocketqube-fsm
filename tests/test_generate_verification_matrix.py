@@ -14,6 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 REQ_DIR = REPO_ROOT / "docs" / "requirements"
 TESTS_DIR = REPO_ROOT / "tests"
 
+
 def test_parse_config_a_yields_34_rows_r01_to_r34():
     rows = parse_requirements_table((REQ_DIR / "requirements-config-a.md").read_text())
     assert len(rows) == 34
@@ -21,6 +22,7 @@ def test_parse_config_a_yields_34_rows_r01_to_r34():
     r34 = "R-" + "34"
     assert rows[0].id == r01
     assert rows[-1].id == r34
+
 
 def test_parse_config_b_yields_12_rows_rb01_to_rb12():
     rows = parse_requirements_table((REQ_DIR / "requirements-config-b.md").read_text())
@@ -30,20 +32,24 @@ def test_parse_config_b_yields_12_rows_rb01_to_rb12():
     assert rows[0].id == rb01
     assert rows[-1].id == rb12
 
+
 def test_r29_referenced_in_persistence_and_integration_tests():
     r29 = "R-" + "29"
     refs = find_test_references(r29, TESTS_DIR)
     assert sorted(refs) == ["test_fault_injection.py", "test_integration.py", "test_persistence.py"]
+
 
 def test_r13_referenced_in_decision_log_tests():
     r13 = "R-" + "13"
     refs = find_test_references(r13, TESTS_DIR)
     assert refs == ["test_decision_log.py"]
 
+
 def test_rb01_has_no_test_references_yet():
     rb01 = "RB-" + "01"
     refs = find_test_references(rb01, TESTS_DIR)
     assert refs == []
+
 
 def test_render_document_includes_both_config_sections_and_header_comment():
     rows_a = parse_requirements_table((REQ_DIR / "requirements-config-a.md").read_text())
@@ -57,12 +63,14 @@ def test_render_document_includes_both_config_sections_and_header_comment():
     assert r29_str in doc
     assert rb01_str in doc
 
+
 def test_render_document_includes_legend_distinguishing_evidence_strength():
     rows_a = parse_requirements_table((REQ_DIR / "requirements-config-a.md").read_text())
     doc = render_document([("Config A", rows_a)], TESTS_DIR)
     assert "Legend" in doc
     assert "Test-Referenced" in doc and "bare text search" in doc
     assert "Marker-Verified" in doc and "pass/fail evidence" in doc
+
 
 def test_parse_junit_requirements_marks_passed_and_failed(tmp_path):
     r01 = "R-" + "01"
@@ -89,6 +97,7 @@ def test_parse_junit_requirements_marks_passed_and_failed(tmp_path):
     assert result[r01] is True
     assert result[r02] is False
 
+
 def test_parse_junit_requirements_all_must_pass_for_a_shared_id(tmp_path):
     r01 = "R-" + "01"
     xml_path = tmp_path / "junit.xml"
@@ -108,12 +117,14 @@ def test_parse_junit_requirements_all_must_pass_for_a_shared_id(tmp_path):
     result = parse_junit_requirements(xml_path)
     assert result[r01] is False
 
+
 def test_render_matrix_section_shows_dash_when_no_junit_results():
     rows = parse_requirements_table((REQ_DIR / "requirements-config-a.md").read_text())
     section = render_matrix_section("Config A", rows, TESTS_DIR)
     r01 = "R-" + "01"
     line = next(l for l in section.splitlines() if l.startswith(f"| {r01} |"))
     assert line.rstrip().endswith("| — |")
+
 
 def test_render_matrix_section_reflects_junit_results():
     rows = parse_requirements_table((REQ_DIR / "requirements-config-a.md").read_text())

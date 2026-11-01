@@ -1,0 +1,25 @@
+:name: cepdt Nucleo-L476RG
+:description: Headless boot of the cepdt Zephyr firmware on a Renode-simulated Nucleo-L476RG, UART exposed on a host pty.
+
+
+using sysbus
+
+$name?="nucleo_l476rg"
+mach create $name
+
+machine LoadPlatformDescription $repl
+sysbus.flash ResetByte 0xFF
+
+$uart_pty?="/tmp/cepdt_nucleo_l476rg_uart"
+
+emulation CreateUartPtyTerminal "term" $uart_pty true
+connector Connect sysbus.usart2 term
+
+macro reset
+"""
+    sysbus LoadELF $bin
+"""
+
+runMacro $reset
+
+start

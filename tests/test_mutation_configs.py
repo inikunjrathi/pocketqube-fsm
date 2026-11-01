@@ -20,8 +20,10 @@ JAR = REPO_ROOT / "tools" / "vendor" / "tla2tools.jar"
 HARNESS = "tests/test_mutation_configs.py"
 NEW_TEST_FILES = ("tests/test_requirements_independent.py", "tests/test_guard_negative.py")
 
+
 def raw_config(config_id: str) -> dict:
     return yaml.safe_load((REPO_ROOT / "config" / f"{config_id}.yaml").read_text())
+
 
 def mutants(config_id: str):
     base = raw_config(config_id)
@@ -62,6 +64,7 @@ def mutants(config_id: str):
         cr[i]["member_events"], cr[i + 1]["member_events"] = cr[i + 1]["member_events"], cr[i]["member_events"]
         yield f"{config_id}:rank:{ranks[i]['rank']}<->{ranks[i + 1]['rank']}", "rank", m
 
+
 def _load(raw: dict, tmp: Path):
     from engine.config_loader import load_config
 
@@ -69,11 +72,13 @@ def _load(raw: dict, tmp: Path):
     path.write_text(yaml.safe_dump(raw, sort_keys=False))
     return load_config(path)
 
+
 def _explorer_violations(cfg) -> set[str]:
     from tests.test_requirements_independent import REQUIREMENTS, check, explore
 
     nodes, edges = explore(cfg)
     return {k for k, v in check(cfg, nodes, edges, REQUIREMENTS[cfg.config_id]).items() if v}
+
 
 def _tlc_violations(cfg, independent: bool, exclude: frozenset[str] = frozenset()) -> str | None:
     from tools.generate_tla_spec import generate_tla_config, generate_tla_module, load_independent_requirements
@@ -101,6 +106,7 @@ def _tlc_violations(cfg, independent: bool, exclude: frozenset[str] = frozenset(
     m = re.search(r"(Invariant|Temporal property|Property) (\w+) is violated|Deadlock|Error: (.*)", out)
     return m.group(0) if m else "TLC error"
 
+
 def _baseline():
     from engine.config_loader import load_config
 
@@ -109,6 +115,7 @@ def _baseline():
         cfg = load_config(REPO_ROOT / "config" / f"{cid}.yaml")
         out[cid] = _explorer_violations(cfg)
     return out
+
 
 def evaluate(mutant_id: str, raw: dict, baseline: dict, tlc: bool) -> dict:
     cid = raw["meta"]["config_id"]
@@ -131,12 +138,15 @@ def evaluate(mutant_id: str, raw: dict, baseline: dict, tlc: bool) -> dict:
         res["tlc_indep"] = _tlc_violations(cfg, independent=True, exclude=exclude)
     return res
 
+
 _COPY_IGNORE = shutil.ignore_patterns(".git", ".venv", "report", "build",
                                       "__pycache__", ".pytest_cache")
+
 
 def _suite_cmd():
     return [str(REPO_ROOT / ".venv" / "bin" / "python"), "-m", "pytest", "-q", "-p", "no:cacheprovider",
             "-rfE", f"--ignore={HARNESS}"]
+
 
 def run_suite(raw: dict | None, workdir: Path, deselect: list[str]) -> dict:
     shutil.copytree(REPO_ROOT, workdir, ignore=_COPY_IGNORE, symlinks=True)
@@ -153,6 +163,7 @@ def run_suite(raw: dict | None, workdir: Path, deselect: list[str]) -> dict:
         result = {"rc": "timeout", "failed": [], "tail": "timeout"}
     shutil.rmtree(workdir, ignore_errors=True)
     return result
+
 
 def main(argv: list[str]) -> None:
     suite = "--suite" in argv
@@ -193,16 +204,19 @@ def main(argv: list[str]) -> None:
     out_path.write_text(json.dumps({"deselected_baseline_failures": deselect, "results": results}, indent=1))
     print(f"wrote {out_path}")
 
+
 def test_every_mutation_class_produces_mutants_for_every_config():
     for cid in CONFIG_IDS:
         classes = {cls for _, cls, _ in mutants(cid)}
         assert classes == {"drop", "retarget", "latch", "guard", "rank"}
+
 
 def test_mutants_differ_from_the_shipped_config_and_have_unique_ids():
     for cid in CONFIG_IDS:
         base = raw_config(cid)
         ids = [mid for mid, _, raw in mutants(cid) if raw != base]
         assert len(ids) == len(set(ids)) == sum(1 for _ in mutants(cid))
+
 
 def test_explorer_kills_dropping_the_ground_safe_mode_transition():
     baseline = _baseline()
@@ -211,10 +225,12 @@ def test_explorer_kills_dropping_the_ground_safe_mode_transition():
     mid, _, mutant = next(m for m in mutants("config-b") if m[0] == f"config-b:drop:{tid}")
     assert "GroundSafeAvailableExactly" in evaluate(mid, mutant, baseline, tlc=False)["explorer"]
 
+
 def test_explorer_kills_setting_the_latch_on_separation():
     baseline = _baseline()
     m = next(m for m in mutants("config-b") if m[0] == "config-b:latch:T-01")
     assert "LatchRisesOnlyVia" in evaluate(m[0], m[2], baseline, tlc=False)["explorer"]
+
 
 if __name__ == "__main__":
     sys.path.insert(0, str(REPO_ROOT))

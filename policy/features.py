@@ -7,6 +7,7 @@ from policy.base import FeatureVector
 
 _QUEUE_DATA_CLASSES = ("TTC", "SSTV", "CODEC2_M17")
 
+
 def build_features(
     *,
     priority_order: list[str],

@@ -20,12 +20,14 @@ from mcu.host_bridge.replay_driver import (  # noqa: E402
 from mcu.host_bridge.firmware_build import restore_committed_config_a_table  # noqa: E402
 from mcu.host_bridge.uart_bridge import Decision, Error, ResponseLine, UartBridgeError  # noqa: E402
 
+
 class CaseOutcome:
     def __init__(self, case: ReplayCase, response: ResponseLine, match: bool, detail: str) -> None:
         self.case = case
         self.response = response
         self.match = match
         self.detail = detail
+
 
 def python_oracle_tuple(config_id: str, case: ReplayCase):
     cfg = load_config(CONFIG_PATHS[config_id])
@@ -41,6 +43,7 @@ def python_oracle_tuple(config_id: str, case: ReplayCase):
     except GuardError as exc:
         return "guard_error", str(exc)
     return "ok", (result.new_state, result.transition_id, result.actions, result.legal)
+
 
 def diff_case(config_id: str, case: ReplayCase, response: ResponseLine) -> CaseOutcome:
     kind, python_value = python_oracle_tuple(config_id, case)
@@ -66,6 +69,7 @@ def diff_case(config_id: str, case: ReplayCase, response: ResponseLine) -> CaseO
         f"python={python_value} firmware={c_value}",
     )
 
+
 def diff_config(
     config_id: str,
     *,
@@ -83,6 +87,7 @@ def diff_config(
             status = "OK" if outcome.match else "MISMATCH"
             print(f"[{status}] {config_id}:{case.label}: {outcome.detail}")
     return outcomes
+
 
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -131,6 +136,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         file=sys.stderr,
     )
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

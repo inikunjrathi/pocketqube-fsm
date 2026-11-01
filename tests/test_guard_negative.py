@@ -26,6 +26,7 @@ BOUNDARIES = {
                   "battery_soc_safe_mode_recovery_threshold_pct", 0, -1)],
 }
 
+
 def _cases():
     for config_id, rows in BOUNDARIES.items():
         cfg = CFG[config_id]
@@ -38,12 +39,14 @@ def _cases():
                     id=f"{config_id}:{event_name}:{origin}",
                 )
 
+
 def _env(cfg, operand, param_name, offset):
     threshold = next(p.value for p in cfg.parameters.values() if p.name == param_name)
     value = threshold + offset
     if operand.startswith("timer:"):
         return {operand[6:]: 0}, {}, value
     return {}, {operand: value}, 0
+
 
 @pytest.mark.parametrize("config_id,event,origin,operand,param_name,fire,nofire", list(_cases()))
 def test_guard_threshold_inclusive_side_fires_and_other_side_blocks(
@@ -59,6 +62,7 @@ def test_guard_threshold_inclusive_side_fires_and_other_side_blocks(
     assert blocked.new_state == origin
     assert blocked.context == ctx
 
+
 @pytest.mark.parametrize("config_id", sorted(CFG))
 def test_unarmed_timer_never_satisfies_an_elapsed_guard(config_id):
     cfg = CFG[config_id]
@@ -66,6 +70,7 @@ def test_unarmed_timer_never_satisfies_an_elapsed_guard(config_id):
         if t.guard and t.guard.startswith("elapsed("):
             for origin in t.from_states:
                 assert step(cfg, origin, t.event, {}, now=10**9).legal is False, (t.id, origin)
+
 
 @pytest.mark.parametrize("config_id", sorted(CFG))
 def test_every_guarded_row_is_covered_by_a_negative_case(config_id):
@@ -77,7 +82,8 @@ def test_every_guarded_row_is_covered_by_a_negative_case(config_id):
     guarded = {cfg.events[t.event].name for t in cfg.transitions if t.guard}
     assert guarded <= covered
 
-# R-03
+
+# R-03 dual-path confirmation: the latch is set only once BOTH paths asserted.
 @pytest.mark.parametrize("first,second", [("DEPLOY_CONFIRM_PATH_A", "DEPLOY_CONFIRM_PATH_B"),
                                           ("DEPLOY_CONFIRM_PATH_B", "DEPLOY_CONFIRM_PATH_A")])
 def test_config_a_single_confirmation_path_never_sets_the_latch(first, second):
@@ -94,7 +100,8 @@ def test_config_a_single_confirmation_path_never_sets_the_latch(first, second):
     assert cfg.states[r2.new_state].name == "DEPLOYED_CONFIRMED"
     assert r2.context["deployment_confirmed"] is True
 
-# R-05
+
+# otherwise back to DEPLOY_CONFIRM_PENDING (R-05).
 @pytest.mark.parametrize("exit_event", ["AUTONOMOUS_RECOVERY_CONDITIONS_MET", "GROUND_OVERRIDE_EXIT_SAFE"])
 @pytest.mark.parametrize("latch,expected", [(True, "COMMISSIONING"), (False, "DEPLOY_CONFIRM_PENDING"),
                                             (None, "DEPLOY_CONFIRM_PENDING")])

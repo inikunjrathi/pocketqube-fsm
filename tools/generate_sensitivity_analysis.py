@@ -33,6 +33,7 @@ EXCLUDED_PARAMETERS = (
     ("P-024", "conflict_resolution_default_order", "Structural (which rank each event belongs to), not a single numeric guard value to sweep."),
 )
 
+
 @dataclasses.dataclass(frozen=True)
 class SweepSpec:
     param_id: str
@@ -42,6 +43,7 @@ class SweepSpec:
     low_value: float
     high_value: float
     note: str = ""
+
 
 SWEEP_SPECS: tuple[SweepSpec, ...] = (
     SweepSpec(
@@ -71,12 +73,14 @@ SWEEP_SPECS: tuple[SweepSpec, ...] = (
     ),
 )
 
+
 POWER_UNCERTAINTY_BAND = 0.30
 
 POWER_UNCERTAINTY_SPECS: tuple[tuple[str, str, float], ...] = (
     ("SSTV", "COMMS_SSTV", 1.5),
     ("CODEC2_M17", "COMMS_VOICE", 1.25),
 )
+
 
 @contextlib.contextmanager
 def _overridden_comms_draw(category_key: str, new_draw_w: float):
@@ -86,6 +90,7 @@ def _overridden_comms_draw(category_key: str, new_draw_w: float):
         yield
     finally:
         _power_module._COMMS_BURST_DRAW_W_BY_CATEGORY = original
+
 
 def _energy_per_bit_by_class(
     deliveries: list[DeliveryRecord], size_bytes_by_item: dict[str, int]
@@ -107,11 +112,13 @@ def _energy_per_bit_by_class(
         for cls in energy_j_by_class
     }
 
+
 @dataclasses.dataclass(frozen=True)
 class PowerUncertaintyResult:
     ratio: float
     draw_w: float
     energy_per_bit_j: float | None
+
 
 def run_power_uncertainty_sweep(
     cfg: Config, data_class: str, category_key: str, baseline_ratio: float,
@@ -137,6 +144,7 @@ def run_power_uncertainty_sweep(
             )
         )
     return results
+
 
 def _render_power_uncertainty_section(
     uncertainty: dict[str, list[PowerUncertaintyResult]],
@@ -176,6 +184,7 @@ def _render_power_uncertainty_section(
             lines.append("")
     return "\n".join(lines)
 
+
 def with_overridden_parameter(cfg: Config, param_id: str, new_value: float) -> Config:
     if param_id not in cfg.parameters:
         raise KeyError(f"{param_id} not present in {cfg.config_id}'s parameters")
@@ -183,11 +192,13 @@ def with_overridden_parameter(cfg: Config, param_id: str, new_value: float) -> C
     new_parameters[param_id] = dataclasses.replace(new_parameters[param_id], value=new_value)
     return dataclasses.replace(cfg, parameters=new_parameters)
 
+
 @dataclasses.dataclass(frozen=True)
 class SweepResult:
     value: float
     delivery_success_rate: float
     energy_per_delivered_bit_j: float | None
+
 
 def run_sweep(
     cfg: Config, spec: SweepSpec, *, seed: int, duration_s: float, dt_s: float
@@ -205,8 +216,10 @@ def run_sweep(
         )
     return results
 
+
 def _fmt_energy(value: float | None) -> str:
     return "—" if value is None else f"{value:.6g}"
+
 
 def _render_sweep_section(spec: SweepSpec, results: list[SweepResult]) -> str:
     lines = [
@@ -230,6 +243,7 @@ def _render_sweep_section(spec: SweepSpec, results: list[SweepResult]) -> str:
         )
     lines.append("")
     return "\n".join(lines)
+
 
 def render_document(
     swept: dict[str, list[SweepResult]],
@@ -319,6 +333,7 @@ def render_document(
 
     return "\n".join(parts)
 
+
 def write_sensitivity_analysis(
     output_path: str | Path = DEFAULT_OUTPUT_PATH,
     *,
@@ -340,9 +355,11 @@ def write_sensitivity_analysis(
     }
     Path(output_path).write_text(render_document(swept, power_uncertainty=power_uncertainty))
 
+
 def main() -> None:
     write_sensitivity_analysis(DEFAULT_OUTPUT_PATH)
     print(f"wrote {DEFAULT_OUTPUT_PATH}")
+
 
 if __name__ == "__main__":
     main()

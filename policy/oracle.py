@@ -43,6 +43,7 @@ TTC_CLASS_NAME = "TTC"
 
 ORACLE_HORIZON_S = 900.0
 
+
 @dataclass(frozen=True)
 class RolloutOutcome:
     ttc_deadline_misses: int
@@ -55,6 +56,7 @@ class RolloutOutcome:
             self.ttc_deadline_misses, self.other_deadline_misses,
             self.energy_wh, self.latency_s,
         )
+
 
 class _EdfQueue:
 
@@ -79,7 +81,9 @@ class _EdfQueue:
     def is_empty(self) -> bool:
         return not self._heap
 
+
 _TX_MAPS: dict = {}
+
 
 def _tx_map(cfg):
     key = (cfg.config_id, id(cfg))
@@ -87,9 +91,11 @@ def _tx_map(cfg):
         _TX_MAPS[key] = transmit_class_map(cfg)
     return _TX_MAPS[key]
 
+
 _DEFAULT_GROUND_STATIONS = (
     (GROUND_STATION_LAT_DEG, GROUND_STATION_LON_DEG, GROUND_STATION_ALT_M),
 )
+
 
 class OraclePolicy:
 
@@ -100,6 +106,7 @@ class OraclePolicy:
         serve_outcome = _rollout(context, action="serve", ground_stations=self.ground_stations)
         hold_outcome = _rollout(context, action="hold", ground_stations=self.ground_stations)
         return "serve" if serve_outcome.score() <= hold_outcome.score() else "hold"
+
 
 def _rollout(
     context: DecisionContext, *, action: str, ground_stations=_DEFAULT_GROUND_STATIONS,
@@ -118,7 +125,7 @@ def _rollout(
     if action == "hold":
         scheduler.insert(acted_item)
 
-    persistence = PersistenceLayer(latch.name for latch in cfg.latches)
+    persistence = PersistenceLayer()
     logger = DecisionLogger()
     params_by_name = {p.name: p.value for p in cfg.parameters.values()}
 

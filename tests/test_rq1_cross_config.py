@@ -1,4 +1,4 @@
-# RB-02 RB-10 RB-09 RC-13
+# RB-02 RB-09 RB-10 RC-13
 
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ SHARED_HARNESS_FILES = (
 
 _CONFIG_BRANCH_RE = re.compile(r"config_id\s*==|config\.config_id\s*==")
 
+
 def test_config_b_has_no_autonomous_recovery_event_or_state():
     event_names = {e.name for e in CONFIG_B.events.values()}
     assert "AUTONOMOUS_RECOVERY_CONDITIONS_MET" not in event_names
@@ -33,6 +34,7 @@ def test_config_b_has_no_autonomous_recovery_event_or_state():
     ]
     exit_event_names = {CONFIG_B.events[t.event].name for t in exits_from_safe_mode}
     assert exit_event_names == {"GROUND_OVERRIDE_EXIT_SAFE"}
+
 
 def test_config_c_has_autonomous_recovery_on_config_b_style_chassis():
     event_names = {e.name for e in CONFIG_C.events.values()}
@@ -57,6 +59,7 @@ def test_config_c_has_autonomous_recovery_on_config_b_style_chassis():
     )
     assert CONFIG_C.states[autonomous_exit.to].name == "COMMISSIONING"
     assert autonomous_exit.guard is not None and "battery_soc" in autonomous_exit.guard
+
 
 def test_shared_harness_files_never_branch_on_config_id():
     for path in SHARED_HARNESS_FILES:
