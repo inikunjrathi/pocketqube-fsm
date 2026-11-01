@@ -1,0 +1,4358 @@
+{
+ "deselected_baseline_failures": [],
+ "results": [
+  {
+   "id": "config-a:drop:T-01",
+   "loader": "ConfigError: config-a: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-a:retarget:T-01->S-03",
+   "loader": "ConfigError: config-a: 1 validation error(s):",
+   "class": "retarget"
+  },
+  {
+   "id": "config-a:latch:T-01",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06",
+    "tests/test_generate_tla_spec.py::test_generate_tla_module_non_set_by_transition_carries_latch_forward"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-02",
+   "loader": "ConfigError: config-a: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-a:retarget:T-02->S-04",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_a",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-02",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-02:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_benchmark_policies.py::test_capturing_policy_delegates_and_records",
+    "tests/test_benchmark_policies.py::test_benchmark_policies_analyzes_all_three_under_the_same_input_model",
+    "tests/test_codegen_c_table.py::test_config_a_t02_guard_is_elapsed_rf_inhibit_timer_ge_p010",
+    "tests/test_dataset.py::test_generate_dataset_produces_rows_with_valid_labels"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-02:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_t02_guard_is_elapsed_rf_inhibit_timer_ge_p010",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-02:S-02]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:RF_INHIBIT_TIMER_EXPIRED:S-02]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-02:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_benchmark_policies.py::test_capturing_policy_delegates_and_records",
+    "tests/test_benchmark_policies.py::test_benchmark_policies_analyzes_all_three_under_the_same_input_model",
+    "tests/test_codegen_c_table.py::test_config_a_t02_guard_is_elapsed_rf_inhibit_timer_ge_p010",
+    "tests/test_dataset.py::test_generate_dataset_produces_rows_with_valid_labels"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:RF_INHIBIT_TIMER_EXPIRED:S-02]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-02:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_benchmark_policies.py::test_capturing_policy_delegates_and_records",
+    "tests/test_benchmark_policies.py::test_benchmark_policies_analyzes_all_three_under_the_same_input_model",
+    "tests/test_codegen_c_table.py::test_config_a_t02_guard_is_elapsed_rf_inhibit_timer_ge_p010",
+    "tests/test_dataset.py::test_generate_dataset_produces_rows_with_valid_labels"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:RF_INHIBIT_TIMER_EXPIRED:S-02]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-02:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_t02_guard_is_elapsed_rf_inhibit_timer_ge_p010",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-02:S-02]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:RF_INHIBIT_TIMER_EXPIRED:S-02]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-03",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_generate_tla_spec.py::test_first_matching_row_rule_blocks_later_rows_with_exact_guards",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-03->S-04",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_a",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-03",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-03:==->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-03:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_generate_tla_spec.py::test_first_matching_row_rule_blocks_later_rows_with_exact_guards"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-03:==->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_generate_tla_spec.py::test_first_matching_row_rule_blocks_later_rows_with_exact_guards",
+    "tests/test_transition_coverage.py::test_every_transition_row_fires_legally_from_every_origin[config-a:T-04:S-03]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-03:==-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_generate_tla_spec.py::test_first_matching_row_rule_blocks_later_rows_with_exact_guards"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-03:==-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-03:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_generate_tla_spec.py::test_first_matching_row_rule_blocks_later_rows_with_exact_guards",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-03:==->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-03:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_generate_tla_spec.py::test_first_matching_row_rule_blocks_later_rows_with_exact_guards"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-04",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_generate_tla_spec.py::test_generate_tla_module_latch_set_by_transition_sets_true"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-04->S-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-04",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_generate_tla_spec.py::test_generate_tla_module_latch_set_by_transition_sets_true"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-04:==->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-04:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[3-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[9-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-04:==->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-04:==-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-04:==-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-04:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[3-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[9-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-04:==->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-04:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[3-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[9-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-05->S-04",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_a",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-05",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-05:==->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-05:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-05:==->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a",
+    "tests/test_transition_coverage.py::test_every_transition_row_fires_legally_from_every_origin[config-a:T-06:S-03]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-05:==-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-05:==-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-05:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[2-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[4-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-05:==->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-05:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_B-DEPLOY_CONFIRM_PATH_A]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-06->S-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-06",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_a",
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-06:==->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-06:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-06:==->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-06:==-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-06:==-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-06:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-06:==->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-06:S-03]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_a",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_single_confirmation_path_never_sets_the_latch[DEPLOY_CONFIRM_PATH_A-DEPLOY_CONFIRM_PATH_B]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-07",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_benchmark_policies.py::test_capturing_policy_delegates_and_records",
+    "tests/test_benchmark_policies.py::test_benchmark_policies_analyzes_all_three_under_the_same_input_model",
+    "tests/test_dataset.py::test_generate_dataset_produces_rows_with_valid_labels",
+    "tests/test_dataset.py::test_generate_dataset_is_deterministic"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:retarget:T-07->S-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-b-confirms-first]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-a-path-a-confirms-first]"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:latch:T-07",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:drop:T-08",
+   "loader": "ConfigError: config-a: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-a:retarget:T-08->S-07",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_power.py::test_config_a_seed42_is_bit_identical_to_pre_0009_name_mapping"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:latch:T-08",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:drop:T-09",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_only_one_event_serviced_per_call",
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_benchmark_policies.py::test_capturing_policy_delegates_and_records",
+    "tests/test_benchmark_policies.py::test_benchmark_policies_analyzes_all_three_under_the_same_input_model",
+    "tests/test_dataset.py::test_generate_dataset_produces_rows_with_valid_labels"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:retarget:T-09->S-07",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_benchmark_policies.py::test_capturing_policy_delegates_and_records",
+    "tests/test_benchmark_policies.py::test_benchmark_policies_analyzes_all_three_under_the_same_input_model",
+    "tests/test_dataset.py::test_generate_dataset_produces_rows_with_valid_labels",
+    "tests/test_dataset.py::test_generate_dataset_is_deterministic"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:latch:T-09",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:drop:T-10",
+   "loader": "ConfigError: config-a: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-a:retarget:T-10->S-08",
+   "loader": "ConfigError: config-a: 1 validation error(s):",
+   "class": "retarget"
+  },
+  {
+   "id": "config-a:latch:T-10",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:drop:T-11",
+   "loader": "ConfigError: config-a: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-a:retarget:T-11->S-09",
+   "loader": "ConfigError: config-a: 1 validation error(s):",
+   "class": "retarget"
+  },
+  {
+   "id": "config-a:latch:T-11",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:drop:T-12",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:retarget:T-12->S-10",
+   "loader": null,
+   "explorer": [
+    "SafeEntryOnlyVia",
+    "SchedulerOnlyInComms"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property SafeEntryOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:SafeEntryOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:SchedulerOnlyInComms]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-12",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:drop:T-13",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_higher_ranked_event_without_legal_transition_is_dropped_not_blocking",
+    "tests/test_codegen_c_table.py::test_config_a_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_driver.py::test_try_fire_applies_legal_transition_and_logs",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised",
+    "tests/test_power.py::test_config_a_seed42_is_bit_identical_to_pre_0009_name_mapping"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:retarget:T-13->S-10",
+   "loader": null,
+   "explorer": [
+    "SafeEntryOnlyVia",
+    "SchedulerOnlyInComms"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property SafeEntryOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_try_fire_applies_legal_transition_and_logs",
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_persistence.py::test_baseline_run_writes_flash_only_on_change",
+    "tests/test_power.py::test_config_a_seed42_is_bit_identical_to_pre_0009_name_mapping"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:SafeEntryOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:SchedulerOnlyInComms]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-13",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-13:<->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_higher_ranked_event_without_legal_transition_is_dropped_not_blocking",
+    "tests/test_driver.py::test_try_fire_applies_legal_transition_and_logs",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-13:S-06]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-13:S-07]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-09]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-13:<->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_try_fire_returns_unfired_when_guard_false",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_persistence.py::test_baseline_run_writes_flash_only_on_change",
+    "tests/test_power.py::test_config_a_seed42_is_bit_identical_to_pre_0009_name_mapping",
+    "tests/test_power.py::test_config_b_downlink_is_charged_transmit_draw_not_idle"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-13:<->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_higher_ranked_event_without_legal_transition_is_dropped_not_blocking",
+    "tests/test_driver.py::test_try_fire_applies_legal_transition_and_logs",
+    "tests/test_driver.py::test_try_fire_returns_unfired_when_guard_false",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-13:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-13:<-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-13:<->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_higher_ranked_event_without_legal_transition_is_dropped_not_blocking",
+    "tests/test_driver.py::test_try_fire_applies_legal_transition_and_logs",
+    "tests/test_driver.py::test_try_fire_returns_unfired_when_guard_false",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-13:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:PASS_END:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-14",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:retarget:T-14->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-14",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-14:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-14:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-06]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-07]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-14:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-14:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-06]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-07]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-14:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-06]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-14:S-07]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:FAULT_DETECTED:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-15",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised",
+    "tests/test_power.py::test_low_power_scenario_crosses_guard_threshold"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:retarget:T-15->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-15",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-15:<=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-15:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-15:S-06]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-15:S-07]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-15:S-08]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-15:<=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_higher_ranked_event_without_legal_transition_is_dropped_not_blocking",
+    "tests/test_driver.py::test_baseline_policy_never_holds_matches_pre_phase5_delivery_count",
+    "tests/test_driver.py::test_multiple_items_delivered_in_one_tick",
+    "tests/test_driver.py::test_oversized_item_defers_to_later_tick",
+    "tests/test_driver.py::test_energy_never_double_counted_across_items_in_one_tick"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-15:<=->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_higher_ranked_event_without_legal_transition_is_dropped_not_blocking",
+    "tests/test_driver.py::test_baseline_policy_never_holds_matches_pre_phase5_delivery_count",
+    "tests/test_driver.py::test_multiple_items_delivered_in_one_tick",
+    "tests/test_driver.py::test_oversized_item_defers_to_later_tick",
+    "tests/test_driver.py::test_energy_never_double_counted_across_items_in_one_tick"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-15:<=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-15:<=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_higher_ranked_event_without_legal_transition_is_dropped_not_blocking",
+    "tests/test_driver.py::test_baseline_policy_never_holds_matches_pre_phase5_delivery_count",
+    "tests/test_driver.py::test_multiple_items_delivered_in_one_tick",
+    "tests/test_driver.py::test_oversized_item_defers_to_later_tick",
+    "tests/test_driver.py::test_energy_never_double_counted_across_items_in_one_tick"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-07]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-08]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:POWER_LOW:S-09]"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-16",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:retarget:T-16->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-16",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:drop:T-17",
+   "loader": null,
+   "explorer": [
+    "GroundSafeAvailableExactly"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant GroundSafeAvailableExactly is violated.",
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_ground_safe_mode_and_pass_end_together_log_a_ground_override"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:GroundSafeAvailableExactly]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-17->S-01",
+   "loader": null,
+   "explorer": [
+    "GroundSafeAvailableExactly",
+    "RfSilenceLeftOnlyVia",
+    "SafeExitOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant GroundSafeAvailableExactly is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_ground_safe_mode_and_pass_end_together_log_a_ground_override"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:RfSilenceLeftOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:SafeExitOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:GroundSafeAvailableExactly]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-17",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-18",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_a",
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-18->S-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_a"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-18",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-18:==->!=",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_a",
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-18:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-18:==->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-18:==-><=",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_transition_coverage.py::test_every_transition_row_fires_legally_from_every_origin[config-a:T-25:S-10]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-18:==-><",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_a",
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-18:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-18:==->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_a",
+    "tests/test_driver.py::test_injected_fault_enters_safe_mode_and_recovery_waits_for_fault_to_clear",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-18:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-21",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_driver_services_ground_override_before_autonomous_recovery",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-GROUND_OVERRIDE_EXIT_SAFE]"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-21->S-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_driver_services_ground_override_before_autonomous_recovery"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-GROUND_OVERRIDE_EXIT_SAFE]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-21",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-21:==->!=",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_driver_services_ground_override_before_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-21:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-21:==->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-21:==-><=",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_transition_coverage.py::test_every_transition_row_fires_legally_from_every_origin[config-a:T-26:S-10]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-21:==-><",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_driver_services_ground_override_before_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-21:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-21:==->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_driver_services_ground_override_before_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-21:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[True-COMMISSIONING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-25",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-25->S-04",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-25",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-25:==->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-25:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[4-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[10-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[13-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-25:==->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-25:==-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-25:==-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-25:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[4-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[10-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[13-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-25:==->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-25:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[4-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[10-config-a]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[13-config-a]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-AUTONOMOUS_RECOVERY_CONDITIONS_MET]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-26",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:retarget:T-26->S-04",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:PostLatchStatesHaveLatch]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-26",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-26:==->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-26:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[10-config-a]",
+    "tests/test_transition_coverage.py::test_every_transition_row_fires_legally_from_every_origin[config-a:T-26:S-10]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-26:==->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-26:==-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-a:guard:T-26:==-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-26:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[10-config-a]",
+    "tests/test_transition_coverage.py::test_every_transition_row_fires_legally_from_every_origin[config-a:T-26:S-10]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-26:==->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-26:S-10]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[10-config-a]",
+    "tests/test_transition_coverage.py::test_every_transition_row_fires_legally_from_every_origin[config-a:T-26:S-10]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[False-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_guard_negative.py::test_config_a_safe_mode_exit_target_depends_on_the_latch[None-DEPLOY_CONFIRM_PENDING-GROUND_OVERRIDE_EXIT_SAFE]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]",
+    "tests/test_requirements_independent.py::test_config_a_safe_mode_before_latch_returns_to_confirmation_not_commissioning"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-22",
+   "loader": null,
+   "explorer": [
+    "ResetAlwaysAvailable"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant ResetAlwaysAvailable is violated by the initial state:",
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_reset_beats_scheduler_event",
+    "tests/test_codegen_c_table.py::test_config_a_t22_wildcard_reset_targets_reload_persistence",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-01:S-01]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-02:S-02]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:ResetAlwaysAvailable]"
+   ]
+  },
+  {
+   "id": "config-a:latch:T-22",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-01:S-01]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-02:S-02]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-03:S-03]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-23",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_t23_wildcard_noop_is_self_loop",
+    "tests/test_generate_diagrams.py::test_wildcard_noop_transition_is_self_loop_on_any_config_a"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:latch:T-23",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-a:drop:T-24",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:latch:T-24",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_a_deployment_confirmed_latch_set_by_t04_and_t06"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-a:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-24:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-a]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-24:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-07]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-24:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-07]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-24:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-07]"
+   ]
+  },
+  {
+   "id": "config-a:guard:T-24:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-a:T-24:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-06]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-a:COMMS_LOSS_TIMEOUT:S-07]"
+   ]
+  },
+  {
+   "id": "config-a:rank:1<->2",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_lower_rank_number_always_first_regardless_of_timestamp",
+    "tests/test_arbitration.py::test_rank1_reset_wins_timestamp_tie_against_ground_commands",
+    "tests/test_arbitration.py::test_ground_safe_mode_and_pass_end_together_log_a_ground_override",
+    "tests/test_arbitration.py::test_driver_services_ground_override_before_autonomous_recovery"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:rank:2<->3",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_lower_rank_number_always_first_regardless_of_timestamp"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:rank:3<->4",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_lower_rank_number_always_first_regardless_of_timestamp",
+    "tests/test_arbitration.py::test_rank4_pass_end_before_any_select_even_if_raised_later",
+    "tests/test_arbitration.py::test_rank4_selects_follow_data_class_priority_not_timestamp"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-a:rank:4<->5",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_lower_rank_number_always_first_regardless_of_timestamp",
+    "tests/test_arbitration.py::test_rank4_pass_end_before_any_select_even_if_raised_later",
+    "tests/test_arbitration.py::test_rank4_selects_follow_data_class_priority_not_timestamp"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:drop:T-01",
+   "loader": "ConfigError: config-b: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-b:retarget:T-01->S-03",
+   "loader": "ConfigError: config-b: 1 validation error(s):",
+   "class": "retarget"
+  },
+  {
+   "id": "config-b:latch:T-01",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_generate_tla_spec.py::test_latch_clear_action_is_modelled_as_a_no_op_on_the_latch"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-b:drop:T-02",
+   "loader": "ConfigError: config-b: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-b:retarget:T-02->S-04",
+   "loader": "ConfigError: config-b: 1 validation error(s):",
+   "class": "retarget"
+  },
+  {
+   "id": "config-b:latch:T-02",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_b",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-b-single-path]",
+    "tests/test_integration.py::test_r29_latch_survives_reset_after_a_torn_write_config_b"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:PostLatchStatesHaveLatch]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-02:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_dataset.py::test_generate_dataset_covers_both_configs",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_b",
+    "tests/test_driver.py::test_stress_knobs_default_to_reference_scenario",
+    "tests/test_generate_baseline_results.py::test_run_baseline_produces_sane_metrics_for_both_configs"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-b]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-02:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-02:S-02]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-b-single-path]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-b]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:SWITCH_DEBOUNCE_ELAPSED:S-02]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-02:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_dataset.py::test_generate_dataset_covers_both_configs",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_b",
+    "tests/test_driver.py::test_stress_knobs_default_to_reference_scenario",
+    "tests/test_generate_baseline_results.py::test_run_baseline_produces_sane_metrics_for_both_configs"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:SWITCH_DEBOUNCE_ELAPSED:S-02]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-02:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_dataset.py::test_generate_dataset_covers_both_configs",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_b",
+    "tests/test_driver.py::test_stress_knobs_default_to_reference_scenario",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:SWITCH_DEBOUNCE_ELAPSED:S-02]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-02:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-02:S-02]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-b-single-path]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-b]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:SWITCH_DEBOUNCE_ELAPSED:S-02]"
+   ]
+  },
+  {
+   "id": "config-b:drop:T-03",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_dataset.py::test_generate_dataset_covers_both_configs",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_b",
+    "tests/test_driver.py::test_stress_knobs_default_to_reference_scenario",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:retarget:T-03->S-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-b-single-path]"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:latch:T-03",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:drop:T-04",
+   "loader": "ConfigError: config-b: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-b:retarget:T-04->S-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_reenter_comms_mode_config_b"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:latch:T-04",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:drop:T-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_dataset.py::test_generate_dataset_covers_both_configs",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_b",
+    "tests/test_driver.py::test_stress_knobs_default_to_reference_scenario",
+    "tests/test_generate_baseline_results.py::test_run_baseline_produces_sane_metrics_for_both_configs"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:retarget:T-05->S-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_benchmark_policies.py::test_capture_decision_contexts_reaches_real_decision_points",
+    "tests/test_dataset.py::test_generate_dataset_covers_both_configs",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_b",
+    "tests/test_driver.py::test_stress_knobs_default_to_reference_scenario",
+    "tests/test_generate_baseline_results.py::test_run_baseline_produces_sane_metrics_for_both_configs"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:latch:T-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:drop:T-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:retarget:T-06->S-07",
+   "loader": null,
+   "explorer": [
+    "SafeEntryOnlyVia",
+    "SchedulerOnlyInComms"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property SafeEntryOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:SafeEntryOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:SchedulerOnlyInComms]"
+   ]
+  },
+  {
+   "id": "config-b:latch:T-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:drop:T-07",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_b_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:retarget:T-07->S-07",
+   "loader": null,
+   "explorer": [
+    "SafeEntryOnlyVia",
+    "SchedulerOnlyInComms"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property SafeEntryOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:SafeEntryOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:SchedulerOnlyInComms]"
+   ]
+  },
+  {
+   "id": "config-b:latch:T-07",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:guard:T-07:<->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-07:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-07:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[7-config-b]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[9-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:PASS_END:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:PASS_END:S-06]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-b]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-07:<->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_power.py::test_config_b_downlink_is_charged_transmit_draw_not_idle"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:guard:T-07:<->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-07:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-07:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[7-config-b]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[9-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:PASS_END:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:PASS_END:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-07:<-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:PASS_END:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:PASS_END:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-07:<->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-07:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-07:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[7-config-b]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[9-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:PASS_END:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:PASS_END:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:drop:T-08",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_b_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:retarget:T-08->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-b:latch:T-08",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:guard:T-08:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-b]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-08:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-08:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-08:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-08:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-08:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:FAULT_DETECTED:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:drop:T-09",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_b_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:retarget:T-09->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-b:latch:T-09",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:guard:T-09:<=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-b]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-09:<=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_power.py::test_config_b_downlink_is_charged_transmit_draw_not_idle"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-09:<=->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-09:<=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-09:<=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-09:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-b]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:POWER_LOW:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:drop:T-10",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:retarget:T-10->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-b:latch:T-10",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:drop:T-11",
+   "loader": null,
+   "explorer": [
+    "GroundSafeAvailableExactly"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant GroundSafeAvailableExactly is violated.",
+   "class": "drop",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:GroundSafeAvailableExactly]"
+   ]
+  },
+  {
+   "id": "config-b:retarget:T-11->S-01",
+   "loader": null,
+   "explorer": [
+    "GroundSafeAvailableExactly",
+    "RfSilenceLeftOnlyVia",
+    "SafeExitOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant GroundSafeAvailableExactly is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_rq1_cross_config.py::test_config_b_has_no_autonomous_recovery_event_or_state"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:RfSilenceLeftOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:SafeExitOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:GroundSafeAvailableExactly]"
+   ]
+  },
+  {
+   "id": "config-b:latch:T-11",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:drop:T-12",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_ground_override_config_b_at_aos",
+    "tests/test_driver.py::test_maybe_recover_ground_override_still_recovers_with_correct_secret",
+    "tests/test_rq1_cross_config.py::test_config_b_has_no_autonomous_recovery_event_or_state"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:retarget:T-12->S-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_ground_override_config_b_at_aos",
+    "tests/test_driver.py::test_maybe_recover_ground_override_still_recovers_with_correct_secret"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:latch:T-12",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:drop:T-13",
+   "loader": null,
+   "explorer": [
+    "ResetAlwaysAvailable"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant ResetAlwaysAvailable is violated by the initial state:",
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-01:S-01]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-02:S-02]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-03:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-04:S-04]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:ResetAlwaysAvailable]"
+   ]
+  },
+  {
+   "id": "config-b:latch:T-13",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-01:S-01]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-03:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-04:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-05:S-05]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-b:drop:T-14",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_generate_diagrams.py::test_wildcard_noop_transition_is_self_loop_on_any_config_b"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:latch:T-14",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-b:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-b:drop:T-15",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_b_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:latch:T-15",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:guard:T-15:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-b]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-15:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-15:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-15:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:guard:T-15:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-b:T-15:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-b:COMMS_LOSS_TIMEOUT:S-06]"
+   ]
+  },
+  {
+   "id": "config-b:rank:1<->2",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_rank1_reset_wins_timestamp_tie_against_ground_commands"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:rank:2<->3",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-b:rank:3<->4",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_rank4_pass_end_before_any_select_even_if_raised_later"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-b:rank:4<->5",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_rank4_pass_end_before_any_select_even_if_raised_later"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:drop:T-01",
+   "loader": "ConfigError: config-c: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-c:retarget:T-01->S-03",
+   "loader": "ConfigError: config-c: 1 validation error(s):",
+   "class": "retarget"
+  },
+  {
+   "id": "config-c:latch:T-01",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-c:drop:T-02",
+   "loader": "ConfigError: config-c: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-c:retarget:T-02->S-04",
+   "loader": "ConfigError: config-c: 1 validation error(s):",
+   "class": "retarget"
+  },
+  {
+   "id": "config-c:latch:T-02",
+   "loader": null,
+   "explorer": [
+    "PostLatchStatesHaveLatch"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant PostLatchStatesHaveLatch is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_c",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-c-single-path]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:PostLatchStatesHaveLatch]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-02:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_generate_baseline_results.py::test_write_baseline_results_includes_multi_seed_section",
+    "tests/test_generate_baseline_results.py::test_main_writes_deterministic_output",
+    "tests/test_generate_ground_station_analysis.py::test_write_ground_station_analysis_writes_a_file"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-c]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-02:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-02:S-02]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-c-single-path]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:SWITCH_DEBOUNCE_ELAPSED:S-02]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-02:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_generate_baseline_results.py::test_write_baseline_results_includes_multi_seed_section",
+    "tests/test_generate_baseline_results.py::test_main_writes_deterministic_output",
+    "tests/test_generate_ground_station_analysis.py::test_write_ground_station_analysis_writes_a_file"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:SWITCH_DEBOUNCE_ELAPSED:S-02]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-02:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-02:S-02]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-c-single-path]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:SWITCH_DEBOUNCE_ELAPSED:S-02]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-02:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-02:S-02]",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-c-single-path]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:SWITCH_DEBOUNCE_ELAPSED:S-02]"
+   ]
+  },
+  {
+   "id": "config-c:drop:T-03",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-c-single-path]"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-03->S-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_latch_survives_corruption_at_every_boundary_after_it_is_set[config-c-single-path]"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:latch:T-03",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:drop:T-04",
+   "loader": "ConfigError: config-c: 1 validation error(s):",
+   "class": "drop"
+  },
+  {
+   "id": "config-c:retarget:T-04->S-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:latch:T-04",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:drop:T-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_generate_baseline_results.py::test_write_baseline_results_includes_multi_seed_section",
+    "tests/test_generate_baseline_results.py::test_main_writes_deterministic_output"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-05->S-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_bootstrap_reaches_operational_state_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_generate_baseline_results.py::test_write_baseline_results_includes_multi_seed_section",
+    "tests/test_generate_baseline_results.py::test_main_writes_deterministic_output",
+    "tests/test_generate_ground_station_analysis.py::test_write_ground_station_analysis_writes_a_file"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:latch:T-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:drop:T-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_config_loader.py::test_loads_config_c_without_error"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-06->S-07",
+   "loader": null,
+   "explorer": [
+    "SafeEntryOnlyVia",
+    "SchedulerOnlyInComms"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property SafeEntryOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:SafeEntryOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:SchedulerOnlyInComms]"
+   ]
+  },
+  {
+   "id": "config-c:latch:T-06",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:drop:T-07",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_c_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-07->S-07",
+   "loader": null,
+   "explorer": [
+    "SafeEntryOnlyVia",
+    "SchedulerOnlyInComms"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property SafeEntryOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:SafeEntryOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:SchedulerOnlyInComms]"
+   ]
+  },
+  {
+   "id": "config-c:latch:T-07",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:guard:T-07:<->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-07:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-07:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[2-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[7-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:PASS_END:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:PASS_END:S-06]",
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-c]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-07:<->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:guard:T-07:<->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-07:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-07:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[2-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[7-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:PASS_END:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:PASS_END:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-07:<-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:PASS_END:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:PASS_END:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-07:<->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-07:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-07:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[2-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[7-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:PASS_END:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:PASS_END:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:drop:T-08",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_c_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-08->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-c:latch:T-08",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:guard:T-08:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-c]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-08:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-08:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-08:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-08:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-08:S-06]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:FAULT_DETECTED:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:drop:T-09",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_c_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-09->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-c:latch:T-09",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:guard:T-09:<=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-c]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-09:<=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-09:<=->>=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-09:<=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-09:<=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-09:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:POWER_LOW:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:drop:T-10",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_config_loader.py::test_loads_config_c_without_error"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-10->S-01",
+   "loader": null,
+   "explorer": [
+    "RfSilenceLeftOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property RfSilenceLeftOnlyVia is violated.",
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:RfSilenceLeftOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-c:latch:T-10",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:drop:T-11",
+   "loader": null,
+   "explorer": [
+    "GroundSafeAvailableExactly"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant GroundSafeAvailableExactly is violated.",
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_config_loader.py::test_loads_config_c_without_error"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:GroundSafeAvailableExactly]"
+   ]
+  },
+  {
+   "id": "config-c:retarget:T-11->S-01",
+   "loader": null,
+   "explorer": [
+    "GroundSafeAvailableExactly",
+    "RfSilenceLeftOnlyVia",
+    "SafeExitOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant GroundSafeAvailableExactly is violated.",
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_rq1_cross_config.py::test_config_c_has_autonomous_recovery_on_config_b_style_chassis"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:RfSilenceLeftOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:SafeExitOnlyVia]",
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:GroundSafeAvailableExactly]"
+   ]
+  },
+  {
+   "id": "config-c:latch:T-11",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:drop:T-12",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_rq1_cross_config.py::test_config_c_has_autonomous_recovery_on_config_b_style_chassis"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-12->S-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:latch:T-12",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:drop:T-13",
+   "loader": null,
+   "explorer": [
+    "ResetAlwaysAvailable"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Invariant ResetAlwaysAvailable is violated by the initial state:",
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-01:S-01]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-02:S-02]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-03:S-03]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:ResetAlwaysAvailable]"
+   ]
+  },
+  {
+   "id": "config-c:latch:T-13",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-01:S-01]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-03:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-04:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-05:S-05]"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-c:drop:T-14",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_config_loader.py::test_loads_config_c_without_error"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:latch:T-14",
+   "loader": null,
+   "explorer": [
+    "LatchRisesOnlyVia"
+   ],
+   "tlc_generic": null,
+   "tlc_indep": "Error: Action property LatchRisesOnlyVia is violated.",
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_engine_satisfies_independent_requirement[config-c:LatchRisesOnlyVia]"
+   ]
+  },
+  {
+   "id": "config-c:drop:T-15",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_c_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:latch:T-15",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:guard:T-15:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-c]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-15:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-15:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": null,
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-15:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-15:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-03]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-04]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-05]",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-15:S-06]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-03]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-04]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-05]",
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:COMMS_LOSS_TIMEOUT:S-06]"
+   ]
+  },
+  {
+   "id": "config-c:drop:T-16",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "drop",
+   "suite_existing": [
+    "tests/test_codegen_c_table.py::test_config_c_parameters_are_exactly_the_guard_referenced_numeric_ids",
+    "tests/test_config_loader.py::test_loads_config_c_without_error",
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_engine_guards_c.py::test_every_guarded_transition_across_all_three_configs_is_exercised"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:retarget:T-16->S-05",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "retarget",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_c",
+    "tests/test_rq1_cross_config.py::test_config_c_has_autonomous_recovery_on_config_b_style_chassis"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:latch:T-16",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "latch",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:guard:T-16:>=->==",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery"
+   ],
+   "suite_new": [
+    "tests/test_requirements_independent.py::test_exploration_exercises_every_transition_row[config-c]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-16:>=->!=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-16:S-07]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[2-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:AUTONOMOUS_RECOVERY_CONDITIONS_MET:S-07]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-16:>=-><=",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:AUTONOMOUS_RECOVERY_CONDITIONS_MET:S-07]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-16:>=-><",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_driver.py::test_maybe_recover_autonomous_config_c",
+    "tests/test_driver.py::test_depleted_initial_soc_triggers_power_low_then_autonomous_recovery",
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-16:S-07]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:AUTONOMOUS_RECOVERY_CONDITIONS_MET:S-07]"
+   ]
+  },
+  {
+   "id": "config-c:guard:T-16:>=->>",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "guard",
+   "suite_existing": [
+    "tests/test_export_visualization_data.py::test_compute_rq2_data_reports_all_passing",
+    "tests/test_fault_injection.py::test_reset_at_every_transition_boundary_round_trips_state_and_context[config-c:T-16:S-07]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[0-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[1-config-c]",
+    "tests/test_latch_fuzz.py::test_latch_never_reverts_across_a_random_walk_with_resets[2-config-c]"
+   ],
+   "suite_new": [
+    "tests/test_guard_negative.py::test_guard_threshold_inclusive_side_fires_and_other_side_blocks[config-c:AUTONOMOUS_RECOVERY_CONDITIONS_MET:S-07]"
+   ]
+  },
+  {
+   "id": "config-c:rank:1<->2",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:rank:2<->3",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": null,
+   "suite_new": null
+  },
+  {
+   "id": "config-c:rank:3<->4",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_rank4_selects_follow_data_class_priority_not_timestamp"
+   ],
+   "suite_new": null
+  },
+  {
+   "id": "config-c:rank:4<->5",
+   "loader": null,
+   "explorer": null,
+   "tlc_generic": null,
+   "tlc_indep": null,
+   "class": "rank",
+   "suite_existing": [
+    "tests/test_arbitration.py::test_rank4_selects_follow_data_class_priority_not_timestamp"
+   ],
+   "suite_new": null
+  }
+ ]
+}
